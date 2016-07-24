@@ -1,0 +1,6 @@
+syntax: glob
+.idea
+.ipynb_checkpoints
+__pycache__
+*.pyo
+*.pyc
