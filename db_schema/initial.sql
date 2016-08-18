@@ -1,0 +1,28 @@
+CREATE DATABASE IF NOT EXISTS NHL_STATS
+  DEFAULT CHARACTER SET utf8
+  DEFAULT COLLATE utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS teams (
+  id BIGINT NOT NULL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  abbreviation VARCHAR(5),
+  location VARCHAR(100),
+  venue_name VARCHAR(100),
+  venue_city VARCHAR(100),
+  division_id BIGINT,
+  conference_id BIGINT,
+  active BOOL NOT NULL)
+  ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS conferences (
+  id BIGINT NOT NULL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  active BOOL NOT NULL)
+  ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS divisions (
+  id BIGINT NOT NULL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  conference_id BIGINT,
+  active BOOL NOT NULL)
+  ENGINE=InnoDB;
