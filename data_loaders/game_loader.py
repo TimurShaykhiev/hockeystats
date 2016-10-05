@@ -1,0 +1,111 @@
+import requests
+
+from data_models import take_give_away as tga
+from data_models.penalty import Penalty
+from data_models.goal import Goal
+from data_models.game import Game
+from data_models.skater_stat import SkaterStat
+from data_models.goalie_stat import GoalieStat
+from data_loaders import NHL_STATS_DOMAIN
+
+SCHEDULE_URL = NHL_STATS_DOMAIN + '/api/v1/schedule'
+
+
+def get_games_list(start, end):
+    """
+    Get list of games for the requested time period
+    :param start: start of time period (in format yyyy-mm-dd)
+    :param end: end of time period (in format yyyy-mm-dd)
+    :return: List of game links
+    """
+    links = []
+    schedule = requests.get(SCHEDULE_URL, params={'startDate': start, 'endDate': end}).json()
+    dates = schedule.get('dates')
+    for date in dates:
+        games = date.get('games')
+        for game in games:
+            game_type = game.get('gameType')
+            if game_type == 'R' or game_type == 'P':
+                links.append(game.get('link'))
+    return links
+
+
+def get_game_info(game_link):
+    game_obj = requests.get(NHL_STATS_DOMAIN + game_link).json()
+    tg_aways = []
+    goals = []
+    penalties = []
+    skater_stats = {}
+    goalie_stats = {}
+
+    game = Game.from_json(game_obj)
+
+    box_score = game_obj['liveData']['boxscore']['teams']
+    _add_player_stats(game, box_score['home']['players'], game.home, goalie_stats, skater_stats)
+    _add_player_stats(game, box_score['away']['players'], game.away, goalie_stats, skater_stats)
+    game.face_off_taken //= 2
+
+    events = game_obj['liveData']['plays']['allPlays']
+    for evt in events:
+        evt_type = evt['result']['eventTypeId']
+        if evt_type == 'TAKEAWAY' or evt_type == 'GIVEAWAY':
+            t = tga.create_from_json(evt, game.id, game.date)
+            tg_aways.append(t)
+            _update_team_stats_tga(game, t)
+        elif evt_type == 'PENALTY':
+            p = Penalty.from_json(evt, game.id, game.date)
+            penalties.append(p)
+            _update_team_stats_penalty(game, p)
+        elif evt_type == 'GOAL':
+            g = Goal.from_json(evt, game.id, game.date)
+            goals.append(g)
+            _update_team_stats_goal(game, g)
+    return game, skater_stats, goalie_stats, tg_aways, penalties, goals
+
+
+def _add_player_stats(game, players, team_stats, goalie_stats, skater_stats):
+    for pl in players.keys():
+        st = SkaterStat.from_json(players[pl], game.id, team_stats.team.id, game.date)
+        if st:
+            skater_stats[st.player.id] = st
+            _update_team_stats(team_stats, st)
+            game.face_off_taken += st.face_off_taken
+        else:
+            st = GoalieStat.from_json(players[pl], game.id, team_stats.team.id, game.date)
+            if st:
+                goalie_stats[st.player.id] = st
+
+
+def _update_team_stats(team_stat, skater_stats):
+    team_stat.face_off_wins += skater_stats.face_off_wins
+    team_stat.shots += skater_stats.shots
+    team_stat.blocked += skater_stats.blocked
+    team_stat.hits += skater_stats.hits
+
+
+def _update_team_stats_penalty(game, penalty):
+    if game.home.team.id == penalty.team.id:
+        game.home.penalty_minutes += penalty.penalty_minutes
+    else:
+        game.away.penalty_minutes += penalty.penalty_minutes
+
+
+def _update_team_stats_goal(game, goal):
+    if goal.strength == 'ppg':
+        if game.home.team.id == goal.team.id:
+            game.home.pp_goals += 1
+        else:
+            game.away.pp_goals += 1
+
+
+def _update_team_stats_tga(game, tg_away):
+    if game.home.team.id == tg_away.team.id:
+        if type(tg_away) == tga.Takeaway:
+            game.home.takeaways += 1
+        else:
+            game.home.giveaways += 1
+    else:
+        if type(tg_away) == tga.Takeaway:
+            game.away.takeaways += 1
+        else:
+            game.away.giveaways += 1

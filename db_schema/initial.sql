@@ -2,27 +2,217 @@ CREATE DATABASE IF NOT EXISTS NHL_STATS
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS teams (
-  id BIGINT NOT NULL PRIMARY KEY,
+CREATE TABLE conferences
+(
+  id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  active TINYINT(1) NOT NULL
+);
+
+CREATE TABLE divisions
+(
+  id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  conference_id BIGINT(20) UNSIGNED,
+  active TINYINT(1) NOT NULL,
+  CONSTRAINT divisions_conferences_id_fk FOREIGN KEY (conference_id) REFERENCES conferences (id) ON UPDATE CASCADE
+);
+
+CREATE TABLE teams
+(
+  id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   name VARCHAR(100) NOT NULL,
   abbreviation VARCHAR(5),
   location VARCHAR(100),
   venue_name VARCHAR(100),
   venue_city VARCHAR(100),
-  division_id BIGINT,
-  conference_id BIGINT,
-  active BOOL NOT NULL)
-  ENGINE=InnoDB;
+  division_id BIGINT(20) UNSIGNED,
+  active TINYINT(1) NOT NULL,
+  CONSTRAINT teams_divisions_id_fk FOREIGN KEY (division_id) REFERENCES divisions (id) ON UPDATE CASCADE
+);
 
-CREATE TABLE IF NOT EXISTS conferences (
-  id BIGINT NOT NULL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  active BOOL NOT NULL)
-  ENGINE=InnoDB;
+# weight in pounds, height in inches
+CREATE TABLE players
+(
+  id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  birth_date DATE,
+  birth_city VARCHAR(100),
+  birth_state VARCHAR(100),
+  birth_country VARCHAR(100),
+  nationality VARCHAR(100),
+  height TINYINT UNSIGNED,
+  weight SMALLINT UNSIGNED,
+  shoots_catches ENUM('left', 'right'),
+  primary_pos ENUM('center', 'right wing', 'left wing', 'defenseman', 'goalie'),
+  current_team_id BIGINT(20) UNSIGNED,
+  CONSTRAINT players_teams_id_fk FOREIGN KEY (current_team_id) REFERENCES teams (id) ON UPDATE CASCADE
+);
 
-CREATE TABLE IF NOT EXISTS divisions (
-  id BIGINT NOT NULL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  conference_id BIGINT,
-  active BOOL NOT NULL)
-  ENGINE=InnoDB;
+CREATE TABLE seasons
+(
+  id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  start DATE NOT NULL,
+  end DATE NOT NULL,
+  current TINYINT(1) NOT NULL
+);
+
+CREATE TABLE games
+(
+  id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
+  date DATE NOT NULL,
+  type ENUM('regular', 'play off') NOT NULL,
+  win_type ENUM('regular', 'overtime', 'shootout') NOT NULL,
+  home_team_id BIGINT(20) UNSIGNED NOT NULL,
+  away_team_id BIGINT(20) UNSIGNED NOT NULL,
+  home_goals TINYINT UNSIGNED NOT NULL,
+  home_goals_period1 TINYINT UNSIGNED NOT NULL,
+  home_goals_period2 TINYINT UNSIGNED NOT NULL,
+  home_goals_period3 TINYINT UNSIGNED NOT NULL,
+  home_shots TINYINT UNSIGNED NOT NULL,
+  home_pp_goals TINYINT UNSIGNED NOT NULL,
+  home_pp_opportunities TINYINT UNSIGNED NOT NULL,
+  home_face_off_wins TINYINT UNSIGNED NOT NULL,
+  home_blocked TINYINT UNSIGNED NOT NULL,
+  home_takeaways TINYINT UNSIGNED NOT NULL,
+  home_giveaways TINYINT UNSIGNED NOT NULL,
+  home_hits TINYINT UNSIGNED NOT NULL,
+  home_penalty_minutes TINYINT UNSIGNED NOT NULL,
+  away_goals TINYINT UNSIGNED NOT NULL,
+  away_goals_period1 TINYINT UNSIGNED NOT NULL,
+  away_goals_period2 TINYINT UNSIGNED NOT NULL,
+  away_goals_period3 TINYINT UNSIGNED NOT NULL,
+  away_shots TINYINT UNSIGNED NOT NULL,
+  away_pp_goals TINYINT UNSIGNED NOT NULL,
+  away_pp_opportunities TINYINT UNSIGNED NOT NULL,
+  away_face_off_wins TINYINT UNSIGNED NOT NULL,
+  away_blocked TINYINT UNSIGNED NOT NULL,
+  away_takeaways TINYINT UNSIGNED NOT NULL,
+  away_giveaways TINYINT UNSIGNED NOT NULL,
+  away_hits TINYINT UNSIGNED NOT NULL,
+  away_penalty_minutes TINYINT UNSIGNED NOT NULL,
+  face_off_taken TINYINT UNSIGNED NOT NULL,
+  CONSTRAINT games_home_team_id_fk FOREIGN KEY (home_team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT games_away_team_id_fk FOREIGN KEY (away_team_id) REFERENCES teams (id) ON UPDATE CASCADE
+);
+
+# time on ice in seconds
+CREATE TABLE skater_stats
+(
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  game_id BIGINT(20) UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  assists TINYINT UNSIGNED NOT NULL,
+  goals TINYINT UNSIGNED NOT NULL,
+  shots TINYINT UNSIGNED NOT NULL,
+  hits TINYINT UNSIGNED NOT NULL,
+  pp_goals TINYINT UNSIGNED NOT NULL,
+  pp_assists TINYINT UNSIGNED NOT NULL,
+  penalty_minutes TINYINT UNSIGNED NOT NULL,
+  face_off_wins TINYINT UNSIGNED NOT NULL,
+  face_off_taken TINYINT UNSIGNED NOT NULL,
+  takeaways TINYINT UNSIGNED NOT NULL,
+  giveaways TINYINT UNSIGNED NOT NULL,
+  sh_goals TINYINT UNSIGNED NOT NULL,
+  sh_assists TINYINT UNSIGNED NOT NULL,
+  blocked TINYINT UNSIGNED NOT NULL,
+  plus_minus TINYINT NOT NULL,
+  toi SMALLINT UNSIGNED NOT NULL,
+  even_toi SMALLINT UNSIGNED NOT NULL,
+  pp_toi SMALLINT UNSIGNED NOT NULL,
+  sh_toi SMALLINT UNSIGNED NOT NULL,
+  CONSTRAINT skater_stats_pk PRIMARY KEY (player_id, game_id),
+  CONSTRAINT skater_players_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT skater_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT skater_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
+);
+
+# time on ice in seconds
+CREATE TABLE goalie_stats
+(
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  game_id BIGINT(20) UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  toi SMALLINT UNSIGNED NOT NULL,
+  assists TINYINT UNSIGNED NOT NULL,
+  goals TINYINT UNSIGNED NOT NULL,
+  penalty_minutes TINYINT UNSIGNED NOT NULL,
+  shots TINYINT UNSIGNED NOT NULL,
+  saves TINYINT UNSIGNED NOT NULL,
+  pp_saves TINYINT UNSIGNED NOT NULL,
+  sh_saves TINYINT UNSIGNED NOT NULL,
+  even_saves TINYINT UNSIGNED NOT NULL,
+  sh_shots_against TINYINT UNSIGNED NOT NULL,
+  even_shots_against TINYINT UNSIGNED NOT NULL,
+  pp_shots_against TINYINT UNSIGNED NOT NULL,
+  decision ENUM('winner', 'loser', 'none') NOT NULL,
+  CONSTRAINT goalie_stats_pk PRIMARY KEY (player_id, game_id),
+  CONSTRAINT goalie_players_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT goalie_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT goalie_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
+);
+
+# period time in seconds
+CREATE TABLE goals
+(
+  id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  game_id BIGINT(20) UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  scorer_id BIGINT(20) UNSIGNED NOT NULL,
+  assist1_id BIGINT(20) UNSIGNED,
+  assist2_id BIGINT(20) UNSIGNED,
+  secondary_type VARCHAR(50),
+  empty_net TINYINT(1) NOT NULL,
+  strength ENUM('even', 'ppg', 'shg') NOT NULL,
+  period_num TINYINT UNSIGNED NOT NULL,
+  period_time SMALLINT UNSIGNED NOT NULL,
+  coord_x TINYINT,
+  coord_y TINYINT,
+  CONSTRAINT goals_scorer_fk FOREIGN KEY (scorer_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT goals_assist1_fk FOREIGN KEY (assist1_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT goals_assist2_fk FOREIGN KEY (assist2_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT goals_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT goals_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
+);
+
+# period time in seconds
+CREATE TABLE penalty
+(
+  id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  game_id BIGINT(20) UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  penalty_on_id BIGINT(20) UNSIGNED NOT NULL,
+  drew_by_id BIGINT(20) UNSIGNED,
+  penalty_minutes TINYINT UNSIGNED NOT NULL,
+  secondary_type VARCHAR(100),
+  period_num TINYINT UNSIGNED NOT NULL,
+  period_time SMALLINT UNSIGNED NOT NULL,
+  coord_x TINYINT,
+  coord_y TINYINT,
+  CONSTRAINT penalty_penalty_on_fk FOREIGN KEY (penalty_on_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT penalty_drew_by_fk FOREIGN KEY (drew_by_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT penalty_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT penalty_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
+);
+
+# period time in seconds
+CREATE TABLE take_give_away
+(
+  id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  game_id BIGINT(20) UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  type ENUM('takeaway', 'giveaway') NOT NULL,
+  period_num TINYINT UNSIGNED NOT NULL,
+  period_time SMALLINT UNSIGNED NOT NULL,
+  coord_x TINYINT,
+  coord_y TINYINT,
+  CONSTRAINT take_give_away_player_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT take_give_away_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT take_give_away_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
+);

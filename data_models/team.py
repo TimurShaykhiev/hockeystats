@@ -1,7 +1,6 @@
-from data_models.conference import Conference
 from data_models.division import Division
 from data_models.venue import Venue
-from data_models import convert_bool, convert_if_none
+from data_models import convert_bool, convert_attr_if_none
 
 
 class Team:
@@ -30,22 +29,16 @@ class Team:
             team.division = Division()
             team.division.id = div['id']
             team.division.name = div['name']
-        conf = obj.get('conference')
-        if conf:
-            team.conference = Conference()
-            team.conference.id = conf['id']
-            team.conference.name = conf['name']
         team.active = obj['active']
         return team
 
     def __str__(self):
-        return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
+        return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.id,
             self.name,
             self.abbreviation,
             self.location,
-            convert_if_none(self.venue, 'name'),
-            convert_if_none(self.venue, 'city'),
-            convert_if_none(self.division, 'id'),
-            convert_if_none(self.conference, 'id'),
+            convert_attr_if_none(self.venue, 'name'),
+            convert_attr_if_none(self.venue, 'city'),
+            convert_attr_if_none(self.division, 'id'),
             convert_bool(self.active))

@@ -1,5 +1,5 @@
 from data_models.conference import Conference
-from data_models import convert_bool, convert_if_none
+from data_models import convert_bool, convert_attr_if_none
 
 
 class Division:
@@ -26,5 +26,5 @@ class Division:
         return '{}\t{}\t{}\t{}\n'.format(
             self.id,
             self.name,
-            convert_if_none(self.conference, 'id'),
+            convert_attr_if_none(self.conference, 'id'),
             convert_bool(self.active))
