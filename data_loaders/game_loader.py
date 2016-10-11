@@ -31,12 +31,23 @@ def get_games_list(start, end):
 
 
 def get_game_info(game_link):
+    """
+    Download and parse game info.
+    :param game_link: game URL
+    :return: Tuple of:
+        game - game data model
+        skater_stats - list of skater stat data models
+        goalie_stats - list of goalkeeper stat data models
+        tg_aways - list of takeaway/giveaway data models
+        penalties - list of penalty data models
+        goals - list of goal data models
+    """
     game_obj = requests.get(NHL_STATS_DOMAIN + game_link).json()
     tg_aways = []
     goals = []
     penalties = []
-    skater_stats = {}
-    goalie_stats = {}
+    skater_stats = []
+    goalie_stats = []
 
     game = Game.from_json(game_obj)
 
@@ -67,13 +78,13 @@ def _add_player_stats(game, players, team_stats, goalie_stats, skater_stats):
     for pl in players.keys():
         st = SkaterStat.from_json(players[pl], game.id, team_stats.team.id, game.date)
         if st:
-            skater_stats[st.player.id] = st
+            skater_stats.append(st)
             _update_team_stats(team_stats, st)
             game.face_off_taken += st.face_off_taken
         else:
             st = GoalieStat.from_json(players[pl], game.id, team_stats.team.id, game.date)
             if st:
-                goalie_stats[st.player.id] = st
+                goalie_stats.append(st)
 
 
 def _update_team_stats(team_stat, skater_stats):

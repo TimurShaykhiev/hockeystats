@@ -61,7 +61,7 @@ CREATE TABLE games
 (
   id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   date DATE NOT NULL,
-  type ENUM('regular', 'play off') NOT NULL,
+  is_regular TINYINT(1) NOT NULL,
   win_type ENUM('regular', 'overtime', 'shootout') NOT NULL,
   home_team_id BIGINT(20) UNSIGNED NOT NULL,
   away_team_id BIGINT(20) UNSIGNED NOT NULL,
@@ -215,4 +215,93 @@ CREATE TABLE take_give_away
   CONSTRAINT take_give_away_player_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
   CONSTRAINT take_give_away_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
   CONSTRAINT take_give_away_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
+);
+
+
+CREATE TABLE team_sum_stats
+(
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  season_id BIGINT(20) UNSIGNED NOT NULL,
+  is_regular TINYINT(1) NOT NULL,
+  goals_for SMALLINT UNSIGNED NOT NULL,
+  goals_against SMALLINT UNSIGNED NOT NULL,
+  shots SMALLINT UNSIGNED NOT NULL,
+  pp_goals SMALLINT UNSIGNED NOT NULL,
+  pp_opportunities SMALLINT UNSIGNED NOT NULL,
+  sh_goals_against SMALLINT UNSIGNED NOT NULL,
+  sh_opportunities SMALLINT UNSIGNED NOT NULL,
+  face_off_wins SMALLINT UNSIGNED NOT NULL,
+  face_off_taken SMALLINT UNSIGNED NOT NULL,
+  blocked SMALLINT UNSIGNED NOT NULL,
+  takeaways SMALLINT UNSIGNED NOT NULL,
+  giveaways SMALLINT UNSIGNED NOT NULL,
+  hits SMALLINT UNSIGNED NOT NULL,
+  penalty_minutes SMALLINT UNSIGNED NOT NULL,
+  games TINYINT UNSIGNED NOT NULL,
+  win_regular TINYINT UNSIGNED NOT NULL,
+  win_overtime TINYINT UNSIGNED NOT NULL,
+  win_shootout TINYINT UNSIGNED NOT NULL,
+  lose_regular TINYINT UNSIGNED NOT NULL,
+  lose_overtime TINYINT UNSIGNED NOT NULL,
+  lose_shootout TINYINT UNSIGNED NOT NULL,
+  CONSTRAINT team_sum_stats_pk PRIMARY KEY (team_id, season_id, is_regular),
+  CONSTRAINT team_sum_players_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT team_sum_seasons_fk FOREIGN KEY (season_id) REFERENCES seasons (id) ON UPDATE CASCADE
+);
+
+# time on ice in seconds
+CREATE TABLE skater_sum_stats
+(
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  season_id BIGINT(20) UNSIGNED NOT NULL,
+  is_regular TINYINT(1) NOT NULL,
+  assists SMALLINT UNSIGNED NOT NULL,
+  goals SMALLINT UNSIGNED NOT NULL,
+  shots SMALLINT UNSIGNED NOT NULL,
+  hits SMALLINT UNSIGNED NOT NULL,
+  pp_goals SMALLINT UNSIGNED NOT NULL,
+  pp_assists SMALLINT UNSIGNED NOT NULL,
+  penalty_minutes SMALLINT UNSIGNED NOT NULL,
+  face_off_wins SMALLINT UNSIGNED NOT NULL,
+  face_off_taken SMALLINT UNSIGNED NOT NULL,
+  takeaways SMALLINT UNSIGNED NOT NULL,
+  giveaways SMALLINT UNSIGNED NOT NULL,
+  sh_goals SMALLINT UNSIGNED NOT NULL,
+  sh_assists SMALLINT UNSIGNED NOT NULL,
+  blocked SMALLINT UNSIGNED NOT NULL,
+  plus_minus SMALLINT NOT NULL,
+  toi MEDIUMINT UNSIGNED NOT NULL,
+  even_toi MEDIUMINT UNSIGNED NOT NULL,
+  pp_toi MEDIUMINT UNSIGNED NOT NULL,
+  sh_toi MEDIUMINT UNSIGNED NOT NULL,
+  games TINYINT UNSIGNED NOT NULL,
+  CONSTRAINT skater_sum_stats_pk PRIMARY KEY (player_id, season_id, is_regular),
+  CONSTRAINT skater_sum_players_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT skater_sum_seasons_fk FOREIGN KEY (season_id) REFERENCES seasons (id) ON UPDATE CASCADE
+);
+
+# time on ice in seconds
+CREATE TABLE goalie_sum_stats
+(
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  season_id BIGINT(20) UNSIGNED NOT NULL,
+  is_regular TINYINT(1) NOT NULL,
+  toi MEDIUMINT UNSIGNED NOT NULL,
+  assists SMALLINT UNSIGNED NOT NULL,
+  goals SMALLINT UNSIGNED NOT NULL,
+  penalty_minutes SMALLINT UNSIGNED NOT NULL,
+  shots SMALLINT UNSIGNED NOT NULL,
+  saves SMALLINT UNSIGNED NOT NULL,
+  pp_saves SMALLINT UNSIGNED NOT NULL,
+  sh_saves SMALLINT UNSIGNED NOT NULL,
+  even_saves SMALLINT UNSIGNED NOT NULL,
+  sh_shots_against SMALLINT UNSIGNED NOT NULL,
+  even_shots_against SMALLINT UNSIGNED NOT NULL,
+  pp_shots_against SMALLINT UNSIGNED NOT NULL,
+  games TINYINT UNSIGNED NOT NULL,
+  wins TINYINT UNSIGNED NOT NULL,
+  shutout TINYINT UNSIGNED NOT NULL,
+  CONSTRAINT goalie_sum_stats_pk PRIMARY KEY (player_id, season_id, is_regular),
+  CONSTRAINT goalie_sum_players_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT goalie_sum_seasons_fk FOREIGN KEY (season_id) REFERENCES seasons (id) ON UPDATE CASCADE
 );

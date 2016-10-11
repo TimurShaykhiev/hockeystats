@@ -1,12 +1,7 @@
 from datetime import datetime, timedelta
 
 from data_models.team import Team
-
-# NHL game 'type' mapping to DB 'type' enum
-GAME_TYPE = {
-  'R': 'regular',
-  'P': 'play off'
-}
+from data_models import convert_bool
 
 # DB win type constants
 WIN_TYPE_REGULAR = 'regular'
@@ -52,7 +47,7 @@ class Game:
     def __init__(self):
         self.id = None
         self.date = None
-        self.type = ''
+        self.is_regular = ''
         self.win_type = WIN_TYPE_REGULAR
         self.home = None
         self.away = None
@@ -63,7 +58,7 @@ class Game:
         game = cls()
         game.id = obj['gamePk']
         game_data = obj['gameData']
-        game.type = GAME_TYPE[game_data['game']['type']]
+        game.is_regular = game_data['game']['type'] == 'R'
         game.date = convert_str_to_date(game_data['datetime']['dateTime'],
                                         float(game_data['teams']['home']['venue']['timeZone']['offset']))
 
@@ -101,7 +96,7 @@ class Game:
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(
             self.id,
             self.date,
-            self.type,
+            convert_bool(self.is_regular),
             self.win_type,
             self.home.team.id,
             self.away.team.id,
