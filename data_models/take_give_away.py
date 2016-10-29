@@ -21,6 +21,11 @@ def create_from_json(obj, game_id, event_date):
     return tg
 
 
+def create_from_tuple(fields):
+    cls = Takeaway if fields[5] == DB_TYPE_TAKEAWAY else Giveaway
+    return cls.from_tuple(fields)
+
+
 class _TGEvent:
     def __init__(self):
         self.id = None
@@ -49,6 +54,23 @@ class _TGEvent:
         tg_event.period_time = convert_time_to_sec(about['periodTime'])
 
         tg_event.coord_x, tg_event.coord_y = get_coordinates(obj)
+        return tg_event
+
+    @classmethod
+    def from_tuple(cls, fields):
+        tg_event = cls()
+        tg_event.id = fields[0]
+        tg_event.team = Team()
+        tg_event.team.id = fields[1]
+        tg_event.game = Game()
+        tg_event.game.id = fields[2]
+        tg_event.date = fields[3]
+        tg_event.player = Player()
+        tg_event.player.id = fields[4]
+        tg_event.period_num = fields[6]
+        tg_event.period_time = fields[7]
+        tg_event.coord_x = fields[8]
+        tg_event.coord_y = fields[9]
         return tg_event
 
 

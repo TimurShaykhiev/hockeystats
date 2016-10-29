@@ -12,6 +12,10 @@ GAME_STRENGTH = {
 
 
 class Goal:
+    STRENGTH_EVEN = 'even'
+    STRENGTH_PPG = 'ppg'
+    STRENGTH_SHG = 'shg'
+
     def __init__(self):
         self.id = None
         self.team = None
@@ -63,6 +67,34 @@ class Goal:
         goal.period_time = convert_time_to_sec(about['periodTime'])
 
         goal.coord_x, goal.coord_y = get_coordinates(obj)
+        return goal
+
+    @classmethod
+    def from_tuple(cls, fields):
+        goal = cls()
+        goal.id = fields[0]
+        goal.team = Team()
+        goal.team.id = fields[1]
+        goal.game = Game()
+        goal.game.id = fields[2]
+        goal.date = fields[3]
+        goal.scorer = Player()
+        goal.scorer.id = fields[4]
+        assist_id = fields[5]
+        if assist_id:
+            goal.assist1 = Player()
+            goal.assist1.id = assist_id
+        assist_id = fields[6]
+        if assist_id:
+            goal.assist2 = Player()
+            goal.assist2.id = assist_id
+        goal.secondary_type = fields[7]
+        goal.empty_net = bool(fields[8])
+        goal.strength = fields[9]
+        goal.period_num = fields[10]
+        goal.period_time = fields[11]
+        goal.coord_x = fields[12]
+        goal.coord_y = fields[13]
         return goal
 
     def __str__(self):

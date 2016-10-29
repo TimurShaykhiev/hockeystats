@@ -24,6 +24,31 @@ class GoalieSumStat:
         self.wins = 0
         self.shutout = 0
 
+    @classmethod
+    def from_tuple(cls, fields):
+        goalie_stat = cls()
+        goalie_stat.player = Player()
+        goalie_stat.player.id = fields[0]
+        goalie_stat.season = Season()
+        goalie_stat.season.id = fields[1]
+        goalie_stat.is_regular = fields[2]
+        goalie_stat.toi = fields[3]
+        goalie_stat.assists = fields[4]
+        goalie_stat.goals = fields[5]
+        goalie_stat.penalty_minutes = fields[6]
+        goalie_stat.shots = fields[7]
+        goalie_stat.saves = fields[8]
+        goalie_stat.pp_saves = fields[9]
+        goalie_stat.sh_saves = fields[10]
+        goalie_stat.even_saves = fields[11]
+        goalie_stat.sh_shots_against = fields[12]
+        goalie_stat.even_shots_against = fields[13]
+        goalie_stat.pp_shots_against = fields[14]
+        goalie_stat.games = fields[15]
+        goalie_stat.wins = fields[16]
+        goalie_stat.shutout = fields[17]
+        return goalie_stat
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.player.id,

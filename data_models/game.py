@@ -1,12 +1,7 @@
 from datetime import datetime, timedelta
 
 from data_models.team import Team
-from data_models import convert_bool
-
-# DB win type constants
-WIN_TYPE_REGULAR = 'regular'
-WIN_TYPE_OVERTIME = 'overtime'
-WIN_TYPE_SHOOTOUT = 'shootout'
+from data_models import convert_bool, get_from_db
 
 
 def convert_str_to_date(date_str, tz_offset):
@@ -15,6 +10,10 @@ def convert_str_to_date(date_str, tz_offset):
 
 
 class Game:
+    WIN_TYPE_REGULAR = 'regular'
+    WIN_TYPE_OVERTIME = 'overtime'
+    WIN_TYPE_SHOOTOUT = 'shootout'
+
     class TeamStat:
         def __init__(self):
             self.team = None
@@ -47,8 +46,8 @@ class Game:
     def __init__(self):
         self.id = None
         self.date = None
-        self.is_regular = ''
-        self.win_type = WIN_TYPE_REGULAR
+        self.is_regular = True
+        self.win_type = self.WIN_TYPE_REGULAR
         self.home = None
         self.away = None
         self.face_off_taken = 0
@@ -85,11 +84,57 @@ class Game:
                 has_overtime = True
 
         if has_shootout:
-            game.win_type = WIN_TYPE_SHOOTOUT
+            game.win_type = cls.WIN_TYPE_SHOOTOUT
         elif has_overtime:
-            game.win_type = WIN_TYPE_OVERTIME
+            game.win_type = cls.WIN_TYPE_OVERTIME
 
         return game
+
+    @classmethod
+    def from_tuple(cls, fields):
+        game = cls()
+        game.id = fields[0]
+        game.date = fields[1]
+        game.is_regular = bool(fields[2])
+        game.win_type = fields[3]
+        game.home = cls.TeamStat()
+        game.home.team = Team()
+        game.home.team.id = fields[4]
+        game.away = cls.TeamStat()
+        game.away.team = Team
+        game.away.team.id = fields[5]
+        game.home.goals = fields[6]
+        game.home.goals_period1 = fields[7]
+        game.home.goals_period2 = fields[8]
+        game.home.goals_period3 = fields[9]
+        game.home.shots = fields[10]
+        game.home.pp_goals = fields[11]
+        game.home.pp_opportunities = fields[12]
+        game.home.face_off_wins = fields[13]
+        game.home.blocked = fields[14]
+        game.home.takeaways = fields[15]
+        game.home.giveaways = fields[16]
+        game.home.hits = fields[17]
+        game.home.penalty_minutes = fields[18]
+        game.away.goals = fields[19]
+        game.away.goals_period1 = fields[20]
+        game.away.goals_period2 = fields[21]
+        game.away.goals_period3 = fields[22]
+        game.away.shots = fields[23]
+        game.away.pp_goals = fields[24]
+        game.away.pp_opportunities = fields[25]
+        game.away.face_off_wins = fields[26]
+        game.away.blocked = fields[27]
+        game.away.takeaways = fields[28]
+        game.away.giveaways = fields[29]
+        game.away.hits = fields[30]
+        game.away.penalty_minutes = fields[31]
+        game.face_off_taken = fields[32]
+        return game
+
+    @classmethod
+    def from_db(cls, db, game_id):
+        return get_from_db(cls, db, 'SELECT * FROM games WHERE id = %s', [game_id])
 
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'

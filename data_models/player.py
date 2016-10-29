@@ -1,5 +1,5 @@
 from data_models.team import Team
-from data_models import convert_attr_if_none, convert_str_to_date
+from data_models import convert_attr_if_none, convert_str_to_date, get_from_db
 
 # NHL position 'code' mapping to DB 'primary_pos' enum
 PLAYER_POSITION = {
@@ -26,6 +26,12 @@ def convert_height(value):
 
 
 class Player:
+    CENTER = 'center'
+    RIGHT_WING = 'right wing'
+    LEFT_WING = 'left wing'
+    DEFENSEMAN = 'defenseman'
+    GOALIE = 'goalie'
+
     def __init__(self):
         self.id = None
         self.name = ''
@@ -63,6 +69,30 @@ class Player:
             player.current_team = Team()
             player.current_team.id = team['id']
         return player
+
+    @classmethod
+    def from_tuple(cls, fields):
+        player = cls()
+        player.id = fields[0]
+        player.name = fields[1]
+        player.birth_date = fields[2]
+        player.birth_city = fields[3]
+        player.birth_state = fields[4]
+        player.birth_country = fields[5]
+        player.nationality = fields[6]
+        player.height = fields[7]
+        player.weight = fields[8]
+        player.shoots_catches = fields[9]
+        player.primary_pos = fields[10]
+        team_id = fields[11]
+        if team_id:
+            player.current_team = Team()
+            player.current_team.id = team_id
+        return team_id
+
+    @classmethod
+    def from_db(cls, db, player_id):
+        return get_from_db(cls, db, 'SELECT * FROM players WHERE id = %s', [player_id])
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(

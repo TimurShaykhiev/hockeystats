@@ -50,6 +50,29 @@ class Penalty:
         penalty.coord_x, penalty.coord_y = get_coordinates(obj)
         return penalty
 
+    @classmethod
+    def from_tuple(cls, fields):
+        penalty = cls()
+        penalty.id = fields[0]
+        penalty.team = Team()
+        penalty.team.id = fields[1]
+        penalty.game = Game()
+        penalty.game.id = fields[2]
+        penalty.date = fields[3]
+        penalty.penalty_on = Player()
+        penalty.penalty_on.id = fields[4]
+        drew_by_id = fields[5]
+        if drew_by_id:
+            penalty.drew_by = Player()
+            penalty.drew_by.id = drew_by_id
+        penalty.penalty_minutes = fields[6]
+        penalty.secondary_type = fields[7]
+        penalty.period_num = fields[8]
+        penalty.period_time = fields[9]
+        penalty.coord_x = fields[10]
+        penalty.coord_y = fields[11]
+        return penalty
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.team.id,

@@ -66,6 +66,37 @@ class SkaterStat:
             return skater_stat
         return None
 
+    @classmethod
+    def from_tuple(cls, fields):
+        skater_stat = cls()
+        skater_stat.player = Player()
+        skater_stat.player.id = fields[0]
+        skater_stat.team = Team()
+        skater_stat.team.id = fields[1]
+        skater_stat.game = Game()
+        skater_stat.game.id = fields[2]
+        skater_stat.date = fields[3]
+        skater_stat.assists = fields[4]
+        skater_stat.goals = fields[5]
+        skater_stat.shots = fields[6]
+        skater_stat.hits = fields[7]
+        skater_stat.pp_goals = fields[8]
+        skater_stat.pp_assists = fields[9]
+        skater_stat.penalty_minutes = fields[10]
+        skater_stat.face_off_wins = fields[11]
+        skater_stat.face_off_taken = fields[12]
+        skater_stat.takeaways = fields[13]
+        skater_stat.giveaways = fields[14]
+        skater_stat.sh_goals = fields[15]
+        skater_stat.sh_assists = fields[16]
+        skater_stat.blocked = fields[17]
+        skater_stat.plus_minus = fields[18]
+        skater_stat.toi = fields[19]
+        skater_stat.even_toi = fields[20]
+        skater_stat.pp_toi = fields[21]
+        skater_stat.sh_toi = fields[22]
+        return skater_stat
+
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(

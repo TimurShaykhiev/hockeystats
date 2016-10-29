@@ -35,3 +35,12 @@ def get_coordinates(obj):
             x = int(float(_x))
             y = int(float(_y))
     return x, y
+
+
+def get_from_db(cls, db, query, query_params):
+    cur = db.cursor()
+    cur.execute(query, query_params)
+    fields = cur.fetchone()
+    if fields:
+        return cls.from_tuple(fields)
+    return None

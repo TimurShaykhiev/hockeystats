@@ -11,6 +11,10 @@ DECISION = {
 
 
 class GoalieStat:
+    DECISION_WINNER = 'winner'
+    DECISION_LOSER = 'loser'
+    DECISION_NONE = 'none'
+
     def __init__(self):
         self.player = None
         self.team = None
@@ -28,7 +32,7 @@ class GoalieStat:
         self.sh_shots_against = 0
         self.even_shots_against = 0
         self.pp_shots_against = 0
-        self.decision = 'none'
+        self.decision = self.DECISION_NONE
 
     @classmethod
     def from_json(cls, obj, game_id, team_id, event_date):
@@ -60,6 +64,31 @@ class GoalieStat:
                 goalie_stat.decision = DECISION[stats['decision']]
             return goalie_stat
         return None
+
+    @classmethod
+    def from_tuple(cls, fields):
+        goalie_stat = cls()
+        goalie_stat.player = Player()
+        goalie_stat.player.id = fields[0]
+        goalie_stat.team = Team()
+        goalie_stat.team.id = fields[1]
+        goalie_stat.game = Game()
+        goalie_stat.game.id = fields[2]
+        goalie_stat.date = fields[3]
+        goalie_stat.toi = fields[4]
+        goalie_stat.assists = fields[5]
+        goalie_stat.goals = fields[6]
+        goalie_stat.penalty_minutes = fields[7]
+        goalie_stat.shots = fields[8]
+        goalie_stat.saves = fields[9]
+        goalie_stat.pp_saves = fields[10]
+        goalie_stat.sh_saves = fields[11]
+        goalie_stat.even_saves = fields[12]
+        goalie_stat.sh_shots_against = fields[13]
+        goalie_stat.even_shots_against = fields[14]
+        goalie_stat.pp_shots_against = fields[15]
+        goalie_stat.decision = fields[16]
+        return goalie_stat
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(

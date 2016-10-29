@@ -30,6 +30,37 @@ class TeamSumStat:
         self.lose_overtime = 0
         self.lose_shootout = 0
 
+    @classmethod
+    def from_tuple(cls, fields):
+        team_stat = cls()
+        team_stat.team = Team()
+        team_stat.team.id = fields[0]
+        team_stat.season = Season()
+        team_stat.season.id = fields[1]
+        team_stat.is_regular = bool(fields[2])
+        team_stat.goals_for = fields[3]
+        team_stat.goals_against = fields[4]
+        team_stat.shots = fields[5]
+        team_stat.pp_goals = fields[6]
+        team_stat.pp_opportunities = fields[7]
+        team_stat.sh_goals_against = fields[8]
+        team_stat.sh_opportunities = fields[9]
+        team_stat.face_off_wins = fields[10]
+        team_stat.face_off_taken = fields[11]
+        team_stat.blocked = fields[12]
+        team_stat.takeaways = fields[13]
+        team_stat.giveaways = fields[14]
+        team_stat.hits = fields[15]
+        team_stat.penalty_minutes = fields[16]
+        team_stat.games = fields[17]
+        team_stat.win_regular = fields[18]
+        team_stat.win_overtime = fields[19]
+        team_stat.win_shootout = fields[20]
+        team_stat.lose_regular = fields[21]
+        team_stat.lose_overtime = fields[22]
+        team_stat.lose_shootout = fields[23]
+        return team_stat
+
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(

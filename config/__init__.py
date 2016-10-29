@@ -1,5 +1,6 @@
 CONFIG = {
     # DB config
+    'db_name': 'NHL_STATS',
     'db_user': 'root',
     'db_password': 'root',
 
