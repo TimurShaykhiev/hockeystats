@@ -2,14 +2,27 @@ CREATE DATABASE IF NOT EXISTS NHL_STATS
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
-CREATE TABLE conferences
+CREATE TABLE IF NOT EXISTS versions
+(
+  version SMALLINT UNSIGNED PRIMARY KEY NOT NULL,
+  applied DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS updates
+(
+  type SMALLINT UNSIGNED PRIMARY KEY NOT NULL,
+  description VARCHAR(255),
+  last_update DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS conferences
 (
   id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   name VARCHAR(100) NOT NULL,
   active TINYINT(1) NOT NULL
 );
 
-CREATE TABLE divisions
+CREATE TABLE IF NOT EXISTS divisions
 (
   id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   name VARCHAR(100) NOT NULL,
@@ -18,7 +31,7 @@ CREATE TABLE divisions
   CONSTRAINT divisions_conferences_id_fk FOREIGN KEY (conference_id) REFERENCES conferences (id) ON UPDATE CASCADE
 );
 
-CREATE TABLE teams
+CREATE TABLE IF NOT EXISTS teams
 (
   id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   name VARCHAR(100) NOT NULL,
@@ -32,7 +45,7 @@ CREATE TABLE teams
 );
 
 # weight in pounds, height in inches
-CREATE TABLE players
+CREATE TABLE IF NOT EXISTS players
 (
   id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -49,7 +62,7 @@ CREATE TABLE players
   CONSTRAINT players_teams_id_fk FOREIGN KEY (current_team_id) REFERENCES teams (id) ON UPDATE CASCADE
 );
 
-CREATE TABLE seasons
+CREATE TABLE IF NOT EXISTS seasons
 (
   id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
   start DATE NOT NULL,
@@ -57,7 +70,7 @@ CREATE TABLE seasons
   current TINYINT(1) NOT NULL
 );
 
-CREATE TABLE games
+CREATE TABLE IF NOT EXISTS games
 (
   id BIGINT(20) UNSIGNED PRIMARY KEY NOT NULL,
   date DATE NOT NULL,
@@ -97,7 +110,7 @@ CREATE TABLE games
 );
 
 # time on ice in seconds
-CREATE TABLE skater_stats
+CREATE TABLE IF NOT EXISTS skater_stats
 (
   player_id BIGINT(20) UNSIGNED NOT NULL,
   team_id BIGINT(20) UNSIGNED NOT NULL,
@@ -129,7 +142,7 @@ CREATE TABLE skater_stats
 );
 
 # time on ice in seconds
-CREATE TABLE goalie_stats
+CREATE TABLE IF NOT EXISTS goalie_stats
 (
   player_id BIGINT(20) UNSIGNED NOT NULL,
   team_id BIGINT(20) UNSIGNED NOT NULL,
@@ -155,7 +168,7 @@ CREATE TABLE goalie_stats
 );
 
 # period time in seconds
-CREATE TABLE goals
+CREATE TABLE IF NOT EXISTS goals
 (
   id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
   team_id BIGINT(20) UNSIGNED NOT NULL,
@@ -179,7 +192,7 @@ CREATE TABLE goals
 );
 
 # period time in seconds
-CREATE TABLE penalty
+CREATE TABLE IF NOT EXISTS penalty
 (
   id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
   team_id BIGINT(20) UNSIGNED NOT NULL,
@@ -200,7 +213,7 @@ CREATE TABLE penalty
 );
 
 # period time in seconds
-CREATE TABLE take_give_away
+CREATE TABLE IF NOT EXISTS take_give_away
 (
   id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
   team_id BIGINT(20) UNSIGNED NOT NULL,
@@ -218,7 +231,7 @@ CREATE TABLE take_give_away
 );
 
 
-CREATE TABLE team_sum_stats
+CREATE TABLE IF NOT EXISTS team_sum_stats
 (
   team_id BIGINT(20) UNSIGNED NOT NULL,
   season_id BIGINT(20) UNSIGNED NOT NULL,
@@ -250,7 +263,7 @@ CREATE TABLE team_sum_stats
 );
 
 # time on ice in seconds
-CREATE TABLE skater_sum_stats
+CREATE TABLE IF NOT EXISTS skater_sum_stats
 (
   player_id BIGINT(20) UNSIGNED NOT NULL,
   season_id BIGINT(20) UNSIGNED NOT NULL,
@@ -281,7 +294,7 @@ CREATE TABLE skater_sum_stats
 );
 
 # time on ice in seconds
-CREATE TABLE goalie_sum_stats
+CREATE TABLE IF NOT EXISTS goalie_sum_stats
 (
   player_id BIGINT(20) UNSIGNED NOT NULL,
   season_id BIGINT(20) UNSIGNED NOT NULL,
