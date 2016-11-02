@@ -4,6 +4,10 @@ from data_models.player import Player
 from data_loaders import NHL_STATS_DOMAIN
 
 
+def create_player_link(player_id):
+    return '/api/v1/people/' + str(player_id)
+
+
 def get_players(links):
     """
     Get NHL players data

@@ -38,9 +38,9 @@ def get_coordinates(obj):
 
 
 def get_from_db(cls, db, query, query_params):
-    cur = db.cursor()
-    cur.execute(query, query_params)
-    fields = cur.fetchone()
+    with db.cursor() as cur:
+        cur.execute(query, query_params)
+        fields = cur.fetchone()
     if fields:
         return cls.from_tuple(fields)
     return None
