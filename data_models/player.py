@@ -94,6 +94,11 @@ class Player:
     def from_db(cls, db, player_id):
         return get_from_db(cls, db, 'SELECT * FROM players WHERE id = %s', [player_id])
 
+    def to_tuple(self):
+        return (self.id, self.name, self.birth_date, self.birth_city, self.birth_state, self.birth_country,
+                self.nationality, self.height, self.weight, self.shoots_catches, self.primary_pos,
+                self.current_team.id if self.current_team else None)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.id,
