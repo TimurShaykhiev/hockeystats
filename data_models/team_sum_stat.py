@@ -1,13 +1,15 @@
+import logging as LOG
 from data_models.team import Team
 from data_models.season import Season
+from data_models.game import Game
 from data_models import convert_bool
 
 
 class TeamSumStat:
-    def __init__(self):
-        self.team = None
-        self.season = None
-        self.is_regular = True
+    def __init__(self, team=None, season=None, regular=True):
+        self.team = team
+        self.season = season
+        self.is_regular = regular
         self.goals_for = 0
         self.goals_against = 0
         self.shots = 0
@@ -60,6 +62,84 @@ class TeamSumStat:
         team_stat.lose_overtime = fields[22]
         team_stat.lose_shootout = fields[23]
         return team_stat
+
+    def add_stat(self, game, team_id, season_id):
+        if self.team.id != team_id or self.season.id != season_id or self.is_regular != game.is_regular:
+            LOG.error('TeamSumStat.add_stat invalid parameters %s, %s, %s', team_id, season_id, game.is_regular)
+            raise ValueError
+        if game.home.team.id != team_id and game.away.team.id != team_id:
+            LOG.error('TeamSumStat.add_stat invalid team_id %s: %s, %s', team_id, game.home.team.id, game.away.team.id)
+            raise ValueError
+
+        if team_id == game.home.team.id:
+            my_team_stat, opp_team_stat = game.home, game.away
+        else:
+            my_team_stat, opp_team_stat = game.away, game.home
+        self.goals_for += my_team_stat.goals
+        self.goals_against += opp_team_stat.goals
+        self.shots += my_team_stat.shots
+        self.pp_goals += my_team_stat.pp_goals
+        self.pp_opportunities += my_team_stat.pp_opportunities
+        self.sh_goals_against += opp_team_stat.pp_goals
+        self.sh_opportunities += opp_team_stat.pp_opportunities
+        self.face_off_wins += my_team_stat.face_off_wins
+        self.face_off_taken += game.face_off_taken
+        self.blocked += my_team_stat.blocked
+        self.takeaways += my_team_stat.takeaways
+        self.giveaways += my_team_stat.giveaways
+        self.hits += my_team_stat.hits
+        self.penalty_minutes += my_team_stat.penalty_minutes
+        self.games += 1
+        if my_team_stat.goals > opp_team_stat.goals:
+            if game.win_type == Game.WIN_TYPE_REGULAR:
+                self.win_regular += 1
+            elif game.win_type == Game.WIN_TYPE_OVERTIME:
+                self.win_overtime += 1
+            else:
+                self.win_shootout += 1
+        else:
+            if game.win_type == Game.WIN_TYPE_REGULAR:
+                self.lose_regular += 1
+            elif game.win_type == Game.WIN_TYPE_OVERTIME:
+                self.lose_overtime += 1
+            else:
+                self.lose_shootout += 1
+
+    def add_sum_stat(self, sum_stat):
+        # sum_stat is TeamSumStat
+        if self.team.id != sum_stat.team.id or self.season.id != sum_stat.season.id or \
+           self.is_regular != sum_stat.is_regular:
+            LOG.error('TeamSumStat.add_sum_stat invalid parameters %s, %s, %s',
+                      sum_stat.team.id, sum_stat.season.id, sum_stat.is_regular)
+            raise ValueError
+        self.goals_for += sum_stat.goals_for
+        self.goals_against += sum_stat.goals_against
+        self.shots += sum_stat.shots
+        self.pp_goals += sum_stat.pp_goals
+        self.pp_opportunities += sum_stat.pp_opportunities
+        self.sh_goals_against += sum_stat.sh_goals_against
+        self.sh_opportunities += sum_stat.sh_opportunities
+        self.face_off_wins += sum_stat.face_off_wins
+        self.face_off_taken += sum_stat.face_off_taken
+        self.blocked += sum_stat.blocked
+        self.takeaways += sum_stat.takeaways
+        self.giveaways += sum_stat.giveaways
+        self.hits += sum_stat.hits
+        self.penalty_minutes += sum_stat.penalty_minutes
+        self.games += sum_stat.games
+        self.win_regular += sum_stat.win_regular
+        self.win_overtime += sum_stat.win_overtime
+        self.win_shootout += sum_stat.win_shootout
+        self.lose_regular += sum_stat.lose_regular
+        self.lose_overtime += sum_stat.lose_overtime
+        self.lose_shootout += sum_stat.lose_shootout
+
+    def to_tuple(self):
+        return (self.team.id, self.season.id, self.is_regular, self.goals_for, self.goals_against, self.shots,
+                self.pp_goals, self.pp_opportunities, self.sh_goals_against, self.sh_opportunities, self.face_off_wins,
+                self.face_off_taken, self.blocked, self.takeaways, self.giveaways, self.hits, self.penalty_minutes,
+                self.games, self.win_regular, self.win_overtime, self.win_shootout, self.lose_regular,
+                self.lose_overtime, self.lose_shootout)
 
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'

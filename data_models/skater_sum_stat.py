@@ -1,13 +1,14 @@
+import logging as LOG
 from data_models.player import Player
 from data_models.season import Season
 from data_models import convert_bool
 
 
 class SkaterSumStat:
-    def __init__(self):
-        self.player = None
-        self.season = None
-        self.is_regular = True
+    def __init__(self, player=None, season=None, regular=True):
+        self.player = player
+        self.season = season
+        self.is_regular = regular
         self.assists = 0
         self.goals = 0
         self.shots = 0
@@ -58,6 +59,66 @@ class SkaterSumStat:
         skater_stat.sh_toi = fields[21]
         skater_stat.games = fields[22]
         return skater_stat
+
+    def add_stat(self, stat, season_id, regular):
+        # stat is SkaterStat
+        if self.player.id != stat.player.id or self.season.id != season_id or self.is_regular != regular:
+            LOG.error('SkaterSumStat.add_stat invalid parameters %s, %s, %s', stat.player.id, season_id, regular)
+            raise ValueError
+        self.assists += stat.assists
+        self.goals += stat.goals
+        self.shots += stat.shots
+        self.hits += stat.hits
+        self.pp_goals += stat.pp_goals
+        self.pp_assists += stat.pp_assists
+        self.penalty_minutes += stat.penalty_minutes
+        self.face_off_wins += stat.face_off_wins
+        self.face_off_taken += stat.face_off_taken
+        self.takeaways += stat.takeaways
+        self.giveaways += stat.giveaways
+        self.sh_goals += stat.sh_goals
+        self.sh_assists += stat.sh_assists
+        self.blocked += stat.blocked
+        self.plus_minus += stat.plus_minus
+        self.toi += stat.toi
+        self.even_toi += stat.even_toi
+        self.pp_toi += stat.pp_toi
+        self.sh_toi += stat.sh_toi
+        self.games += 1
+
+    def add_sum_stat(self, sum_stat):
+        # sum_stat is SkaterSumStat
+        if self.player.id != sum_stat.player.id or self.season.id != sum_stat.season.id or \
+           self.is_regular != sum_stat.is_regular:
+            LOG.error('SkaterSumStat.add_sum_stat invalid parameters %s, %s, %s',
+                      sum_stat.player.id, sum_stat.season.id, sum_stat.is_regular)
+            raise ValueError
+        self.assists += sum_stat.assist
+        self.goals += sum_stat.goals
+        self.shots += sum_stat.shots
+        self.hits += sum_stat.hits
+        self.pp_goals += sum_stat.pp_goals
+        self.pp_assists += sum_stat.pp_assists
+        self.penalty_minutes += sum_stat.penalty_minutes
+        self.face_off_wins += sum_stat.face_off_wins
+        self.face_off_taken += sum_stat.face_off_taken
+        self.takeaways += sum_stat.takeaways
+        self.giveaways += sum_stat.giveaways
+        self.sh_goals += sum_stat.sh_goals
+        self.sh_assists += sum_stat.sh_assists
+        self.blocked += sum_stat.blocked
+        self.plus_minus += sum_stat.plus_minus
+        self.toi += sum_stat.toi
+        self.even_toi += sum_stat.even_toi
+        self.pp_toi += sum_stat.pp_toi
+        self.sh_toi += sum_stat.sh_toi
+        self.games += sum_stat.games
+
+    def to_tuple(self):
+        return (self.player.id, self.season.id, self.is_regular, self.assists, self.goals, self.shots, self.hits,
+                self.pp_goals, self.pp_assists, self.penalty_minutes, self.face_off_wins, self.face_off_taken,
+                self.takeaways, self.giveaways, self.sh_goals, self.sh_assists, self.blocked, self.plus_minus,
+                self.toi, self.even_toi, self.pp_toi, self.sh_toi, self.games)
 
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'

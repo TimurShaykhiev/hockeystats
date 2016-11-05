@@ -115,6 +115,9 @@ def _create_game_stat(link):
     game.away.penalty_minutes = randrange(0, 20)
     game.is_regular = True
     game.win_type = 'regular'
+    if game.home.goals == game.away.goals:
+        game.home.goals += 1
+        game.home.goals_period3 += 1
     game.face_off_taken = game.home.face_off_wins + game.away.face_off_wins
     return game
 
@@ -124,9 +127,6 @@ def get_games_list(start, end):
 
 
 def get_game_info(link):
-    if link == 3:
-        raise KeyError
-
     tg_aways = []
     goals = []
     penalties = []
