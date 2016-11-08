@@ -26,6 +26,13 @@ def create_from_tuple(fields):
     return cls.from_tuple(fields)
 
 
+def load_data_to_db(db_cur, filename):
+    query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.take_give_away " \
+            "(team_id, game_id, date, player_id, type, period_num, period_time, coord_x, coord_y) " \
+            "SET id = NULL".format(filename)
+    return db_cur.execute(query)
+
+
 class _TGEvent:
     def __init__(self):
         self.id = None

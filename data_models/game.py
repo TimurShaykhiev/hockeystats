@@ -136,6 +136,11 @@ class Game:
     def from_db(cls, db, game_id):
         return get_from_db(cls, db, 'SELECT * FROM games WHERE id = %s', [game_id])
 
+    @classmethod
+    def load_data_to_db(cls, db_cur, filename):
+        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.games".format(filename)
+        return db_cur.execute(query)
+
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(

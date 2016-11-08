@@ -1,0 +1,82 @@
+from db_utils import get_all_from_query_result
+from data_models.skater_sum_stat import SkaterSumStat
+from data_models.goalie_sum_stat import GoalieSumStat
+from data_models.team_sum_stat import TeamSumStat
+
+
+def update_skater_summary_stats(db_cur, skater_sum_stats):
+    num = 0
+    for pl_id, season_id, regular in skater_sum_stats.keys():
+        db_cur.execute('SELECT * FROM skater_sum_stats WHERE player_id = %s AND season_id = %s AND is_regular = %s',
+                       [pl_id, season_id, regular])
+        res = get_all_from_query_result(SkaterSumStat, db_cur)
+        if len(res) > 0:
+            stat = res[0]
+            stat.add_sum_stat(skater_sum_stats[(pl_id, season_id, regular)])
+            fields = list(stat.to_tuple())
+            fields = fields[3:] + fields[:3]
+            num += db_cur.execute(
+                'UPDATE skater_sum_stats '
+                'SET assists = %s, goals = %s, shots = %s, hits = %s, pp_goals = %s, pp_assists = %s, '
+                'penalty_minutes = %s, face_off_wins = %s, face_off_taken = %s, takeaways = %s, '
+                'giveaways = %s, sh_goals = %s, sh_assists = %s, blocked = %s, plus_minus = %s, '
+                'toi = %s, even_toi = %s, pp_toi = %s, sh_toi = %s, games = %s '
+                'WHERE player_id = %s AND season_id = %s AND is_regular = %s', fields)
+        else:
+            num += db_cur.execute(
+                'INSERT INTO skater_sum_stats VALUES '
+                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                skater_sum_stats[(pl_id, season_id, regular)].to_tuple())
+    return num
+
+
+def update_goalie_summary_stats(db_cur, goalie_sum_stats):
+    num = 0
+    for pl_id, season_id, regular in goalie_sum_stats.keys():
+        db_cur.execute('SELECT * FROM goalie_sum_stats WHERE player_id = %s AND season_id = %s AND is_regular = %s',
+                       [pl_id, season_id, regular])
+        res = get_all_from_query_result(GoalieSumStat, db_cur)
+        if len(res) > 0:
+            stat = res[0]
+            stat.add_sum_stat(goalie_sum_stats[(pl_id, season_id, regular)])
+            fields = list(stat.to_tuple())
+            fields = fields[3:] + fields[:3]
+            num += db_cur.execute(
+                'UPDATE goalie_sum_stats '
+                'SET toi = %s, assists = %s, goals = %s, penalty_minutes = %s, shots = %s, saves = %s, '
+                'pp_saves = %s, sh_saves = %s, even_saves = %s, sh_shots_against = %s, '
+                'even_shots_against = %s, pp_shots_against = %s, games = %s, wins = %s, shutout = %s '
+                'WHERE player_id = %s AND season_id = %s AND is_regular = %s', fields)
+        else:
+            num += db_cur.execute(
+                'INSERT INTO goalie_sum_stats VALUES '
+                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                goalie_sum_stats[(pl_id, season_id, regular)].to_tuple())
+    return num
+
+
+def update_team_summary_stats(db_cur, team_sum_stats):
+    num = 0
+    for team_id, season_id, regular in team_sum_stats.keys():
+        db_cur.execute('SELECT * FROM team_sum_stats WHERE team_id = %s AND season_id = %s AND is_regular = %s',
+                       [team_id, season_id, regular])
+        res = get_all_from_query_result(TeamSumStat, db_cur)
+        if len(res) > 0:
+            stat = res[0]
+            stat.add_sum_stat(team_sum_stats[(team_id, season_id, regular)])
+            fields = list(stat.to_tuple())
+            fields = fields[3:] + fields[:3]
+            num += db_cur.execute(
+                'UPDATE team_sum_stats '
+                'SET goals_for = %s, goals_against = %s, shots = %s, pp_goals = %s, '
+                'pp_opportunities = %s, sh_goals_against = %s, sh_opportunities = %s, '
+                'face_off_wins = %s, face_off_taken = %s, blocked = %s, takeaways = %s, giveaways = %s, '
+                'hits = %s, penalty_minutes = %s, games = %s, win_regular = %s, win_overtime = %s, '
+                'win_shootout = %s, lose_regular = %s, lose_overtime = %s, lose_shootout = %s '
+                'WHERE team_id = %s AND season_id = %s AND is_regular = %s', fields)
+        else:
+            num += db_cur.execute(
+                'INSERT INTO team_sum_stats VALUES '
+                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                team_sum_stats[(team_id, season_id, regular)].to_tuple())
+    return num

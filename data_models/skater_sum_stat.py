@@ -93,7 +93,7 @@ class SkaterSumStat:
             LOG.error('SkaterSumStat.add_sum_stat invalid parameters %s, %s, %s',
                       sum_stat.player.id, sum_stat.season.id, sum_stat.is_regular)
             raise ValueError
-        self.assists += sum_stat.assist
+        self.assists += sum_stat.assists
         self.goals += sum_stat.goals
         self.shots += sum_stat.shots
         self.hits += sum_stat.hits

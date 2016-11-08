@@ -90,6 +90,11 @@ class GoalieStat:
         goalie_stat.decision = fields[16]
         return goalie_stat
 
+    @classmethod
+    def load_data_to_db(cls, db_cur, filename):
+        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.goalie_stats".format(filename)
+        return db_cur.execute(query)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.player.id,

@@ -6,5 +6,5 @@ CONFIG = {
 
     # Directories
     'loader_log_file': '/home/timur/hockeystats/loader/loader.log',
-    'loader_data_dir': '/home/timur/hockeystats/loader/data/'
+    'loader_data_dir': '/var/lib/mysql-files/hockeystats/'
 }

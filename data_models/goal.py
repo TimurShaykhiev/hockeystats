@@ -97,6 +97,13 @@ class Goal:
         goal.coord_y = fields[13]
         return goal
 
+    @classmethod
+    def load_data_to_db(cls, db_cur, filename):
+        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.goals " \
+                "(team_id, game_id, date, scorer_id, assist1_id, assist2_id, secondary_type, empty_net, strength, " \
+                "period_num, period_time, coord_x, coord_y) SET id = NULL".format(filename)
+        return db_cur.execute(query)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.team.id,

@@ -73,6 +73,13 @@ class Penalty:
         penalty.coord_y = fields[11]
         return penalty
 
+    @classmethod
+    def load_data_to_db(cls, db_cur, filename):
+        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.penalty " \
+                "(team_id, game_id, date, penalty_on_id, drew_by_id, penalty_minutes, secondary_type, period_num, " \
+                "period_time, coord_x, coord_y) SET id = NULL".format(filename)
+        return db_cur.execute(query)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.team.id,

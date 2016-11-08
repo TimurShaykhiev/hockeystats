@@ -97,6 +97,11 @@ class SkaterStat:
         skater_stat.sh_toi = fields[22]
         return skater_stat
 
+    @classmethod
+    def load_data_to_db(cls, db_cur, filename):
+        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.skater_stats".format(filename)
+        return db_cur.execute(query)
+
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(

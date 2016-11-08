@@ -14,12 +14,12 @@ from data_loaders.test_player_loader import TEAMS, create_player
 
 GameData = namedtuple('GameData', 'id, home, away')
 GAMES = [
-    GameData(id=1, home=TEAMS[0], away=TEAMS[1]),
-    GameData(id=2, home=TEAMS[2], away=TEAMS[3]),
-    GameData(id=3, home=TEAMS[4], away=TEAMS[7]),
-    GameData(id=4, home=TEAMS[4], away=TEAMS[5]),
-    GameData(id=5, home=TEAMS[6], away=TEAMS[7]),
-    GameData(id=6, home=TEAMS[8], away=TEAMS[0])
+    GameData(id=21, home=TEAMS[0], away=TEAMS[1]),
+    GameData(id=22, home=TEAMS[2], away=TEAMS[3]),
+    GameData(id=23, home=TEAMS[4], away=TEAMS[7]),
+    GameData(id=24, home=TEAMS[4], away=TEAMS[5]),
+    GameData(id=25, home=TEAMS[6], away=TEAMS[7]),
+    GameData(id=26, home=TEAMS[8], away=TEAMS[0])
 ]
 
 
@@ -74,7 +74,7 @@ def _get_goalie_stat(game, player):
 
 
 def _create_game_stat(link):
-    date = datetime(2016, 3, 25).date()
+    date = datetime(2016, 4, 30).date()
     home = Team()
     home.id = GAMES[link].home.id
     away = Team()
@@ -183,6 +183,7 @@ def get_game_info(link):
         goal.game = game
         goal.team = pl.current_team
         goal.scorer = pl
+        goal.strength = 'even'
         goal.coord_x = randrange(-99, 100)
         goal.coord_y = randrange(-42, 43)
         goals.append(goal)
