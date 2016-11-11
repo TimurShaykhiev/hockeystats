@@ -5,6 +5,6 @@ CONFIG = {
     'db_password': 'root',
 
     # Directories
-    'loader_log_file': '/home/timur/hockeystats/loader/loader.log',
-    'loader_data_dir': '/var/lib/mysql-files/hockeystats/'
+    'loader_log_file': '/home/timur/hockeystats/log/loader.log',
+    'loader_data_dir': '/home/timur/hockeystats/data/'
 }

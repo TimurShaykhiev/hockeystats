@@ -153,8 +153,47 @@ def _update_db(db_conn):
     cur.close()
 
 
-def main():
+def load(start, end, db_conn):
     global DATA_FILES, players
+
+    LOG.info('Load from %s to %s', start, end)
+    result = True
+    try:
+        season = _get_season(db_conn, start, end)
+        if season is None:
+            LOG.error('Start and end dates must belong to the same season')
+            sys.exit(-1)
+
+        DATA_FILES = _create_data_files_dict('{}_{}_'.format(start, end))
+
+        game_links = get_games_list(start, end)
+        for link in game_links:
+            LOG.info('Process %s', link)
+            game, skater_stats, goalie_stats, tga, penalty, goals = get_game_info(link)
+            create_load_file(DATA_FILES[DB_GAME_TABLE], [game])
+            create_load_file(DATA_FILES[DB_SKATER_STATS_TABLE], skater_stats)
+            create_load_file(DATA_FILES[DB_GOALIE_STATS_TABLE], goalie_stats)
+            create_load_file(DATA_FILES[DB_GOAL_TABLE], goals)
+            create_load_file(DATA_FILES[DB_PENALTY_TABLE], penalty)
+            create_load_file(DATA_FILES[DB_TGA_TABLE], tga)
+
+            for pl in skater_stats:
+                players[pl.player.id] = pl.team.id
+            for pl in goalie_stats:
+                players[pl.player.id] = pl.team.id
+            _update_skater_sum_stats(skater_stats, season, game.is_regular)
+            _update_goalie_sum_stats(goalie_stats, season, game.is_regular)
+            _update_team_sum_stats(game, season)
+
+        _update_db(db_conn)
+    except:
+        LOG.exception('Exception during data load')
+        result = False
+    LOG.info('Script end with %s', 'success' if result else 'fail')
+    return result
+
+
+def main():
     LOG.info('Started with params %s', ', '.join(sys.argv))
     if len(sys.argv) < 3:
         print('You must pass start and end dates.')
@@ -162,40 +201,12 @@ def main():
         sys.exit(-1)
 
     start, end = sys.argv[1], sys.argv[2]
+
     db_conn = Db.connect('localhost', CONFIG['db_user'], CONFIG['db_password'], CONFIG['db_name'])
-    season = _get_season(db_conn, start, end)
-    if season is None:
-        LOG.error('Start and end dates must belong to the same season')
-        sys.exit(-1)
-
-    DATA_FILES = _create_data_files_dict('{}_{}_'.format(start, end))
-
-    game_links = get_games_list(start, end)
-    for link in game_links:
-        LOG.info('Process %s', link)
-        game, skater_stats, goalie_stats, tga, penalty, goals = get_game_info(link)
-        create_load_file(DATA_FILES[DB_GAME_TABLE], [game])
-        create_load_file(DATA_FILES[DB_SKATER_STATS_TABLE], skater_stats)
-        create_load_file(DATA_FILES[DB_GOALIE_STATS_TABLE], goalie_stats)
-        create_load_file(DATA_FILES[DB_GOAL_TABLE], goals)
-        create_load_file(DATA_FILES[DB_PENALTY_TABLE], penalty)
-        create_load_file(DATA_FILES[DB_TGA_TABLE], tga)
-
-        for pl in skater_stats:
-            players[pl.player.id] = pl.team.id
-        for pl in goalie_stats:
-            players[pl.player.id] = pl.team.id
-        _update_skater_sum_stats(skater_stats, season, game.is_regular)
-        _update_goalie_sum_stats(goalie_stats, season, game.is_regular)
-        _update_team_sum_stats(game, season)
-
     try:
-        _update_db(db_conn)
-    except:
-        LOG.exception('Exception during DB update.')
+        load(start, end, db_conn)
     finally:
         db_conn.close()
-    LOG.info('Script end')
 
 if __name__ == '__main__':
     main()

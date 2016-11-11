@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS updates
 (
   type SMALLINT UNSIGNED PRIMARY KEY NOT NULL,
   description VARCHAR(255),
-  last_update DATE NOT NULL
+  start DATE NOT NULL,
+  end DATE NOT NULL,
+  successful TINYINT(1) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS conferences
