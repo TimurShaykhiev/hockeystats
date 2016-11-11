@@ -1,4 +1,5 @@
 import requests
+import logging as LOG
 
 from data_models.player import Player
 from data_loaders import NHL_STATS_DOMAIN
@@ -20,5 +21,6 @@ def get_players(links):
         people_list = p.get('people')
         if people_list is None or len(people_list) == 0:
             continue
+        LOG.info('Get player from %s', link)
         players.append(Player.from_json(people_list[0]))
     return players

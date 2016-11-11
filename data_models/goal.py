@@ -56,7 +56,9 @@ class Goal:
                     goal.assist2 = p
 
         result = obj['result']
-        goal.secondary_type = result['secondaryType']
+        sec_type = result.get('secondaryType')
+        if sec_type:
+            goal.secondary_type = sec_type
         goal.strength = GAME_STRENGTH[result['strength']['code']]
         is_empty_net = result.get('isEmptyNet')
         if is_empty_net:

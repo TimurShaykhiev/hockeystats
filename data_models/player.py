@@ -64,7 +64,7 @@ class Player:
         player.weight = obj['weight']
         player.shoots_catches = PLAYER_SHOOTS[obj['shootsCatches']]
         player.primary_pos = PLAYER_POSITION[obj['primaryPosition']['code']]
-        team = obj['currentTeam']
+        team = obj.get('currentTeam')
         if team:
             player.current_team = Team()
             player.current_team.id = team['id']
