@@ -18,7 +18,7 @@ from data_loaders.game_loader import get_games_list, get_game_info
 from data_loaders.player_loader import get_players, create_player_link
 from db_utils.players import get_player_team_info, add_players, update_player_teams
 from db_utils.seasons import get_season_by_date
-from db_utils.summary_stats import update_skater_summary_stats, update_goalie_summary_stats, update_team_summary_stats
+from db_utils.add_stats import update_skater_summary_stats, update_goalie_summary_stats, update_team_summary_stats
 
 
 DB_GAME_TABLE = 'games'
