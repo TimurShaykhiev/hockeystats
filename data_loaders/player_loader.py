@@ -1,8 +1,10 @@
 import requests
-import logging as LOG
 
+from logger import get_loader_logger
 from data_models.player import Player
 from data_loaders import NHL_STATS_DOMAIN
+
+LOG = get_loader_logger()
 
 
 def create_player_link(player_id):

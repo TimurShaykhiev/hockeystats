@@ -1,10 +1,9 @@
 import sys
 import os
-import logging
-from logging.handlers import RotatingFileHandler
 import MySQLdb as Db
 
 from config import CONFIG
+from logger import create_loader_logger, get_loader_logger
 from data_models.game import Game
 from data_models.skater_stat import SkaterStat
 from data_models.goalie_stat import GoalieStat
@@ -22,25 +21,12 @@ from db_utils.seasons import get_season_by_date
 from db_utils.summary_stats import update_skater_summary_stats, update_goalie_summary_stats, update_team_summary_stats
 
 
-LOG_SIZE_LIMIT = 50*1024*1024
 DB_GAME_TABLE = 'games'
 DB_SKATER_STATS_TABLE = 'skater_stats'
 DB_GOALIE_STATS_TABLE = 'goalie_stats'
 DB_GOAL_TABLE = 'goals'
 DB_PENALTY_TABLE = 'penalty'
 DB_TGA_TABLE = 'take_give_away'
-
-
-def _create_logger():
-    logger = logging.getLogger('loader')
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s [%(filename)s] [%(levelname)s] %(message)s')
-
-    rfh = RotatingFileHandler(CONFIG['loader_log_file'], maxBytes=LOG_SIZE_LIMIT, backupCount=5)
-    rfh.setLevel(logging.DEBUG)
-    rfh.setFormatter(formatter)
-    logger.addHandler(rfh)
-    return logger
 
 
 def _create_data_files_dict(file_prefix):
@@ -55,7 +41,7 @@ def _create_data_files_dict(file_prefix):
     }
 
 
-LOG = _create_logger()
+LOG = None
 DATA_FILES = {}
 players = {}
 skater_sum_stats = {}
@@ -154,7 +140,9 @@ def _update_db(db_conn):
 
 
 def load(start, end, db_conn):
-    global DATA_FILES, players
+    global DATA_FILES, players, LOG
+    if LOG is None:
+        LOG = get_loader_logger()
 
     LOG.info('Load from %s to %s', start, end)
     result = True
@@ -209,4 +197,5 @@ def main():
         db_conn.close()
 
 if __name__ == '__main__':
+    LOG = create_loader_logger()
     main()

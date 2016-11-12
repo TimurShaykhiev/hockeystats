@@ -1,8 +1,10 @@
-import logging as LOG
+from logger import get_loader_logger
 from data_models.player import Player
 from data_models.season import Season
 from data_models.goalie_stat import GoalieStat
 from data_models import convert_bool
+
+LOG = get_loader_logger()
 
 
 class GoalieSumStat:
