@@ -127,7 +127,7 @@ def load(start, end, db_conn):
         season = _get_season(db_conn, start, end)
         if season is None:
             LOG.error('Start and end dates must belong to the same season')
-            sys.exit(-1)
+            return False
 
         game_links = get_games_list(start, end)
         for link in game_links:
