@@ -106,6 +106,13 @@ class Goal:
                 "period_num, period_time, coord_x, coord_y) SET id = NULL".format(filename)
         return db_cur.execute(query)
 
+    def to_tuple(self):
+        return (self.team.id, self.game.id, self.date, self.scorer.id,
+                self.assist1.id if self.assist1 is not None else None,
+                self.assist2.id if self.assist2 is not None else None,
+                self.secondary_type, self.empty_net, self.strength, self.period_num, self.period_time,
+                self.coord_x, self.coord_y)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.team.id,

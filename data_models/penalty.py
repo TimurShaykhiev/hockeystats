@@ -80,6 +80,11 @@ class Penalty:
                 "period_time, coord_x, coord_y) SET id = NULL".format(filename)
         return db_cur.execute(query)
 
+    def to_tuple(self):
+        return (self.team.id, self.game.id, self.date, self.penalty_on.id,
+                self.drew_by.id if self.drew_by is not None else None, self.penalty_minutes, self.secondary_type,
+                self.period_num, self.period_time, self.coord_x, self.coord_y)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.team.id,

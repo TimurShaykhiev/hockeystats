@@ -141,6 +141,16 @@ class Game:
         query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.games".format(filename)
         return db_cur.execute(query)
 
+    def to_tuple(self):
+        return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,
+                self.home.goals, self.home.goals_period1, self.home.goals_period2, self.home.goals_period3,
+                self.home.shots, self.home.pp_goals, self.home.pp_opportunities, self.home.face_off_wins,
+                self.home.blocked, self.home.takeaways, self.home.giveaways, self.home.hits, self.home.penalty_minutes,
+                self.away.goals, self.away.goals_period1, self.away.goals_period2, self.away.goals_period3,
+                self.away.shots, self.away.pp_goals, self.away.pp_opportunities, self.away.face_off_wins,
+                self.away.blocked, self.away.takeaways, self.away.giveaways, self.away.hits, self.away.penalty_minutes,
+                self.face_off_taken)
+
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(

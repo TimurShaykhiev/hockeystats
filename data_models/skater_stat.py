@@ -102,6 +102,12 @@ class SkaterStat:
         query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.skater_stats".format(filename)
         return db_cur.execute(query)
 
+    def to_tuple(self):
+        return (self.player.id, self.team.id, self.game.id, self.date, self.assists, self.goals, self.shots, self.hits,
+                self.pp_goals, self.pp_assists, self.penalty_minutes, self.face_off_wins, self.face_off_taken,
+                self.takeaways, self.giveaways, self.sh_goals, self.sh_assists, self.blocked, self.plus_minus, self.toi,
+                self.even_toi, self.pp_toi, self.sh_toi)
+
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
                 '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(

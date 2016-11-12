@@ -85,6 +85,10 @@ class Takeaway(_TGEvent):
     def __init__(self):
         super().__init__()
 
+    def to_tuple(self):
+        return (self.team.id, self.game.id, self.date, self.player.id, DB_TYPE_TAKEAWAY, self.period_num,
+                self.period_time, self.coord_x, self.coord_y)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.team.id,
@@ -101,6 +105,10 @@ class Takeaway(_TGEvent):
 class Giveaway(_TGEvent):
     def __init__(self):
         super().__init__()
+
+    def to_tuple(self):
+        return (self.team.id, self.game.id, self.date, self.player.id, DB_TYPE_GIVEAWAY, self.period_num,
+                self.period_time, self.coord_x, self.coord_y)
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(

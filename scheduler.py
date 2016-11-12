@@ -18,7 +18,7 @@ def main():
             LOG.error('Cannot process. Fix errors from prev load.')
             return
         new_start = new_end = update.end + timedelta(days=1)
-        if new_start > date.today():
+        if new_end > date.today():
             LOG.warning('New date is in the future.')
             return
         successful_load = load(new_start, new_end, db_conn)

@@ -1,49 +1,26 @@
 import sys
-import os
 import MySQLdb as Db
 
 from config import CONFIG
 from logger import create_loader_logger, get_loader_logger
-from data_models.game import Game
-from data_models.skater_stat import SkaterStat
-from data_models.goalie_stat import GoalieStat
-from data_models.goal import Goal
-from data_models.penalty import Penalty
-from data_models.take_give_away import load_data_to_db as tga_load_data_to_db
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.team_sum_stat import TeamSumStat
-from data_loaders import create_load_file
 from data_loaders.game_loader import get_games_list, get_game_info
 from data_loaders.player_loader import get_players, create_player_link
 from db_utils.players import get_player_team_info, add_players, update_player_teams
 from db_utils.seasons import get_season_by_date
-from db_utils.add_stats import update_skater_summary_stats, update_goalie_summary_stats, update_team_summary_stats
-
-
-DB_GAME_TABLE = 'games'
-DB_SKATER_STATS_TABLE = 'skater_stats'
-DB_GOALIE_STATS_TABLE = 'goalie_stats'
-DB_GOAL_TABLE = 'goals'
-DB_PENALTY_TABLE = 'penalty'
-DB_TGA_TABLE = 'take_give_away'
-
-
-def _create_data_files_dict(file_prefix):
-    loader_dir = CONFIG['loader_data_dir']
-    return {
-        DB_GAME_TABLE: os.path.join(loader_dir, file_prefix + DB_GAME_TABLE),
-        DB_SKATER_STATS_TABLE: os.path.join(loader_dir, file_prefix + DB_SKATER_STATS_TABLE),
-        DB_GOALIE_STATS_TABLE: os.path.join(loader_dir, file_prefix + DB_GOALIE_STATS_TABLE),
-        DB_GOAL_TABLE: os.path.join(loader_dir, file_prefix + DB_GOAL_TABLE),
-        DB_PENALTY_TABLE: os.path.join(loader_dir, file_prefix + DB_PENALTY_TABLE),
-        DB_TGA_TABLE: os.path.join(loader_dir, file_prefix + DB_TGA_TABLE)
-    }
+import db_utils.add_stats as add_stats
 
 
 LOG = None
-DATA_FILES = {}
 players = {}
+all_games = []
+all_skater_stats = []
+all_goalie_stats = []
+all_tga = []
+all_penalty = []
+all_goals = []
 skater_sum_stats = {}
 goalie_sum_stats = {}
 team_sum_stats = {}
@@ -116,31 +93,31 @@ def _update_players(db_conn):
 def _update_db(db_conn):
     _update_players(db_conn)
     with db_conn as cur:
-        num = Game.load_data_to_db(cur, DATA_FILES[DB_GAME_TABLE])
+        num = add_stats.add_games(cur, all_games)
         LOG.info('%s rows loaded into games', num if num else 0)
-        num = SkaterStat.load_data_to_db(cur, DATA_FILES[DB_SKATER_STATS_TABLE])
+        num = add_stats.add_skater_stats(cur, all_skater_stats)
         LOG.info('%s rows loaded into skater_stats', num if num else 0)
-        num = GoalieStat.load_data_to_db(cur, DATA_FILES[DB_GOALIE_STATS_TABLE])
+        num = add_stats.add_goalie_stats(cur, all_goalie_stats)
         LOG.info('%s rows loaded into goalie_stats', num if num else 0)
-        num = Goal.load_data_to_db(cur, DATA_FILES[DB_GOAL_TABLE])
+        num = add_stats.add_goals(cur, all_goals)
         LOG.info('%s rows loaded into goals', num if num else 0)
-        num = Penalty.load_data_to_db(cur, DATA_FILES[DB_PENALTY_TABLE])
+        num = add_stats.add_penalty(cur, all_penalty)
         LOG.info('%s rows loaded into penalty', num if num else 0)
-        num = tga_load_data_to_db(cur, DATA_FILES[DB_TGA_TABLE])
+        num = add_stats.add_tga(cur, all_tga)
         LOG.info('%s rows loaded into take_give_away', num if num else 0)
 
-        num = update_skater_summary_stats(cur, skater_sum_stats)
+        num = add_stats.update_skater_summary_stats(cur, skater_sum_stats)
         LOG.info('%s rows loaded into skater_sum_stats', num if num else 0)
-        num = update_goalie_summary_stats(cur, goalie_sum_stats)
+        num = add_stats.update_goalie_summary_stats(cur, goalie_sum_stats)
         LOG.info('%s rows loaded into goalie_sum_stats', num if num else 0)
-        num = update_team_summary_stats(cur, team_sum_stats)
+        num = add_stats.update_team_summary_stats(cur, team_sum_stats)
         LOG.info('%s rows loaded into team_sum_stats', num if num else 0)
     LOG.info('DB updates commit')
     cur.close()
 
 
 def load(start, end, db_conn):
-    global DATA_FILES, players, LOG
+    global players, LOG, all_games, all_skater_stats, all_goalie_stats, all_goals, all_penalty, all_tga
     if LOG is None:
         LOG = get_loader_logger()
 
@@ -152,18 +129,16 @@ def load(start, end, db_conn):
             LOG.error('Start and end dates must belong to the same season')
             sys.exit(-1)
 
-        DATA_FILES = _create_data_files_dict('{}_{}_'.format(start, end))
-
         game_links = get_games_list(start, end)
         for link in game_links:
             LOG.info('Process %s', link)
             game, skater_stats, goalie_stats, tga, penalty, goals = get_game_info(link)
-            create_load_file(DATA_FILES[DB_GAME_TABLE], [game])
-            create_load_file(DATA_FILES[DB_SKATER_STATS_TABLE], skater_stats)
-            create_load_file(DATA_FILES[DB_GOALIE_STATS_TABLE], goalie_stats)
-            create_load_file(DATA_FILES[DB_GOAL_TABLE], goals)
-            create_load_file(DATA_FILES[DB_PENALTY_TABLE], penalty)
-            create_load_file(DATA_FILES[DB_TGA_TABLE], tga)
+            all_games.append(game)
+            all_skater_stats += skater_stats
+            all_goalie_stats += goalie_stats
+            all_goals += goals
+            all_penalty += penalty
+            all_tga += tga
 
             for pl in skater_stats:
                 players[pl.player.id] = pl.team.id
@@ -173,7 +148,8 @@ def load(start, end, db_conn):
             _update_goalie_sum_stats(goalie_stats, season, game.is_regular)
             _update_team_sum_stats(game, season)
 
-        _update_db(db_conn)
+        if len(game_links) > 0:
+            _update_db(db_conn)
     except:
         LOG.exception('Exception during data load')
         result = False

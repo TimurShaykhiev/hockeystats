@@ -95,6 +95,11 @@ class GoalieStat:
         query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.goalie_stats".format(filename)
         return db_cur.execute(query)
 
+    def to_tuple(self):
+        return (self.player.id, self.team.id, self.game.id, self.date, self.toi, self.assists, self.goals,
+                self.penalty_minutes, self.shots, self.saves, self.pp_saves, self.sh_saves, self.even_saves,
+                self.sh_shots_against, self.even_shots_against, self.pp_shots_against, self.decision)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.player.id,

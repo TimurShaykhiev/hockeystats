@@ -4,6 +4,49 @@ from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.team_sum_stat import TeamSumStat
 
 
+def add_games(db_cur, games):
+    num = db_cur.executemany('INSERT INTO games VALUES '
+                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                             [g.to_tuple() for g in games])
+    return num
+
+
+def add_skater_stats(db_cur, skater_stats):
+    num = db_cur.executemany('INSERT INTO skater_stats VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+                             '%s, %s, %s, %s, %s, %s, %s, %s, %s)', [sk.to_tuple() for sk in skater_stats])
+    return num
+
+
+def add_goalie_stats(db_cur, goalie_stats):
+    num = db_cur.executemany('INSERT INTO goalie_stats VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+                             '%s, %s, %s)', [gl.to_tuple() for gl in goalie_stats])
+    return num
+
+
+def add_goals(db_cur, goals):
+    num = db_cur.executemany('INSERT INTO goals (team_id, game_id, date, scorer_id, assist1_id, assist2_id, '
+                             'secondary_type, empty_net, strength, period_num, period_time, coord_x, coord_y) '
+                             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                             [gl.to_tuple() for gl in goals])
+    return num
+
+
+def add_penalty(db_cur, penalty):
+    num = db_cur.executemany('INSERT INTO penalty (team_id, game_id, date, penalty_on_id, drew_by_id, penalty_minutes, '
+                             'secondary_type, period_num, period_time, coord_x, coord_y) '
+                             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                             [p.to_tuple() for p in penalty])
+    return num
+
+
+def add_tga(db_cur, tga):
+    num = db_cur.executemany('INSERT INTO take_give_away (team_id, game_id, date, player_id, type, period_num, '
+                             'period_time, coord_x, coord_y) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                             [t.to_tuple() for t in tga])
+    return num
+
+
 def update_skater_summary_stats(db_cur, skater_sum_stats):
     num = 0
     for pl_id, season_id, regular in skater_sum_stats.keys():
