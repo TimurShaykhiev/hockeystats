@@ -13,6 +13,14 @@ def convert_bool(val):
     return 1 if val else 0
 
 
+# returns True if fixed
+def check_and_fix_attr_unsigned(obj, attr):
+    if getattr(obj, attr) < 0:
+        setattr(obj, attr, 0)
+        return True
+    return False
+
+
 # time in format "mm:ss"
 def convert_time_to_sec(time):
     m, s = time.split(':')

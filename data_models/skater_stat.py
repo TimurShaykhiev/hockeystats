@@ -1,7 +1,10 @@
+from logger import get_loader_logger
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
-from data_models import convert_time_to_sec
+from data_models import convert_time_to_sec, check_and_fix_attr_unsigned
+
+LOG = get_loader_logger()
 
 
 class SkaterStat:
@@ -29,6 +32,16 @@ class SkaterStat:
         self.even_toi = 0
         self.pp_toi = 0
         self.sh_toi = 0
+
+    def _validate_and_fix(self):
+        # Sometimes stats have invalid(negative) values. Set them to 0 and log.
+        orig = str(self)
+        fixed = [check_and_fix_attr_unsigned(self, attr)
+                 for attr in ['assists', 'goals', 'shots', 'hits', 'pp_goals', 'pp_assists', 'penalty_minutes',
+                              'face_off_wins', 'face_off_taken', 'takeaways', 'giveaways', 'sh_goals', 'sh_assists',
+                              'blocked', 'toi', 'even_toi', 'pp_toi', 'sh_toi']]
+        if any(fixed):
+            LOG.warning('SkaterStat fixed: %s', orig)
 
     @classmethod
     def from_json(cls, obj, game_id, team_id, event_date):
@@ -63,6 +76,7 @@ class SkaterStat:
             skater_stat.even_toi = convert_time_to_sec(stats['evenTimeOnIce'])
             skater_stat.pp_toi = convert_time_to_sec(stats['powerPlayTimeOnIce'])
             skater_stat.sh_toi = convert_time_to_sec(stats['shortHandedTimeOnIce'])
+            skater_stat._validate_and_fix()
             return skater_stat
         return None
 

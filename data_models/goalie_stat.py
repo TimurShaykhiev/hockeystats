@@ -1,7 +1,10 @@
+from logger import get_loader_logger
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
-from data_models import convert_time_to_sec
+from data_models import convert_time_to_sec, check_and_fix_attr_unsigned
+
+LOG = get_loader_logger()
 
 # NHL 'decision' mapping to DB 'decision' enum
 DECISION = {
@@ -34,6 +37,15 @@ class GoalieStat:
         self.pp_shots_against = 0
         self.decision = self.DECISION_NONE
 
+    def _validate_and_fix(self):
+        # Sometimes stats have invalid(negative) values. Set them to 0 and log.
+        orig = str(self)
+        fixed = [check_and_fix_attr_unsigned(self, attr)
+                 for attr in ['toi', 'assists', 'goals', 'penalty_minutes', 'shots', 'saves', 'pp_saves', 'sh_saves',
+                              'even_saves', 'sh_shots_against', 'even_shots_against', 'pp_shots_against']]
+        if any(fixed):
+            LOG.warning('GoalieStat fixed: %s', orig)
+
     @classmethod
     def from_json(cls, obj, game_id, team_id, event_date):
         goalie_stat = cls()
@@ -62,6 +74,7 @@ class GoalieStat:
             goalie_stat.pp_shots_against = stats['powerPlayShotsAgainst']
             if stats['decision']:
                 goalie_stat.decision = DECISION[stats['decision']]
+            goalie_stat._validate_and_fix()
             return goalie_stat
         return None
 
