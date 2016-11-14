@@ -1,5 +1,8 @@
+from logger import get_loader_logger
 from data_models.team import Team
 from data_models import convert_attr_if_none, convert_str_to_date, get_from_db
+
+LOG = get_loader_logger()
 
 # NHL position 'code' mapping to DB 'primary_pos' enum
 PLAYER_POSITION = {
@@ -62,7 +65,12 @@ class Player:
             player.nationality = nationality
         player.height = convert_height(obj['height'])
         player.weight = obj['weight']
-        player.shoots_catches = PLAYER_SHOOTS[obj['shootsCatches']]
+        shoots_catches = obj.get('shootsCatches')
+        if shoots_catches is None:
+            # This field is mandatory, but in rare cases it is missed in server response. Set it to 'L'.
+            shoots_catches = 'L'
+            LOG.warning('Player: shootsCatches is missed. Set to L.')
+        player.shoots_catches = PLAYER_SHOOTS[shoots_catches]
         player.primary_pos = PLAYER_POSITION[obj['primaryPosition']['code']]
         team = obj.get('currentTeam')
         if team:
