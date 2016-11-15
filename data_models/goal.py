@@ -1,7 +1,10 @@
+from logger import get_loader_logger
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
 from data_models import convert_if_none, convert_attr_if_none, convert_bool, convert_time_to_sec, get_coordinates
+
+LOG = get_loader_logger()
 
 # NHL strength 'code' mapping to DB 'strength' enum
 GAME_STRENGTH = {
@@ -55,18 +58,25 @@ class Goal:
                 else:
                     goal.assist2 = p
 
+        about = obj['about']
+        goal.period_num = about['period']
+        goal.period_time = convert_time_to_sec(about['periodTime'])
+
         result = obj['result']
         sec_type = result.get('secondaryType')
         if sec_type:
             goal.secondary_type = sec_type
-        goal.strength = GAME_STRENGTH[result['strength']['code']]
+        strength = result.get('strength')
+        if strength is None or strength.get('code') is None:
+            # This field is mandatory, but in rare cases it is missed in server response. Set it to 'EVEN'.
+            goal.strength = goal.STRENGTH_EVEN
+            LOG.warning('Goal %s, %s, %s : strength is missed. Set to EVEN.',
+                        goal.game.id, goal.period_num, goal.period_time)
+        else:
+            goal.strength = GAME_STRENGTH[strength['code']]
         is_empty_net = result.get('isEmptyNet')
         if is_empty_net:
             goal.empty_net = is_empty_net
-
-        about = obj['about']
-        goal.period_num = about['period']
-        goal.period_time = convert_time_to_sec(about['periodTime'])
 
         goal.coord_x, goal.coord_y = get_coordinates(obj)
         return goal

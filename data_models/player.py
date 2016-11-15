@@ -69,7 +69,7 @@ class Player:
         if shoots_catches is None:
             # This field is mandatory, but in rare cases it is missed in server response. Set it to 'L'.
             shoots_catches = 'L'
-            LOG.warning('Player: shootsCatches is missed. Set to L.')
+            LOG.warning('Player %s: shootsCatches is missed. Set to L.', player.id)
         player.shoots_catches = PLAYER_SHOOTS[shoots_catches]
         player.primary_pos = PLAYER_POSITION[obj['primaryPosition']['code']]
         team = obj.get('currentTeam')
