@@ -133,6 +133,9 @@ def load(start, end, db_conn):
         for link in game_links:
             LOG.info('Process %s', link)
             game, skater_stats, goalie_stats, tga, penalty, goals = get_game_info(link)
+            if len(skater_stats) == 0 or len(goalie_stats) == 0:
+                LOG.warning('No stats in game info')
+                raise UserWarning
             all_games.append(game)
             all_skater_stats += skater_stats
             all_goalie_stats += goalie_stats
