@@ -77,8 +77,8 @@ class TeamSumStat:
             my_team_stat, opp_team_stat = game.home, game.away
         else:
             my_team_stat, opp_team_stat = game.away, game.home
-        self.goals_for += my_team_stat.goals
-        self.goals_against += opp_team_stat.goals
+        self.goals_for += my_team_stat.goals_period1 + my_team_stat.goals_period2 + my_team_stat.goals_period3
+        self.goals_against += opp_team_stat.goals_period1 + opp_team_stat.goals_period2 + opp_team_stat.goals_period3
         self.shots += my_team_stat.shots
         self.pp_goals += my_team_stat.pp_goals
         self.pp_opportunities += my_team_stat.pp_opportunities
