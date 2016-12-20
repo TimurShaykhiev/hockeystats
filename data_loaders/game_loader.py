@@ -26,7 +26,9 @@ def get_games_list(start, end):
         for game in games:
             game_type = game.get('gameType')
             if game_type == 'R' or game_type == 'P':
-                links.append(game.get('link'))
+                game_state = game.get('status').get('abstractGameState')
+                if game_state == 'Final':
+                    links.append(game.get('link'))
     return links
 
 
