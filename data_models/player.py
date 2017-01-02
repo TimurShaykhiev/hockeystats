@@ -54,17 +54,15 @@ class Player:
         player = cls()
         player.id = obj['id']
         player.name = obj['fullName']
-        player.birth_date = convert_str_to_date(obj['birthDate'])
-        player.birth_city = obj['birthCity']
-        player.birth_country = obj['birthCountry']
-        state = obj.get('birthStateProvince')
-        if state:
-            player.birth_state = state
-        nationality = obj.get('nationality')
-        if nationality:
-            player.nationality = nationality
-        player.height = convert_height(obj['height'])
-        player.weight = obj['weight']
+        player.birth_date = convert_str_to_date(obj.get('birthDate', '1900-01-01'))
+        player.birth_city = obj.get('birthCity', player.birth_city)
+        player.birth_country = obj.get('birthCountry', player.birth_country)
+        player.birth_state = obj.get('birthStateProvince', player.birth_state)
+        player.nationality = obj.get('nationality', player.nationality)
+        height = obj.get('height')
+        if height:
+            player.height = convert_height(obj.get('height'))
+        player.weight = obj.get('weight', player.weight)
         shoots_catches = obj.get('shootsCatches')
         if shoots_catches is None:
             # This field is mandatory, but in rare cases it is missed in server response. Set it to 'L'.
@@ -96,7 +94,7 @@ class Player:
         if team_id:
             player.current_team = Team()
             player.current_team.id = team_id
-        return team_id
+        return player
 
     @classmethod
     def from_db(cls, db, player_id):
