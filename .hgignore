@@ -4,3 +4,6 @@ syntax: glob
 __pycache__
 *.pyo
 *.pyc
+node_modules
+dist
+npm-debug.log*
