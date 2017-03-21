@@ -1,4 +1,5 @@
 import sys
+import errno
 import MySQLdb as Db
 
 from config import CONFIG
@@ -24,6 +25,10 @@ all_goals = []
 skater_sum_stats = {}
 goalie_sum_stats = {}
 team_sum_stats = {}
+
+LOAD_RESULT_SUCCESS = 0
+LOAD_RESULT_FAIL = 1
+LOAD_RESULT_TRY_AGAIN = 2
 
 
 # check that start and end date belong to the same season and return the season
@@ -122,12 +127,12 @@ def load(start, end, db_conn):
         LOG = get_loader_logger()
 
     LOG.info('Load from %s to %s', start, end)
-    result = True
+    result = LOAD_RESULT_SUCCESS
     try:
         season = _get_season(db_conn, start, end)
         if season is None:
             LOG.error('Start and end dates must belong to the same season')
-            return False
+            return LOAD_RESULT_FAIL
 
         game_links = get_games_list(start, end)
         for link in game_links:
@@ -153,10 +158,13 @@ def load(start, end, db_conn):
 
         if len(game_links) > 0:
             _update_db(db_conn)
+    except ConnectionError:
+        LOG.error('Connection error')
+        result = LOAD_RESULT_TRY_AGAIN
     except:
         LOG.exception('Exception during data load')
-        result = False
-    LOG.info('Script end with %s', 'success' if result else 'fail')
+        result = LOAD_RESULT_FAIL
+    LOG.info('Script end with %s', 'success' if result == LOAD_RESULT_SUCCESS else 'fail')
     return result
 
 
@@ -165,7 +173,7 @@ def main():
     if len(sys.argv) < 3:
         print('You must pass start and end dates.')
         LOG.error('Invalid params')
-        sys.exit(-1)
+        sys.exit(errno.EINVAL)
 
     start, end = sys.argv[1], sys.argv[2]
 

@@ -1,9 +1,10 @@
+import sys
 import MySQLdb as Db
 from datetime import timedelta, datetime
 
 from logger import create_loader_logger
 from config import CONFIG
-from load import load
+from load import load, LOAD_RESULT_SUCCESS, LOAD_RESULT_TRY_AGAIN
 from db_utils.updates import get_last_stat_update, set_last_stat_update
 
 LOG = None
@@ -31,11 +32,13 @@ def main():
         if _is_in_future(new_end):
             LOG.warning('New date is in the future.')
             return
-        successful_load = load(new_start, new_end, db_conn)
-        set_last_stat_update(db_conn, new_start, new_end, successful_load)
+        load_result = load(new_start, new_end, db_conn)
+        if load_result != LOAD_RESULT_TRY_AGAIN:
+            set_last_stat_update(db_conn, new_start, new_end, load_result == LOAD_RESULT_SUCCESS)
     finally:
         db_conn.close()
     LOG.info('Scheduler end.')
+    sys.exit(load_result)
 
 if __name__ == '__main__':
     LOG = create_loader_logger()
