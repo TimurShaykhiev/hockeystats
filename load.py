@@ -1,6 +1,7 @@
 import sys
 import errno
 import MySQLdb as Db
+from requests.exceptions import ConnectionError
 
 from config import CONFIG
 from logger import create_loader_logger, get_loader_logger
