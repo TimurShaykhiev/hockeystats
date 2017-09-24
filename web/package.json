@@ -1,26 +1,37 @@
 {
-  "name": "webapp",
+  "name": "hockeystats",
   "version": "1.0.0",
   "description": "Web client for hockey stats project",
   "main": "./src/main.js",
   "scripts": {
-    "build": "webpack -d && cp ./src/index.html ./dist/app",
-    "build:prod": "webpack -p && cp ./src/index.html ./dist/app",
-    "start": "webpack-dev-server &"
+    "build": "$(npm bin)/webpack -d",
+    "build:prod": "$(npm bin)/webpack -p",
+    "start": "$(npm bin)/webpack-dev-server"
   },
   "keywords": [],
   "author": "Timur Shaykhiev",
   "license": "",
   "devDependencies": {
-    "babel-core": "^6.23.1",
-    "babel-loader": "^6.4.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-react": "^6.23.0",
-    "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.4.1"
+    "babel-core": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.6.0",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.28.4",
+    "eslint": "^3.19.0",
+    "eslint-config-google": "^0.9.1",
+    "eslint-loader": "^1.7.1",
+    "eslint-plugin-html": "^3.2.0",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.5",
+    "style-loader": "^0.18.2",
+    "vue-loader": "^13.0.4",
+    "vue-template-compiler": "^2.4.2",
+    "webpack": "^2.5.1",
+    "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "vue": "^2.4.4"
   }
 }
