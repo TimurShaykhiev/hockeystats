@@ -49,7 +49,8 @@ const config = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
-      Components: SRC_DIR + '/components'
+      Components: SRC_DIR + '/components',
+      Root: SRC_DIR
     }
   },
   plugins: [

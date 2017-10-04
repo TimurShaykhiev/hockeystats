@@ -1,12 +1,22 @@
 <template>
   <footer class="footer">
-    <div>Created by Timur.</div>
+    <div>{{$t("copyright")}}</div>
   </footer>
 </template>
 
 <script>
 export default {
-  name: 'page-footer'
+  name: 'page-footer',
+  i18n: {
+    messages: {
+      en: {
+        copyright: 'Created by Timur.'
+      },
+      ru: {
+        copyright: 'Сделано Тимуром.'
+      }
+    }
+  }
 };
 
 </script>
