@@ -1,7 +1,7 @@
 <template>
   <header class="header container-row">
-    <div class="header__logo">Logo</div>
-    <div class="header__caption">{{$t("caption")}}</div>
+    <div class="header__logo" @click="goHome">Logo</div>
+    <div class="header__caption" @click="goHome">{{$t("caption")}}</div>
     <nav class="header__nav-bar">
       <ul>
         <router-link tag="li" :to="{name: 'home'}">
@@ -15,7 +15,12 @@
         </router-link>
       </ul>
     </nav>
-    <button @click="changeLang">Change lang</button>
+    <div class="header__change-lang">
+      <ul>
+        <li @click="setLang('en')">{{$t("chooseLang.eng")}}</li>
+        <li @click="setLang('ru')">{{$t("chooseLang.rus")}}</li>
+      </ul>
+    </div>
   </header>
 </template>
 
@@ -32,6 +37,10 @@ export default {
           home: 'Home',
           teams: 'Teams',
           players: 'Players'
+        },
+        chooseLang: {
+          rus: 'Русский',
+          eng: 'English'
         }
       },
       ru: {
@@ -40,15 +49,24 @@ export default {
           home: 'Главная',
           teams: 'Команды',
           players: 'Игроки'
+        },
+        chooseLang: {
+          rus: 'Русский',
+          eng: 'English'
         }
       }
     }
   },
   methods: {
-    changeLang() {
+    setLang(lang) {
       const settings = new UserSettings();
-      settings.locale = settings.locale === 'en' ? 'ru' : 'en';
-      location.reload();
+      if (settings.locale !== lang) {
+        settings.locale = lang;
+        location.reload();
+      }
+    },
+    goHome() {
+      this.$router.push({name: 'home'});
     }
   }
 };
@@ -56,6 +74,8 @@ export default {
 </script>
 
 <style lang="less">
+  @textColor: white;
+
   .header {
     align-items: center;
     height: 80px;
@@ -66,14 +86,17 @@ export default {
     height: 60px;
     margin: 5px;
     background: darkblue;
-    color: white;
+    color: @textColor;
+    cursor: pointer;
   }
   .header__caption {
     margin-left: 20px;
     font-size: 34px;
-    color: white;
+    color: @textColor;
+    cursor: pointer;
   }
   .header__nav-bar {
+    margin-left: 50px;
     ul {
       list-style-type: none;
       margin: 0;
@@ -83,7 +106,7 @@ export default {
         float: left;
         a {
           display: block;
-          color: white;
+          color: @textColor;
           text-align: center;
           padding: 16px;
           text-decoration: none;
@@ -91,6 +114,21 @@ export default {
           background-color: lightgray;
         }
         }
+      }
+    }
+  }
+  .header__change-lang {
+    margin: auto 10px auto auto;
+    color: @textColor;
+    font-size: 12px;
+    ul {
+      list-style-type: none;
+      margin: 5px 0;
+      padding: 0;
+      overflow: hidden;
+      text-align: right;
+      li {
+        cursor: pointer;
       }
     }
   }
