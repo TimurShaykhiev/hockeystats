@@ -17,8 +17,7 @@ const config = {
   entry: SRC_DIR + '/main.js',
   output: {
     filename: 'bundle.js',
-    path: DIST_DIR + '/app',
-    publicPath: '/app/'
+    path: DIST_DIR
   },
   module: {
     rules: [{
@@ -54,11 +53,11 @@ const config = {
     }
   },
   plugins: [
-    new CopyWebpackPlugin([{from: 'index.html'}]),
+    new CopyWebpackPlugin([{from: 'index.html'}, {from: 'assets'}]),
     extractLess
   ],
   devServer: {
-    contentBase: DIST_DIR + '/app',
+    contentBase: DIST_DIR,
     port: 9000,
     host: '0.0.0.0'
   },
