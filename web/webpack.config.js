@@ -1,13 +1,14 @@
 'use strict';
 
 const path = require('path');
-const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const devBuild = process.env.NODE_ENV === 'development';
 
 const extractLess = new ExtractTextPlugin({
-  filename: 'all.css',
-  disable: process.env.NODE_ENV === 'development'
+  filename: devBuild ? 'all.css' : '[hash].css'
 });
 
 const DIST_DIR = path.resolve(__dirname, 'dist');
@@ -16,7 +17,7 @@ const SRC_DIR = path.resolve(__dirname, 'src');
 const config = {
   entry: SRC_DIR + '/main.js',
   output: {
-    filename: 'bundle.js',
+    filename: devBuild ? 'bundle.js' : '[hash].js',
     path: DIST_DIR
   },
   module: {
@@ -55,35 +56,18 @@ const config = {
     }
   },
   plugins: [
-    new CopyWebpackPlugin([{from: 'index.html'}, {from: 'assets'}]),
-    extractLess
+    new CopyWebpackPlugin([{from: 'assets'}]),
+    extractLess,
+    new HtmlWebpackPlugin({
+      template: 'index.template'
+    })
   ],
   devServer: {
     contentBase: DIST_DIR,
     port: 9000,
     host: '0.0.0.0'
   },
-  devtool: '#eval-source-map'
+  devtool: devBuild ? 'eval-source-map' : 'source-map'
 };
 
 module.exports = config;
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map';
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ]);
-}
