@@ -1,4 +1,10 @@
-export default {
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+import UserSettings from 'Root/userSettings';
+
+Vue.use(VueI18n);
+
+let locales = {
   locale: 'en',
   fallbackLocale: 'en',
   messages: {
@@ -74,3 +80,8 @@ export default {
     }
   }
 };
+
+const settings = new UserSettings();
+locales.locale = settings.locale;
+
+export default new VueI18n(locales);

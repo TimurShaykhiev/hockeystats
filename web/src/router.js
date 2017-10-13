@@ -1,8 +1,12 @@
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 import Home from 'Components/Home';
 import Teams from 'Components/Teams';
 import Players from 'Components/Players';
 
-export default [{
+Vue.use(VueRouter);
+
+const routes = [{
     path: '/teams',
     name: 'teams',
     component: Teams
@@ -16,3 +20,7 @@ export default [{
     component: Home
   }
 ];
+
+export default new VueRouter({
+  routes
+});
