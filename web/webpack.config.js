@@ -24,9 +24,7 @@ const config = {
     rules: [{
         test: /\.less$/,
         use: extractLess.extract({
-          use: [{loader: 'css-loader'}, {loader: 'less-loader'}],
-          // use style-loader in development
-          fallback: 'style-loader'
+          use: ['css-loader', 'less-loader', 'postcss-loader']
         })
       }, {
         test: /\.vue$/,
