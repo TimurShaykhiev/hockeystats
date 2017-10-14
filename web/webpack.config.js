@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -41,6 +40,13 @@ const config = {
           failOnWarning: false,
           failOnError: true
         }
+      }, {
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          outputPath: 'fonts/'
+        }
       }
     ]
   },
@@ -54,7 +60,6 @@ const config = {
     }
   },
   plugins: [
-    new CopyWebpackPlugin([{from: 'assets'}]),
     extractLess,
     new HtmlWebpackPlugin({
       template: 'index.template'
