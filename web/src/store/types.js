@@ -16,4 +16,14 @@ export class SeasonRequestParams {
       {name: 'locale', value: this.locale}
     ];
   }
+  // Returns true if requested season is the same as in storage.
+  isSeasonEqual(season) {
+    if (season === undefined) {
+      return false;
+    }
+    if (this.year === CURRENT_SEASON && season.current === true) {
+      return true;
+    }
+    return this.year === season.year && this.regular === season.regular;
+  }
 }

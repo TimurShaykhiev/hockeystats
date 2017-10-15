@@ -1,7 +1,7 @@
 <template>
   <header class="header container-row">
     <div class="header__logo" @click="goHome">Logo</div>
-    <div class="header__caption" @click="goHome">{{$t("caption")}}</div>
+    <div class="header__caption" @click="goHome"><h1>{{$t("caption")}}</h1></div>
     <nav class="header__nav-bar">
       <ul>
         <router-link tag="li" :to="{name: 'home'}">
@@ -91,7 +91,7 @@ export default {
   }
   .header__caption {
     margin-left: 20px;
-    font-size: 34px;
+    font-size: 24px;
     color: @textColor;
     cursor: pointer;
   }
