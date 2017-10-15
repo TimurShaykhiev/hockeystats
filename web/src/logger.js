@@ -3,10 +3,8 @@ export const INFO = 1;
 export const WARN = 2;
 export const ERROR = 3;
 
-const LOG_LEVELS = ['DEBUG', 'INFO', 'WARN', 'ERROR'];
-
 function printLog(logLevel, message) {
-  console.log(`${new Date().toISOString()} [${LOG_LEVELS[logLevel]}] ${message}`);
+  console.log(`${new Date().toISOString()} [${logLevel}] ${message}`);
 }
 
 class Logger {
@@ -19,22 +17,22 @@ class Logger {
   }
   debug(message) {
     if (this.logLevel <= DEBUG) {
-      printLog(this.logLevel, message);
+      printLog('DEBUG', message);
     }
   }
   info(message) {
     if (this.logLevel <= INFO) {
-      printLog(this.logLevel, message);
+      printLog('INFO', message);
     }
   }
   warn(message) {
     if (this.logLevel <= WARN) {
-      printLog(this.logLevel, message);
+      printLog('WARN', message);
     }
   }
   error(message) {
     if (this.logLevel <= ERROR) {
-      printLog(this.logLevel, message);
+      printLog('ERROR', message);
     }
   }
 }

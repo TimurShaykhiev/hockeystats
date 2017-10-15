@@ -1,6 +1,9 @@
 import 'whatwg-fetch';
+import ApiErrors from 'Api/apiErrors';
 
 const API_URL = 'http://localhost:5000/api/v1/';
+
+let pendingStates = {};
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -9,7 +12,7 @@ function getRandomInt(min, max) {
 }
 
 const result = {
-  season: {year: 2017, regular: true},
+  season: {year: 2017, regular: true, current: true},
   results: [
     {player: {id: 1, name: 'Alex Ovechkin', team: 'WSH'}, stats: Array.from(new Array(20), () => getRandomInt(0, 10))},
     {player: {id: 2, name: 'Sydney Crosby', team: 'PTB'}, stats: Array.from(new Array(20), () => getRandomInt(0, 10))},
@@ -39,10 +42,33 @@ export function buildUrl(data) {
   return `${API_URL}${path}`;
 }
 
-export function getData(url) {
+export function makeRequest(url) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(result);
-    }, 100);
+      // reject(new Error('NetworkError'));
+    }, getRandomInt(100, 300));
   });
+}
+
+// This function also checks do we have pending request of the same type.
+export function makeRequestIfNeeded(pendingStateName, prepareRequestData) {
+  if (pendingStates[pendingStateName] === true) {
+    // request is already in progress
+    return Promise.reject(new Error(ApiErrors.DUPLICATE_REQUEST));
+  }
+
+  let reqData = prepareRequestData();
+  pendingStates[pendingStateName] = true;
+
+  return makeRequest(buildUrl(reqData)).then(
+    (result) => {
+      pendingStates[pendingStateName] = false;
+      return result;
+    },
+    (error) => {
+      pendingStates[pendingStateName] = false;
+      throw error;
+    }
+  );
 }

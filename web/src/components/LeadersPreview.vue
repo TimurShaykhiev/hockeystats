@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import {SeasonRequestParams} from 'Store/types';
 
 export default {
   name: 'leaders-preview',
@@ -18,6 +19,9 @@ export default {
   },
   data() {
     return {};
+  },
+  created() {
+    this.$store.dispatch('getSkatersStats', {reqParams: new SeasonRequestParams(this.$store)});
   },
   computed: {
     dataSet() {

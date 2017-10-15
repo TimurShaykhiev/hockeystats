@@ -1,13 +1,16 @@
 <template>
   <div class="">
     <h1>This is Home page.</h1>
-    <leaders-preview type="goal"></leaders-preview>
+    <div class="container-row">
+      <leaders-preview type="skaterGoal"></leaders-preview>
+      <leaders-preview type="skaterAssist"></leaders-preview>
+      <leaders-preview type="skaterPoint"></leaders-preview>
+    </div>
   </div>
 </template>
 
 <script>
 import LeadersPreview from 'Components/LeadersPreview';
-import {SeasonRequestParams} from 'Store/types';
 
 export default {
   name: 'home',
@@ -15,9 +18,6 @@ export default {
   props: {},
   data() {
     return {};
-  },
-  created() {
-    this.$store.dispatch('getSkatersStats', {reqParams: new SeasonRequestParams(this.$store)});
   },
   computed: {},
   methods: {}

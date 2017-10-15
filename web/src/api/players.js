@@ -1,11 +1,12 @@
-import {getData, buildUrl} from 'Api/request';
+import {makeRequestIfNeeded} from 'Api/request';
 
 export default {
   getSkatersStats(reqParams) {
-    let urlData = {
-      path: ['stats', 'skaters'],
-      query: reqParams.getQueryParams()
-    };
-    return getData(buildUrl(urlData));
+    return makeRequestIfNeeded('skaterStats', () => {
+      return {
+        path: ['stats', 'skaters'],
+        query: reqParams.getQueryParams()
+      };
+    });
   }
 };
