@@ -1,6 +1,7 @@
 <template>
-  <div class="">
+  <div class="preview-table">
     <table>
+      <caption>{{$t(type)}}</caption>
       <tr v-for="elem in dataSet">
         <td>{{elem.name}}</td>
         <td>{{elem.value}}</td>
@@ -39,6 +40,20 @@ export default {
   name: 'leaders-preview',
   props: {
     type: {type: String, required: true}
+  },
+  i18n: {
+    messages: {
+      en: {
+        skaterGoal: 'Goals',
+        skaterAssist: 'Assists',
+        skaterPoint: 'Points'
+      },
+      ru: {
+        skaterGoal: 'Голы',
+        skaterAssist: 'Пасы',
+        skaterPoint: 'Очки'
+      }
+    }
   },
   data() {
     return {};
@@ -87,4 +102,39 @@ export default {
 </script>
 
 <style lang="less">
+  .preview-table {
+    margin: 10px;
+    table {
+      border-collapse: collapse;
+      border: 1px solid black;
+      width: 250px;
+      table-layout: fixed;
+    }
+    caption {
+      height: 2em;
+      color: white;
+      background: black;
+      line-height: 2em;
+      font-size: 1.3em;
+    }
+    tr {
+      height: 2em;
+      &:first-of-type {
+        height: 3em;
+        font-size: 1.5em;
+      }
+      &:nth-of-type(odd) {
+        background: #e1e1e1;
+      }
+    }
+    td {
+      padding: 0 10px;
+      &:nth-of-type(even) {
+        width: 40px;
+        text-align: center;
+      }
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 </style>
