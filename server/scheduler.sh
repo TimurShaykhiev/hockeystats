@@ -1,6 +1,6 @@
 #! /bin/bash
 
-SCHEDULER_ROOT=/home/timur/sources/hockeystats
+SCHEDULER_ROOT=/home/timur/sources/hockeystats/server
 
 SCHEDULER_PATH=${SCHEDULER_ROOT}/scheduler.py
 THIS_SCRIPT=${SCHEDULER_ROOT}/scheduler.sh
