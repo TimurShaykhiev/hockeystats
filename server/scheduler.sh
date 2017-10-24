@@ -1,6 +1,7 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
-SCHEDULER_ROOT=/home/timur/sources/hockeystats/server
+source ~/.profile
+SCHEDULER_ROOT=${HOCKEYSTATS_ROOT}/server
 
 SCHEDULER_PATH=${SCHEDULER_ROOT}/scheduler.py
 THIS_SCRIPT=${SCHEDULER_ROOT}/scheduler.sh

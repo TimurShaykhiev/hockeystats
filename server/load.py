@@ -3,7 +3,7 @@ import errno
 import MySQLdb as Db
 from requests.exceptions import ConnectionError
 
-from config import CONFIG
+from config import DB_URL, DB_USER, DB_PASSWORD, DB_NAME
 from logger import create_loader_logger, get_loader_logger
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
@@ -178,11 +178,12 @@ def main():
 
     start, end = sys.argv[1], sys.argv[2]
 
-    db_conn = Db.connect('localhost', CONFIG['db_user'], CONFIG['db_password'], CONFIG['db_name'])
+    db_conn = Db.connect(DB_URL, DB_USER, DB_PASSWORD, DB_NAME)
     try:
         load(start, end, db_conn)
     finally:
         db_conn.close()
+
 
 if __name__ == '__main__':
     LOG = create_loader_logger()

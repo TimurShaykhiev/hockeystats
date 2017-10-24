@@ -1,10 +1,13 @@
-CONFIG = {
-    # DB config
-    'db_name': 'NHL_STATS',
-    'db_user': 'hockstats',
-    'db_password': 'hockstats',
+# DB config
+DB_NAME = 'NHL_STATS'
+DB_URL = 'localhost'
+DB_USER = 'hockstats'
+DB_PASSWORD = 'hockstats'
 
-    # Directories
-    'loader_log_file': '/home/timur/hockeystats/log/loader.log',
-    'loader_data_dir': '/home/timur/hockeystats/data/'
-}
+# Directories
+LOADER_LOG_FILE = '/home/timur/hockeystats/log/loader.log'
+HOCKEY_STATS_LOG_FILE = '/home/timur/hockeystats/log/hockeystats.log'
+
+# Flask
+DEBUG = True
+LOGGER_NAME = 'hockeystats'

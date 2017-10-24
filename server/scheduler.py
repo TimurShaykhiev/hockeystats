@@ -3,7 +3,7 @@ import MySQLdb as Db
 from datetime import timedelta, datetime
 
 from logger import create_loader_logger
-from config import CONFIG
+from config import DB_URL, DB_USER, DB_PASSWORD, DB_NAME
 from load import load, LOAD_RESULT_SUCCESS, LOAD_RESULT_TRY_AGAIN
 from db_utils.updates import get_last_stat_update, set_last_stat_update
 
@@ -21,7 +21,7 @@ def _is_in_future(end_date):
 
 
 def main():
-    db_conn = Db.connect('localhost', CONFIG['db_user'], CONFIG['db_password'], CONFIG['db_name'])
+    db_conn = Db.connect(DB_URL, DB_USER, DB_PASSWORD, DB_NAME)
     try:
         LOG.info('Scheduler start.')
         update = get_last_stat_update(db_conn)
@@ -39,6 +39,7 @@ def main():
         db_conn.close()
     LOG.info('Scheduler end.')
     sys.exit(load_result)
+
 
 if __name__ == '__main__':
     LOG = create_loader_logger()
