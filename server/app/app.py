@@ -1,19 +1,39 @@
 import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask
-from logger import create_app_log_handler
 
-app = Flask(__name__)
-app.config.from_object('config')
-app.config.from_envvar('HOCKEYSTATS_CONFIG', silent=True)
-
-app.logger.addHandler(create_app_log_handler(app.config['HOCKEY_STATS_LOG_FILE']))
-app.logger.setLevel(logging.DEBUG if app.debug else logging.INFO)
+from .database import configure_db
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+def create_app():
+    """Create Flask application."""
+    app = Flask('app')
+    _configure_app(app)
+    _configure_logging(app)
+    _configure_blueprints(app)
+    configure_db(app)
+    return app
 
 
-if __name__ == '__main__':
-    app.run()
+def _configure_app(app):
+    app.config.from_object('config')
+    app.config.from_envvar('HOCKEYSTATS_CONFIG', silent=True)
+
+
+def _configure_logging(app):
+    log_size_limit = 50 * 1024 * 1024
+    backup_count = 5
+    log_level = getattr(logging, app.config['HOCKEY_STATS_LOG_LEVEL'])
+
+    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s [%(module)s:%(lineno)d]')
+    rfh = RotatingFileHandler(app.config['HOCKEY_STATS_LOG_FILE'], maxBytes=log_size_limit, backupCount=backup_count)
+    rfh.setLevel(log_level)
+    rfh.setFormatter(formatter)
+
+    app.logger.addHandler(rfh)
+    app.logger.setLevel(log_level)
+
+
+def _configure_blueprints(app):
+    import api
+    app.register_blueprint(api.season_stats_api)

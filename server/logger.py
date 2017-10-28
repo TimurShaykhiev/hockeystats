@@ -24,11 +24,3 @@ def create_loader_logger():
 
 def get_loader_logger():
     return logging.getLogger(LOADER_LOGGER_NAME)
-
-
-def create_app_log_handler(log_file):
-    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s [%(module)s:%(lineno)d]')
-    rfh = RotatingFileHandler(log_file, maxBytes=LOG_SIZE_LIMIT, backupCount=BACKUP_COUNT)
-    rfh.setLevel(logging.DEBUG)
-    rfh.setFormatter(formatter)
-    return rfh

@@ -23,6 +23,18 @@ def get_player_team_info(db):
         return cur.fetchall()
 
 
+def get_all_skaters_short_info(db):
+    with db.cursor() as cur:
+        cur.execute('SELECT id, name, current_team_id, primary_pos FROM players WHERE primary_pos != \'goalie\'')
+        return cur.fetchall()
+
+
+def get_all_goalies_short_info(db):
+    with db.cursor() as cur:
+        cur.execute('SELECT id, name, current_team_id, primary_pos FROM players WHERE primary_pos = \'goalie\'')
+        return cur.fetchall()
+
+
 def add_players(db, players):
     with db as cur:
         num = cur.executemany('INSERT INTO players VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
