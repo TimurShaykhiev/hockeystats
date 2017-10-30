@@ -1,5 +1,7 @@
 from flask import jsonify, make_response
 
+from .error_codes import API_ERRORS
+
 
 def response(data):
     resp = make_response(data)
@@ -7,5 +9,16 @@ def response(data):
     return resp
 
 
-def error(http_err_code, api_err_code):
-    return make_response(jsonify({'error': api_err_code}), http_err_code)
+class ApiError(Exception):
+    def __init__(self, status_code, api_err_code):
+        Exception.__init__(self)
+        self.status_code = status_code
+        self.api_err_code = api_err_code
+
+    def get_response(self):
+        return make_response(jsonify({'error': API_ERRORS[self.api_err_code]}), self.status_code)
+
+
+class InvalidQueryParams(ApiError):
+    def __init__(self):
+        super().__init__(400, 'INVALID_QUERY_PARAMS')

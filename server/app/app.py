@@ -11,6 +11,7 @@ def create_app():
     _configure_app(app)
     _configure_logging(app)
     _configure_blueprints(app)
+    _configure_error_handlers(app)
     configure_db(app)
     return app
 
@@ -37,3 +38,12 @@ def _configure_logging(app):
 def _configure_blueprints(app):
     import api
     app.register_blueprint(api.season_stats_api)
+    app.register_blueprint(api.season_api)
+
+
+def _configure_error_handlers(app):
+    from api.response_utils import ApiError
+
+    @app.errorhandler(ApiError)
+    def handle_invalid_usage(error):
+        return error.get_response()

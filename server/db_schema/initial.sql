@@ -68,7 +68,9 @@ CREATE TABLE IF NOT EXISTS seasons
 (
   id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
   start DATE NOT NULL,
+  po_start DATE NOT NULL,
   end DATE NOT NULL,
+  status ENUM('not_started', 'regular', 'play_off', 'finished') NOT NULL,
   current TINYINT(1) NOT NULL
 );
 
