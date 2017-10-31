@@ -31,6 +31,7 @@ class Season:
 
         dm = SeasonDm.from_db(db, sid)
         if dm is None:
+            current_app.logger.error('Season id %s not found.', sid)
             raise ApiError(404, 'SEASON_NOT_FOUND')
 
         season = cls()

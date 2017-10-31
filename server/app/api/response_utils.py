@@ -2,10 +2,14 @@ from flask import jsonify, make_response
 
 from .error_codes import API_ERRORS
 
+CACHE_TYPE_CURRENT_SEASON_STATS = 0
+CACHE_TYPE_OLD_SEASON_STATS = 1
 
-def response(data):
+
+def response(data, cache_type):
     resp = make_response(data)
     resp.headers['Content-Type'] = 'application/json'
+    _add_cache_headers(resp, cache_type)
     return resp
 
 
@@ -22,3 +26,12 @@ class ApiError(Exception):
 class InvalidQueryParams(ApiError):
     def __init__(self):
         super().__init__(400, 'INVALID_QUERY_PARAMS')
+
+
+def _add_cache_headers(resp, cache_type):
+    if cache_type == CACHE_TYPE_OLD_SEASON_STATS:
+        # This info won't be changed. Expiration time: 1 year.
+        resp.headers['Cache-Control'] = 'public, max-age=31536000'
+    elif cache_type == CACHE_TYPE_CURRENT_SEASON_STATS:
+        # This info is changed every day. Expiration time: 1 hour.
+        resp.headers['Cache-Control'] = 'public, max-age=3600'

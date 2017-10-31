@@ -1,6 +1,6 @@
 import logging
 from logging.handlers import RotatingFileHandler
-from flask import Flask
+from flask import Flask, current_app, request
 
 from .database import configure_db
 
@@ -34,6 +34,10 @@ def _configure_logging(app):
     app.logger.addHandler(rfh)
     app.logger.setLevel(log_level)
 
+    @app.before_request
+    def log_request():
+        current_app.logger.debug(request.url)
+
 
 def _configure_blueprints(app):
     import api
@@ -46,4 +50,5 @@ def _configure_error_handlers(app):
 
     @app.errorhandler(ApiError)
     def handle_invalid_usage(error):
+        current_app.logger.error('Request failed %s, %s', error.status_code, error.api_err_code)
         return error.get_response()
