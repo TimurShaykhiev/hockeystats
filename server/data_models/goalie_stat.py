@@ -72,8 +72,9 @@ class GoalieStat:
             goalie_stat.sh_shots_against = stats['shortHandedShotsAgainst']
             goalie_stat.even_shots_against = stats['evenShotsAgainst']
             goalie_stat.pp_shots_against = stats['powerPlayShotsAgainst']
-            if stats['decision']:
-                goalie_stat.decision = DECISION[stats['decision']]
+            decision = stats.get('decision')
+            if decision:
+                goalie_stat.decision = DECISION[decision]
             goalie_stat._validate_and_fix()
             return goalie_stat
         return None
