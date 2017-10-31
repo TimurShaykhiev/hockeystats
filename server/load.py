@@ -1,10 +1,6 @@
-import sys
-import errno
-import MySQLdb as Db
 from requests.exceptions import ConnectionError
 
-from config import DB_URL, DB_USER, DB_PASSWORD, DB_NAME
-from logger import create_loader_logger, get_loader_logger
+from logger import get_loader_logger
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.team_sum_stat import TeamSumStat
@@ -15,7 +11,7 @@ from db_utils.seasons import get_season_by_date
 import db_utils.add_stats as add_stats
 
 
-LOG = None
+LOG = get_loader_logger()
 players = {}
 all_games = []
 all_skater_stats = []
@@ -124,8 +120,6 @@ def _update_db(db_conn):
 
 def load(start, end, db_conn):
     global players, LOG, all_games, all_skater_stats, all_goalie_stats, all_goals, all_penalty, all_tga
-    if LOG is None:
-        LOG = get_loader_logger()
 
     LOG.info('Load from %s to %s', start, end)
     result = LOAD_RESULT_SUCCESS
@@ -167,24 +161,3 @@ def load(start, end, db_conn):
         result = LOAD_RESULT_FAIL
     LOG.info('Script end with %s', 'success' if result == LOAD_RESULT_SUCCESS else 'fail')
     return result
-
-
-def main():
-    LOG.info('Started with params %s', ', '.join(sys.argv))
-    if len(sys.argv) < 3:
-        print('You must pass start and end dates.')
-        LOG.error('Invalid params')
-        sys.exit(errno.EINVAL)
-
-    start, end = sys.argv[1], sys.argv[2]
-
-    db_conn = Db.connect(DB_URL, DB_USER, DB_PASSWORD, DB_NAME)
-    try:
-        load(start, end, db_conn)
-    finally:
-        db_conn.close()
-
-
-if __name__ == '__main__':
-    LOG = create_loader_logger()
-    main()
