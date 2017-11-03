@@ -1,21 +1,19 @@
-import {makeRequestIfNeeded} from 'Api/request';
+import makeRequest from 'Api/request';
 
 export default {
   getSkaterStats(reqParams) {
-    return makeRequestIfNeeded('skaterStats', () => {
-      return {
-        path: ['stats', 'skaters'],
-        query: reqParams.getQueryParams()
-      };
-    });
+    let reqData = {
+      path: ['stats', 'skaters'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   },
 
   getGoalieStats(reqParams) {
-    return makeRequestIfNeeded('goalieStats', () => {
-      return {
-        path: ['stats', 'goalies'],
-        query: reqParams.getQueryParams()
-      };
-    });
+    let reqData = {
+      path: ['stats', 'goalies'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };

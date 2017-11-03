@@ -1,17 +1,15 @@
-const CURRENT_SEASON = 0;
-
 export class SeasonRequestParams {
-  constructor(store) {
-    this.year = CURRENT_SEASON;
-    this.regular = null;
+  constructor(store, seasonId, regular) {
+    this.seasonId = seasonId;
+    this.seasonType = regular ? 'reg' : 'po';
     this.limit = null;
     // English locale is default, it can be omitted in request.
     this.locale = store.state.userLocale !== 'en' ? store.state.userLocale : null;
   }
   getQueryParams() {
     return [
-      {name: 'year', value: this.year},
-      {name: 'reg', value: this.regular},
+      {name: 'sid', value: this.seasonId},
+      {name: 'stype', value: this.seasonType},
       {name: 'limit', value: this.limit},
       {name: 'locale', value: this.locale}
     ];
@@ -21,9 +19,6 @@ export class SeasonRequestParams {
     if (season === undefined) {
       return false;
     }
-    if (this.year === CURRENT_SEASON && season.current === true) {
-      return true;
-    }
-    return this.year === season.year && this.regular === season.regular;
+    return this.seasonId === season.seasonId && this.seasonType === season.seasonType;
   }
 }

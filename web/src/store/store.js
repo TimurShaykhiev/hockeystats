@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import teams from 'Store/modules/teams';
 import players from 'Store/modules/players';
+import season from 'Store/modules/season';
 import UserSettings from 'Root/userSettings';
 
 Vue.use(Vuex);
@@ -14,6 +15,7 @@ export default new Vuex.Store({
   },
   modules: {
     teams,
-    players
+    players,
+    season
   }
 });

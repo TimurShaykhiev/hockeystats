@@ -13,7 +13,7 @@
 <script>
 import {SeasonRequestParams} from 'Store/types';
 
-const ITEMS_TO_SHOW = 5;
+const ITEMS_TO_SHOW = 10;
 
 const typesMap = {
   skaterGoal: {
@@ -59,7 +59,11 @@ export default {
     return {};
   },
   created() {
-    this.$store.dispatch(typesMap[this.type].action, {reqParams: new SeasonRequestParams(this.$store)});
+    this.$store.dispatch('getCurrentSeason').then((season) => {
+      this.$store.dispatch(typesMap[this.type].action, {
+        reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+      });
+    });
   },
   computed: {
     dataSet() {
