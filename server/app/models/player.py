@@ -9,7 +9,6 @@ class Player:
         self.name = ''
         self.position = ''
         self.team_id = None
-        self.team_name = None
 
 
 class PlayerSchema(ModelSchema):
@@ -17,4 +16,3 @@ class PlayerSchema(ModelSchema):
     name = fields.String()
     pos = fields.String(attribute='position')
     tid = fields.Integer(attribute='team_id')
-    team = fields.String(attribute='team_name')

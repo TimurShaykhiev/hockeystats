@@ -11,12 +11,6 @@ def get_all_teams(db, active_only=True):
         return get_all_from_query_result(Team, cur)
 
 
-def get_all_teams_short_info(db):
-    with db.cursor() as cur:
-        cur.execute('SELECT id, name FROM teams')
-        return cur.fetchall()
-
-
 def get_teams_by_division(db, div_id):
     with db.cursor() as cur:
         cur.execute('SELECT * FROM teams WHERE division_id = %s', [div_id])

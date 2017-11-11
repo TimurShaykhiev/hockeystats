@@ -3,7 +3,6 @@ from flask import current_app
 
 from database import get_db
 from db_utils.players import get_all_skaters_short_info, get_all_goalies_short_info
-from db_utils.teams import get_all_teams_short_info
 from db_utils.get_sum_stats import get_all_skaters_sum_stats, get_all_goalies_sum_stats
 from .player import Player, PlayerSchema
 from .season import SeasonSchema
@@ -16,21 +15,13 @@ def _get_all_players_info(db, data_getter_func):
     return dict((pid, (name, tid, pos)) for pid, name, tid, pos in sk_list)
 
 
-def _get_all_teams_info(db):
-    team_list = get_all_teams_short_info(db)
-    # Convert to dict for quick search
-    return dict(team_list)
-
-
-def _create_player(pid, players, teams):
+def _create_player(pid, players):
     pl = Player()
     pl.id = pid
     pl.name = players[pid][0]
     pl.position = players[pid][2][0].upper()
     pl.team_id = players[pid][1]
-    if pl.team_id is not None:
-        pl.team_name = teams[pl.team_id]
-    else:
+    if pl.team_id is None:
         current_app.logger.warn('Player {} has no team id.'.format(pid))
     return pl
 
@@ -56,10 +47,9 @@ class PlayerSeasonStatsCollection:
     def get_collection(self):
         db = get_db()
         players = _get_all_players_info(db, self.get_players_func)
-        teams = _get_all_teams_info(db)
         stats = self.get_stats_func(db, self.season.id, self.season.regular)
         for st in stats:
-            pl = _create_player(st.player.id, players, teams)
+            pl = _create_player(st.player.id, players)
             self.results.append(PlayerSeasonStats(pl, st))
         schema = PlayerSeasonStatsCollectionSchema()
         return schema.dumps(self)
