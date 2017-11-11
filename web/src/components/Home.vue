@@ -6,15 +6,20 @@
       <leaders-preview type="skaterAssist"></leaders-preview>
       <leaders-preview type="skaterPoint"></leaders-preview>
     </div>
+    <div class="container-row">
+      <standings num="1"></standings>
+      <standings num="2"></standings>
+    </div>
   </div>
 </template>
 
 <script>
 import LeadersPreview from 'Components/LeadersPreview';
+import Standings from 'Components/Standings';
 
 export default {
   name: 'home',
-  components: {LeadersPreview},
+  components: {LeadersPreview, Standings},
   props: {},
   data() {
     return {};
