@@ -4,6 +4,7 @@ from .error_codes import API_ERRORS
 
 CACHE_TYPE_CURRENT_SEASON_STATS = 0
 CACHE_TYPE_OLD_SEASON_STATS = 1
+CACHE_TYPE_SEASONS_DATA = 2
 
 
 def response(data, cache_type):
@@ -32,6 +33,9 @@ def _add_cache_headers(resp, cache_type):
     if cache_type == CACHE_TYPE_OLD_SEASON_STATS:
         # This info won't be changed. Expiration time: 1 year.
         resp.headers['Cache-Control'] = 'public, max-age=31536000'
+    elif cache_type == CACHE_TYPE_SEASONS_DATA:
+        # This info is changed once a year. Expiration time: 1 day.
+        resp.headers['Cache-Control'] = 'public, max-age=86400'
     elif cache_type == CACHE_TYPE_CURRENT_SEASON_STATS:
         # This info is changed every day. Expiration time: 1 hour.
         resp.headers['Cache-Control'] = 'public, max-age=3600'

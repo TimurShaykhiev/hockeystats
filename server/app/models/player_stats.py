@@ -10,9 +10,9 @@ from models import ModelSchema
 
 
 def _get_all_players_info(db, data_getter_func):
-    sk_list = data_getter_func(db)
+    pl_list = data_getter_func(db)
     # Convert to dict for quick search
-    return dict((pid, (name, tid, pos)) for pid, name, tid, pos in sk_list)
+    return dict((pid, (name, tid, pos)) for pid, name, tid, pos in pl_list)
 
 
 def _create_player(pid, players):
@@ -72,18 +72,3 @@ class GoaliesSeasonStatsCollection(PlayerSeasonStatsCollection):
 class PlayerSeasonStatsCollectionSchema(ModelSchema):
     season = fields.Nested(SeasonSchema)
     results = fields.Nested(PlayerSeasonStatsSchema, many=True)
-
-
-class PlayerStats:
-    def __init__(self):
-        self.player = None
-        self.stats_dm = None
-        self.start_season = None
-        self.end_season = None
-
-
-class PlayerStatsSchema(ModelSchema):
-    player = fields.Nested(PlayerSchema)
-    start_season = fields.Nested(SeasonSchema)
-    end_season = fields.Nested(SeasonSchema)
-    stats = fields.Function(lambda obj: obj.stats_dm.to_tuple()[3:], attribute='stats_dm')

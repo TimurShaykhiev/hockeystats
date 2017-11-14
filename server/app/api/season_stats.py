@@ -30,3 +30,10 @@ def teams_season_stats():
     t_stats = TeamsSeasonStatsCollection(season)
     return response(t_stats.get_collection(),
                     CACHE_TYPE_CURRENT_SEASON_STATS if season.current else CACHE_TYPE_OLD_SEASON_STATS)
+
+
+@season_stats_api.route('/leagueAverage')
+def league_average_stats():
+    # todo
+    # season = Season.create()
+    return ''
