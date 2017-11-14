@@ -3,7 +3,10 @@
     <table>
       <caption>{{$t(type)}}</caption>
       <tr v-for="elem in dataSet">
-        <td>{{elem.name}}</td>
+        <td>
+          <span class="preview-table__player-name">{{elem.name}}</span>
+          <span class="preview-table__team-name">{{elem.team}}</span>
+        </td>
         <td>{{elem.value}}</td>
       </tr>
     </table>
@@ -12,8 +15,10 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
+import {floatToStr} from 'Components/utils';
 
-const ITEMS_TO_SHOW = 10;
+const ITEMS_TO_SHOW = 5;
+const GAMES_MIN_LIMIT = 5;
 
 const typesMap = {
   skaterGoal: {
@@ -33,6 +38,26 @@ const typesMap = {
     getStats: 'skaterStats',
     getValue: (plStats) => plStats.stats.goals + plStats.stats.assists,
     descSort: true
+  },
+  skaterPlusMinus: {
+    action: 'getSkaterStats',
+    getStats: 'skaterStats',
+    getValue: (plStats) => plStats.stats.plusMinus,
+    descSort: true
+  },
+  goalieGaa: {
+    action: 'getGoalieStats',
+    getStats: 'goalieStats',
+    getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.gaa : 1000,
+    showValue: (value) => floatToStr(value, 2),
+    descSort: false
+  },
+  goalieSavePercentage: {
+    action: 'getGoalieStats',
+    getStats: 'goalieStats',
+    getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.svp : 0,
+    showValue: (value) => floatToStr(value, 3, true),
+    descSort: true
   }
 };
 
@@ -46,12 +71,18 @@ export default {
       en: {
         skaterGoal: 'Goals',
         skaterAssist: 'Assists',
-        skaterPoint: 'Points'
+        skaterPoint: 'Points',
+        skaterPlusMinus: 'Plus-Minus',
+        goalieGaa: 'Goals Against Average',
+        goalieSavePercentage: 'Save Percentage'
       },
       ru: {
         skaterGoal: 'Голы',
         skaterAssist: 'Пасы',
-        skaterPoint: 'Очки'
+        skaterPoint: 'Очки',
+        skaterPlusMinus: 'Плюс-Минус',
+        goalieGaa: 'Коэф. надёжности',
+        goalieSavePercentage: '% ОБ'
       }
     }
   },
@@ -73,13 +104,15 @@ export default {
       }
       allStats = allStats.slice();
       let getValueFunc = typesMap[this.type].getValue;
+      let showValueFunc = typesMap[this.type].showValue;
       allStats.sort((a, b) => {
-        if (getValueFunc(a) > getValueFunc(b)) {
-          return -1;
-        }
-        if (getValueFunc(a) < getValueFunc(b)) {
-          return 1;
-        }
+        let valueA = getValueFunc(a);
+        let valueB = getValueFunc(b);
+        if (valueA > valueB) return -1;
+        if (valueA < valueB) return 1;
+        // The fewer games played, the higher in chart.
+        if (a.games > b.games) return 1;
+        if (a.games < b.games) return -1;
         return 0;
       });
       let statsToShow;
@@ -89,7 +122,11 @@ export default {
         statsToShow = allStats.slice(allStats.length-ITEMS_TO_SHOW).reverse();
       }
       return statsToShow.map((x) => {
-        return {name: x.player.name, value: getValueFunc(x)};
+        return {
+          name: x.player.name,
+          team: this.$t(`teams.${x.player.tid}`),
+          value: showValueFunc ? showValueFunc(getValueFunc(x)) : getValueFunc(x)
+        };
       });
     }
   },
@@ -134,11 +171,19 @@ export default {
     td {
       padding: 0 10px;
       &:nth-of-type(even) {
-        width: 40px;
+        width: 50px;
         text-align: center;
       }
       overflow: hidden;
       text-overflow: ellipsis;
+      span {
+        &.preview-table__player-name {
+          display: block;
+        }
+        &.preview-table__team-name {
+          font-size: 12px;
+        }
+      }
     }
   }
 </style>

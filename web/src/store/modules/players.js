@@ -73,7 +73,7 @@ const mutations = {
     state.skaterStats = newStat;
   },
 
-  setGoalieStats(state, {stats}) {
+  setGoalieStats(state, stats) {
     logger.debug('mutation: setGoalieStats');
     let newStat = {};
     newStat.timestamp = stats.timestamp;
@@ -96,6 +96,10 @@ const mutations = {
       goalie.stats.games = s.stats[12];
       goalie.stats.wins = s.stats[13];
       goalie.stats.shutout = s.stats[14];
+      // Calculate some stats
+      goalie.stats.gaa = getGoalsAgainstAverage(goalie.stats);
+      goalie.stats.svp = getSavePercentage(goalie.stats);
+
       newStat.goalies.push(goalie);
     }
     state.goalieStats = newStat;
@@ -108,3 +112,17 @@ export default {
   actions,
   mutations
 };
+
+function getGoalsAgainstAverage(stats) {
+  if (stats.toi > 0) {
+    return (stats.shots - stats.saves) * 60 / Math.round(stats.toi / 60);
+  }
+  return 0;
+}
+
+function getSavePercentage(stats) {
+  if (stats.shots > 0) {
+    return stats.saves / stats.shots;
+  }
+  return 0;
+}

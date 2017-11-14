@@ -154,7 +154,7 @@ export default {
     caption() {
       let cid = this.conferenceId;
       if (cid) {
-        return this.$i18n.t(`conferences.${cid}`);
+        return this.$t(`conferences.${cid}`);
       }
       return '';
     },
@@ -183,7 +183,7 @@ export default {
         return {
           rank: ++i,
           colorMark: getColorMarkClass(i),
-          name: this.$i18n.t(`teams.${t.team.id}`),
+          name: this.$t(`teams.${t.team.id}`),
           games: t.stats.games,
           wins: t.stats.winRegular + t.stats.winOvertime + t.stats.winShootout,
           losses: t.stats.loseRegular,
