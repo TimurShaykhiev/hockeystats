@@ -70,7 +70,8 @@ class GoalieSumStat:
         self.sh_shots_against += stat.sh_shots_against
         self.even_shots_against += stat.even_shots_against
         self.pp_shots_against += stat.pp_shots_against
-        self.games += 1
+        if stat.toi > 0:
+            self.games += 1
         if stat.decision == GoalieStat.DECISION_WINNER:
             self.wins += 1
         if stat.shots == stat.saves:

@@ -86,7 +86,8 @@ class SkaterSumStat:
         self.even_toi += stat.even_toi
         self.pp_toi += stat.pp_toi
         self.sh_toi += stat.sh_toi
-        self.games += 1
+        if stat.toi > 0:
+            self.games += 1
 
     def add_sum_stat(self, sum_stat):
         # sum_stat is SkaterSumStat
