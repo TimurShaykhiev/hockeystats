@@ -41,14 +41,14 @@ def main():
         if update is None or not update.successful:
             LOG.error('Cannot process. Fix errors from prev load.')
             return
-        new_start = new_end = update.end + timedelta(days=1)
-        if _is_in_future(new_end):
+        new_date = update.end + timedelta(days=1)
+        if _is_in_future(new_date):
             LOG.warning('New date is in the future.')
             return
-        load_result = load(new_start, new_end, db_conn)
+        load_result = load(new_date, db_conn)
         if load_result != LOAD_RESULT_TRY_AGAIN:
-            set_last_stat_update(db_conn, new_start, new_end, load_result == LOAD_RESULT_SUCCESS)
-            check_season(db_conn, new_end)
+            set_last_stat_update(db_conn, new_date, new_date, load_result == LOAD_RESULT_SUCCESS)
+            check_season(db_conn, new_date)
     finally:
         db_conn.close()
     LOG.info('Scheduler end.')

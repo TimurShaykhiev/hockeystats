@@ -17,12 +17,6 @@ def get_players_by_team(db, team_id):
         return get_all_from_query_result(Player, cur)
 
 
-def get_player_team_info(db):
-    with db.cursor() as cur:
-        cur.execute('SELECT id, current_team_id FROM players')
-        return cur.fetchall()
-
-
 def get_all_skaters_short_info(db):
     with db.cursor() as cur:
         cur.execute('SELECT id, name, current_team_id, primary_pos FROM players WHERE primary_pos != \'goalie\'')

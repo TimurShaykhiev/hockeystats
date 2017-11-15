@@ -322,3 +322,14 @@ CREATE TABLE IF NOT EXISTS goalie_sum_stats
   CONSTRAINT goalie_sum_players_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
   CONSTRAINT goalie_sum_seasons_fk FOREIGN KEY (season_id) REFERENCES seasons (id) ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS player_trades
+(
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  date DATE NOT NULL,
+  from_team_id BIGINT(20) UNSIGNED NOT NULL,
+  to_team_id BIGINT(20) UNSIGNED NOT NULL,
+  CONSTRAINT player_trades_pk PRIMARY KEY (player_id, date),
+  CONSTRAINT player_trades_from_team_id_fk FOREIGN KEY (from_team_id) REFERENCES teams (id) ON UPDATE CASCADE,
+  CONSTRAINT player_trades_to_team_id_fk FOREIGN KEY (to_team_id) REFERENCES teams (id) ON UPDATE CASCADE
+);

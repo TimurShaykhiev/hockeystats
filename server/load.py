@@ -4,10 +4,13 @@ from logger import get_loader_logger
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.team_sum_stat import TeamSumStat
+from data_models.player_trade import PlayerTrade
 from data_loaders.game_loader import get_games_list, get_game_info
 from data_loaders.player_loader import get_players, create_player_link
-from db_utils.players import get_player_team_info, add_players, update_player_teams
+from db_utils import get_columns_from_table
+from db_utils.players import add_players, update_player_teams
 from db_utils.seasons import get_season_by_date
+from db_utils.player_trades import add_player_trades
 import db_utils.add_stats as add_stats
 
 
@@ -22,20 +25,11 @@ all_goals = []
 skater_sum_stats = {}
 goalie_sum_stats = {}
 team_sum_stats = {}
+load_date = None
 
 LOAD_RESULT_SUCCESS = 0
 LOAD_RESULT_FAIL = 1
 LOAD_RESULT_TRY_AGAIN = 2
-
-
-# check that start and end date belong to the same season and return the season
-def _get_season(db_conn, start, end):
-    start_season = get_season_by_date(db_conn, start)
-    if start_season:
-        end_season = get_season_by_date(db_conn, end)
-        if end_season and start_season.id == end_season.id:
-            return start_season
-    return None
 
 
 def _update_skater_sum_stats(stats, season, regular):
@@ -68,8 +62,9 @@ def _update_team_sum_stats(game, season):
 def _update_players(db_conn):
     player_ids_to_add = []
     player_info_to_update = []
+    player_trades = []
     pt_dict = {}
-    player_team_info = get_player_team_info(db_conn)
+    player_team_info = get_columns_from_table(db_conn, 'players', ['id', 'current_team_id'])
     # convert list to dict to improve search
     for info in player_team_info:
         pt_dict[info[0]] = info[1]
@@ -79,6 +74,7 @@ def _update_players(db_conn):
             if players[p] != pt_dict[p]:
                 # player in DB but contains another team id
                 player_info_to_update.append((players[p], p))
+                player_trades.append(PlayerTrade(p, load_date, pt_dict[p], players[p]))
         else:
             # no such player in DB
             player_ids_to_add.append(p)
@@ -90,6 +86,8 @@ def _update_players(db_conn):
     LOG.info('%s new players added', num if num else 0)
     num = update_player_teams(db_conn, player_info_to_update)
     LOG.info('%s players updated', num if num else 0)
+    num = add_player_trades(db_conn, player_trades)
+    LOG.info('%s player trades added', num if num else 0)
 
 
 def _update_db(db_conn):
@@ -118,18 +116,19 @@ def _update_db(db_conn):
     cur.close()
 
 
-def load(start, end, db_conn):
-    global players, LOG, all_games, all_skater_stats, all_goalie_stats, all_goals, all_penalty, all_tga
+def load(date, db_conn):
+    global players, LOG, all_games, all_skater_stats, all_goalie_stats, all_goals, all_penalty, all_tga, load_date
 
-    LOG.info('Load from %s to %s', start, end)
+    LOG.info('Load for %s', date)
     result = LOAD_RESULT_SUCCESS
     try:
-        season = _get_season(db_conn, start, end)
+        season = get_season_by_date(db_conn, date)
         if season is None:
-            LOG.error('Start and end dates must belong to the same season')
+            LOG.error('Date must belong to the season')
             return LOAD_RESULT_FAIL
 
-        game_links = get_games_list(start, end)
+        load_date = date
+        game_links = get_games_list(date, date)
         for link in game_links:
             LOG.info('Process %s', link)
             game, skater_stats, goalie_stats, tga, penalty, goals = get_game_info(link)
