@@ -4,7 +4,7 @@ from db_utils.seasons import get_2_last_seasons, set_new_current_season, update_
 LOG = get_loader_logger()
 
 
-def check_season(today, db_conn):
+def check_season(db_conn, today):
     last, prev = get_2_last_seasons(db_conn)
     with db_conn as cur:
         if last.status == last.STATUS_NOT_STARTED:
