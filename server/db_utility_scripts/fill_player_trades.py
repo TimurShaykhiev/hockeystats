@@ -1,6 +1,5 @@
 import MySQLdb as Db
 
-from db_utils import get_columns_from_table
 from db_utils.get_stats import get_team_info_from_skater_stats, get_team_info_from_goalie_stats
 from db_utils.player_trades import add_player_trades
 from data_models.player import Player
@@ -11,7 +10,7 @@ def main(db):
     """
     This script finds player trades(team id is changed) and saves them to player_trades table.
     """
-    players = get_columns_from_table(db, 'players', ['id', 'current_team_id', 'primary_pos'])
+    players = Player.get_fields(db, ['id', 'current_team_id', 'primary_pos'])
     player_trades = []
     for p in players:
         pid, current_tid, pos = p

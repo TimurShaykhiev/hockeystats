@@ -1,7 +1,7 @@
-from data_models.model import Model
+from data_models.entity_model import EntityModel
 
 
-class PlayerTrade(Model):
+class PlayerTrade(EntityModel):
     _table_name = 'player_trades'
     _query_get_by_id = 'SELECT * FROM player_trades WHERE player_id = %s'
 

@@ -2,7 +2,7 @@ from marshmallow import fields
 from flask import current_app
 
 from database import get_db
-from db_utils.players import get_all_skaters_short_info, get_all_goalies_short_info
+from data_models.player import Player as PlayerDm
 from db_utils.get_sum_stats import get_all_skaters_sum_stats, get_all_goalies_sum_stats
 from .player import Player, PlayerSchema
 from .season import SeasonSchema
@@ -10,7 +10,7 @@ from models import ModelSchema
 
 
 def _get_all_players_info(db, data_getter_func):
-    pl_list = data_getter_func(db)
+    pl_list = data_getter_func(db, ['id', 'name', 'current_team_id', 'primary_pos'])
     # Convert to dict for quick search
     return dict((pid, (name, tid, pos)) for pid, name, tid, pos in pl_list)
 
@@ -58,14 +58,14 @@ class PlayerSeasonStatsCollection:
 class SkatersSeasonStatsCollection(PlayerSeasonStatsCollection):
     def __init__(self, season):
         super().__init__(season)
-        self.get_players_func = get_all_skaters_short_info
+        self.get_players_func = PlayerDm.get_skaters
         self.get_stats_func = get_all_skaters_sum_stats
 
 
 class GoaliesSeasonStatsCollection(PlayerSeasonStatsCollection):
     def __init__(self, season):
         super().__init__(season)
-        self.get_players_func = get_all_goalies_short_info
+        self.get_players_func = PlayerDm.get_goalies
         self.get_stats_func = get_all_goalies_sum_stats
 
 

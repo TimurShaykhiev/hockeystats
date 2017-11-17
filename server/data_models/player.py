@@ -119,3 +119,23 @@ class Player(EntityModel):
             self.shoots_catches,
             self.primary_pos,
             convert_attr_if_none(self.current_team, 'id'))
+
+    @classmethod
+    def get_skaters(cls, db_conn, columns=None):
+        if columns is None:
+            return cls._get_all_from_db(db_conn, 'SELECT * FROM players WHERE primary_pos != \'goalie\'')
+
+        query = 'SELECT {} FROM players WHERE primary_pos != \'goalie\''.format(', '.join(columns))
+        with db_conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+
+    @classmethod
+    def get_goalies(cls, db_conn, columns=None):
+        if columns is None:
+            return cls._get_all_from_db(db_conn, 'SELECT * FROM players WHERE primary_pos = \'goalie\'')
+
+        query = 'SELECT {} FROM players WHERE primary_pos = \'goalie\''.format(', '.join(columns))
+        with db_conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
