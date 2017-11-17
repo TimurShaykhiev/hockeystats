@@ -1,7 +1,11 @@
-from data_models import convert_bool, get_from_db
+from data_models import convert_bool
+from data_models.entity_model import EntityModel
 
 
-class Update:
+class Update(EntityModel):
+    _table_name = 'updates'
+    _query_get_by_id = 'SELECT * FROM updates WHERE type = %s'
+
     STAT_UPDATE_TYPE = 0
 
     def __init__(self):
@@ -21,9 +25,8 @@ class Update:
         upd.successful = bool(fields[4])
         return upd
 
-    @classmethod
-    def from_db(cls, db, update_type):
-        return get_from_db(cls, db, 'SELECT * FROM updates WHERE type = %s', [update_type])
+    def to_tuple(self):
+        return self.type, self.description, self.start, self.end, self.successful
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\n'.format(

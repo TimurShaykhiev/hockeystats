@@ -9,8 +9,8 @@ def get_one_from_query_result(cls, cur):
     return None
 
 
-def get_columns_from_table(db, table_name, columns):
+def get_columns_from_table(db_conn, table_name, columns):
     query = 'SELECT {} FROM {}'.format(', '.join(columns), table_name)
-    with db.cursor() as cur:
+    with db_conn.cursor() as cur:
         cur.execute(query)
         return cur.fetchall()

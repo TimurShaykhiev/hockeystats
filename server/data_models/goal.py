@@ -1,4 +1,5 @@
 from logger import get_loader_logger
+from data_models.event_model import EventModel
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
@@ -14,7 +15,10 @@ GAME_STRENGTH = {
 }
 
 
-class Goal:
+class Goal(EventModel):
+    _table_name = 'goals'
+    _query_get_by_id = 'SELECT * FROM goals WHERE id = %s'
+
     STRENGTH_EVEN = 'even'
     STRENGTH_PPG = 'ppg'
     STRENGTH_SHG = 'shg'
@@ -108,13 +112,6 @@ class Goal:
         goal.coord_x = fields[12]
         goal.coord_y = fields[13]
         return goal
-
-    @classmethod
-    def load_data_to_db(cls, db_cur, filename):
-        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.goals " \
-                "(team_id, game_id, date, scorer_id, assist1_id, assist2_id, secondary_type, empty_net, strength, " \
-                "period_num, period_time, coord_x, coord_y) SET id = NULL".format(filename)
-        return db_cur.execute(query)
 
     def to_tuple(self):
         return (self.team.id, self.game.id, self.date, self.scorer.id,

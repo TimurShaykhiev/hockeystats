@@ -1,7 +1,11 @@
-from data_models import convert_bool, get_from_db
+from data_models.entity_model import EntityModel
+from data_models import convert_bool
 
 
-class Season:
+class Season(EntityModel):
+    _table_name = 'seasons'
+    _query_get_by_id = 'SELECT * FROM seasons WHERE id = %s'
+
     STATUS_NOT_STARTED = 'not_started'
     STATUS_REGULAR = 'regular'
     STATUS_PLAY_OFF = 'play_off'
@@ -26,9 +30,12 @@ class Season:
         season.current = bool(fields[5])
         return season
 
+    def to_tuple(self):
+        return self.id, self.start, self.po_start, self.end, self.status, self.current
+
     @classmethod
-    def from_db(cls, db, season_id):
-        return get_from_db(cls, db, 'SELECT * FROM seasons WHERE id = %s', [season_id])
+    def get_current(cls, db_conn):
+        return cls._get_one_from_db(db_conn, 'SELECT * FROM seasons WHERE current = 1')
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\n'.format(

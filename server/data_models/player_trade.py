@@ -1,7 +1,10 @@
-from data_models import get_from_db
+from data_models.model import Model
 
 
-class PlayerTrade:
+class PlayerTrade(Model):
+    _table_name = 'player_trades'
+    _query_get_by_id = 'SELECT * FROM player_trades WHERE player_id = %s'
+
     def __init__(self, player_id=None, date=None, from_team=None, to_team=None):
         self.player_id = player_id
         self.date = date
@@ -16,10 +19,6 @@ class PlayerTrade:
         trade.from_team = fields[2]
         trade.to_team = fields[3]
         return trade
-
-    @classmethod
-    def from_db(cls, db, player_id):
-        return get_from_db(cls, db, 'SELECT * FROM player_trades WHERE player_id = %s', [player_id])
 
     def to_tuple(self):
         return self.player_id, self.date, self.from_team, self.to_team

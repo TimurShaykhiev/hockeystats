@@ -1,4 +1,5 @@
 from logger import get_loader_logger
+from data_models.stats_model import StatsModel
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
@@ -7,7 +8,10 @@ from data_models import convert_time_to_sec, check_and_fix_attr_unsigned
 LOG = get_loader_logger()
 
 
-class SkaterStat:
+class SkaterStat(StatsModel):
+    _table_name = 'skater_stats'
+    _query_get_by_id = 'SELECT * FROM skater_stats WHERE player_id = %s AND game_id = %s'
+
     def __init__(self):
         self.player = None
         self.team = None
@@ -110,11 +114,6 @@ class SkaterStat:
         skater_stat.pp_toi = fields[21]
         skater_stat.sh_toi = fields[22]
         return skater_stat
-
-    @classmethod
-    def load_data_to_db(cls, db_cur, filename):
-        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.skater_stats".format(filename)
-        return db_cur.execute(query)
 
     def to_tuple(self):
         return (self.player.id, self.team.id, self.game.id, self.date, self.assists, self.goals, self.shots, self.hits,

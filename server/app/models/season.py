@@ -4,7 +4,6 @@ from flask import request, current_app
 from database import get_db
 from models import ModelSchema
 from data_models.season import Season as SeasonDm
-from db_utils.seasons import get_current_season, get_all_seasons
 from api.response_utils import ApiError, InvalidQueryParams
 
 SEASON_ID_QUERY_PARAM = 'sid'
@@ -42,7 +41,7 @@ class Season:
     @classmethod
     def create_current(cls):
         db = get_db()
-        dm = get_current_season(db)
+        dm = SeasonDm.get_current(db)
         if dm is None:
             current_app.logger.error('Current season not found.')
             raise ApiError(404, 'SEASON_NOT_FOUND')
@@ -71,7 +70,7 @@ class SeasonCollection:
 
     def get_collection(self):
         db = get_db()
-        all_seasons = get_all_seasons(db)
+        all_seasons = SeasonDm.get_all(db)
         if len(all_seasons) == 0:
             current_app.logger.error('Seasons are not found.')
             raise ApiError(404, 'SEASON_NOT_FOUND')

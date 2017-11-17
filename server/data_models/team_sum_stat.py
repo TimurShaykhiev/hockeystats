@@ -1,4 +1,5 @@
 from logger import get_loader_logger
+from data_models.sum_stats_model import SumStatsModel
 from data_models.team import Team
 from data_models.season import Season
 from data_models.game import Game
@@ -7,7 +8,10 @@ from data_models import convert_bool
 LOG = get_loader_logger()
 
 
-class TeamSumStat:
+class TeamSumStat(SumStatsModel):
+    _table_name = 'team_sum_stats'
+    _query_get_by_id = 'SELECT * FROM team_sum_stats WHERE team_id = %s AND season_id = %s AND is_regular = %s'
+
     def __init__(self, team=None, season=None, regular=True):
         self.team = team
         self.season = season

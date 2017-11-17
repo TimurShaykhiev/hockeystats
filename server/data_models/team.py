@@ -1,9 +1,13 @@
+from data_models.entity_model import EntityModel
 from data_models.division import Division
 from data_models.venue import Venue
-from data_models import convert_bool, convert_attr_if_none, get_from_db
+from data_models import convert_bool, convert_attr_if_none
 
 
-class Team:
+class Team(EntityModel):
+    _table_name = 'teams'
+    _query_get_by_id = 'SELECT * FROM teams WHERE id = %s'
+
     def __init__(self):
         self.id = None
         self.name = ''
@@ -51,9 +55,12 @@ class Team:
         team.active = bool(fields[7])
         return team
 
-    @classmethod
-    def from_db(cls, db, team_id):
-        return get_from_db(cls, db, 'SELECT * FROM teams WHERE id = %s', [team_id])
+    def to_tuple(self):
+        return (self.id, self.name, self.abbreviation, self.location,
+                self.venue.name if self.venue else None,
+                self.venue.city if self.venue else None,
+                self.division.id if self.division else None,
+                self.active)
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(

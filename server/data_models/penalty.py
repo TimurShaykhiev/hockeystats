@@ -1,10 +1,14 @@
+from data_models.event_model import EventModel
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
 from data_models import convert_if_none, convert_attr_if_none, convert_time_to_sec, get_coordinates
 
 
-class Penalty:
+class Penalty(EventModel):
+    _table_name = 'penalty'
+    _query_get_by_id = 'SELECT * FROM penalty WHERE id = %s'
+
     def __init__(self):
         self.id = None
         self.team = None
@@ -72,13 +76,6 @@ class Penalty:
         penalty.coord_x = fields[10]
         penalty.coord_y = fields[11]
         return penalty
-
-    @classmethod
-    def load_data_to_db(cls, db_cur, filename):
-        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.penalty " \
-                "(team_id, game_id, date, penalty_on_id, drew_by_id, penalty_minutes, secondary_type, period_num, " \
-                "period_time, coord_x, coord_y) SET id = NULL".format(filename)
-        return db_cur.execute(query)
 
     def to_tuple(self):
         return (self.team.id, self.game.id, self.date, self.penalty_on.id,

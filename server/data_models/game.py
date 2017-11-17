@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 
+from data_models.model import Model
 from data_models.team import Team
-from data_models import convert_bool, get_from_db
+from data_models import convert_bool
 
 
 def convert_str_to_date(date_str, tz_offset):
@@ -9,7 +10,10 @@ def convert_str_to_date(date_str, tz_offset):
     return (datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ") + offset).date()
 
 
-class Game:
+class Game(Model):
+    _table_name = 'games'
+    _query_get_by_id = 'SELECT * FROM games WHERE id = %s'
+
     WIN_TYPE_REGULAR = 'regular'
     WIN_TYPE_OVERTIME = 'overtime'
     WIN_TYPE_SHOOTOUT = 'shootout'
@@ -131,15 +135,6 @@ class Game:
         game.away.penalty_minutes = fields[31]
         game.face_off_taken = fields[32]
         return game
-
-    @classmethod
-    def from_db(cls, db, game_id):
-        return get_from_db(cls, db, 'SELECT * FROM games WHERE id = %s', [game_id])
-
-    @classmethod
-    def load_data_to_db(cls, db_cur, filename):
-        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.games".format(filename)
-        return db_cur.execute(query)
 
     def to_tuple(self):
         return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,

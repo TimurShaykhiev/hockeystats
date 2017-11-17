@@ -1,9 +1,9 @@
 from marshmallow import fields
 
 from database import get_db
-from db_utils.conferences import get_all_conferences
-from db_utils.divisions import get_all_divisions
-from db_utils.teams import get_all_teams
+from data_models.conference import Conference
+from data_models.division import Division
+from data_models.team import Team
 from db_utils.get_sum_stats import get_all_teams_sum_stats
 from .team import Team, TeamSchema
 from .season import SeasonSchema
@@ -45,9 +45,9 @@ class TeamsSeasonStatsCollection:
 
     def get_collection(self):
         db = get_db()
-        divisions = dict((el.id, el) for el in get_all_divisions(db, False))
-        conferences = dict((el.id, el) for el in get_all_conferences(db, False))
-        teams = dict((el.id, el) for el in get_all_teams(db, False))
+        divisions = dict((el.id, el) for el in Division.get_all(db))
+        conferences = dict((el.id, el) for el in Conference.get_all(db))
+        teams = dict((el.id, el) for el in Team.get_all(db))
         stats = get_all_teams_sum_stats(db, self.season.id, self.season.regular)
         for st in stats:
             team = _create_team(st.team.id, teams, divisions, conferences)

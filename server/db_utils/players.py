@@ -2,15 +2,6 @@ from db_utils import get_all_from_query_result
 from data_models.player import Player
 
 
-def get_all_players(db, active_only=True):
-    with db.cursor() as cur:
-        if active_only:
-            cur.execute('SELECT * FROM players WHERE current_team_id IS NOT NULL')
-        else:
-            cur.execute('SELECT * FROM players')
-        return get_all_from_query_result(Player, cur)
-
-
 def get_players_by_team(db, team_id):
     with db.cursor() as cur:
         cur.execute('SELECT * FROM players WHERE current_team_id = %s', [team_id])

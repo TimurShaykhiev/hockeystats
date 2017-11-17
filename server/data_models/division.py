@@ -1,8 +1,12 @@
+from data_models.entity_model import EntityModel
 from data_models.conference import Conference
-from data_models import convert_bool, convert_attr_if_none, get_from_db
+from data_models import convert_bool, convert_attr_if_none
 
 
-class Division:
+class Division(EntityModel):
+    _table_name = 'divisions'
+    _query_get_by_id = 'SELECT * FROM divisions WHERE id = %s'
+
     def __init__(self):
         self.id = None
         self.name = ''
@@ -34,9 +38,8 @@ class Division:
         div.active = bool(fields[3])
         return div
 
-    @classmethod
-    def from_db(cls, db, div_id):
-        return get_from_db(cls, db, 'SELECT * FROM divisions WHERE id = %s', [div_id])
+    def to_tuple(self):
+        return self.id, self.name, self.conference.id if self.conference else None, self.active
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\n'.format(

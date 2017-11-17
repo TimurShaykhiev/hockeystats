@@ -1,7 +1,11 @@
-from data_models import convert_bool, get_from_db
+from data_models.entity_model import EntityModel
+from data_models import convert_bool
 
 
-class Conference:
+class Conference(EntityModel):
+    _table_name = 'conferences'
+    _query_get_by_id = 'SELECT * FROM conferences WHERE id = %s'
+
     def __init__(self):
         self.id = None
         self.name = ''
@@ -23,9 +27,8 @@ class Conference:
         conf.active = bool(fields[2])
         return conf
 
-    @classmethod
-    def from_db(cls, db, conf_id):
-        return get_from_db(cls, db, 'SELECT * FROM conferences WHERE id = %s', [conf_id])
+    def to_tuple(self):
+        return self.id, self.name, self.active
 
     def __str__(self):
         return '{}\t{}\t{}\n'.format(self.id, self.name, convert_bool(self.active))

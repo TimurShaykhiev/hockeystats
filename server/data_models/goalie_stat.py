@@ -1,4 +1,5 @@
 from logger import get_loader_logger
+from data_models.stats_model import StatsModel
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
@@ -13,7 +14,10 @@ DECISION = {
 }
 
 
-class GoalieStat:
+class GoalieStat(StatsModel):
+    _table_name = 'goalie_stats'
+    _query_get_by_id = 'SELECT * FROM goalie_stats WHERE player_id = %s AND game_id = %s'
+
     DECISION_WINNER = 'winner'
     DECISION_LOSER = 'loser'
     DECISION_NONE = 'none'
@@ -103,11 +107,6 @@ class GoalieStat:
         goalie_stat.pp_shots_against = fields[15]
         goalie_stat.decision = fields[16]
         return goalie_stat
-
-    @classmethod
-    def load_data_to_db(cls, db_cur, filename):
-        query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.goalie_stats".format(filename)
-        return db_cur.execute(query)
 
     def to_tuple(self):
         return (self.player.id, self.team.id, self.game.id, self.date, self.toi, self.assists, self.goals,

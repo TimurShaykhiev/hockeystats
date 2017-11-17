@@ -1,6 +1,7 @@
 from logger import get_loader_logger
+from data_models.entity_model import EntityModel
 from data_models.team import Team
-from data_models import convert_attr_if_none, convert_str_to_date, get_from_db
+from data_models import convert_attr_if_none, convert_str_to_date
 
 LOG = get_loader_logger()
 
@@ -28,7 +29,10 @@ def convert_height(value):
     return feet * 12 + inches
 
 
-class Player:
+class Player(EntityModel):
+    _table_name = 'players'
+    _query_get_by_id = 'SELECT * FROM players WHERE id = %s'
+
     CENTER = 'center'
     RIGHT_WING = 'right wing'
     LEFT_WING = 'left wing'
@@ -95,10 +99,6 @@ class Player:
             player.current_team = Team()
             player.current_team.id = team_id
         return player
-
-    @classmethod
-    def from_db(cls, db, player_id):
-        return get_from_db(cls, db, 'SELECT * FROM players WHERE id = %s', [player_id])
 
     def to_tuple(self):
         return (self.id, self.name, self.birth_date, self.birth_city, self.birth_state, self.birth_country,

@@ -1,3 +1,4 @@
+from data_models.event_model import EventModel
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
@@ -26,14 +27,10 @@ def create_from_tuple(fields):
     return cls.from_tuple(fields)
 
 
-def load_data_to_db(db_cur, filename):
-    query = "LOAD DATA INFILE '{}' INTO TABLE NHL_STATS.take_give_away " \
-            "(team_id, game_id, date, player_id, type, period_num, period_time, coord_x, coord_y) " \
-            "SET id = NULL".format(filename)
-    return db_cur.execute(query)
+class _TGEvent(EventModel):
+    _table_name = 'take_give_away'
+    _query_get_by_id = 'SELECT * FROM take_give_away WHERE id = %s'
 
-
-class _TGEvent:
     def __init__(self):
         self.id = None
         self.team = None
@@ -79,6 +76,17 @@ class _TGEvent:
         tg_event.coord_x = fields[8]
         tg_event.coord_y = fields[9]
         return tg_event
+
+    @classmethod
+    def get_all(cls, db_conn):
+        if cls == Takeaway:
+            query = "SELECT * FROM take_give_away WHERE type = 'takeaway'"
+        else:
+            query = "SELECT * FROM take_give_away WHERE type = 'giveaway'"
+        return cls._get_all_from_db(db_conn, query)
+
+    def to_tuple(self):
+        raise NotImplementedError()
 
 
 class Takeaway(_TGEvent):
