@@ -3,7 +3,8 @@ from flask import current_app
 
 from database import get_db
 from data_models.player import Player as PlayerDm
-from db_utils.get_sum_stats import get_all_skaters_sum_stats, get_all_goalies_sum_stats
+from data_models.skater_sum_stat import SkaterSumStat
+from data_models.goalie_sum_stat import GoalieSumStat
 from .player import Player, PlayerSchema
 from .season import SeasonSchema
 from models import ModelSchema
@@ -59,14 +60,14 @@ class SkatersSeasonStatsCollection(PlayerSeasonStatsCollection):
     def __init__(self, season):
         super().__init__(season)
         self.get_players_func = PlayerDm.get_skaters
-        self.get_stats_func = get_all_skaters_sum_stats
+        self.get_stats_func = SkaterSumStat.get_season_stats
 
 
 class GoaliesSeasonStatsCollection(PlayerSeasonStatsCollection):
     def __init__(self, season):
         super().__init__(season)
         self.get_players_func = PlayerDm.get_goalies
-        self.get_stats_func = get_all_goalies_sum_stats
+        self.get_stats_func = GoalieSumStat.get_season_stats
 
 
 class PlayerSeasonStatsCollectionSchema(ModelSchema):

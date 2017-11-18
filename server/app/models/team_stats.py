@@ -4,7 +4,7 @@ from database import get_db
 from data_models.conference import Conference
 from data_models.division import Division
 from data_models.team import Team
-from db_utils.get_sum_stats import get_all_teams_sum_stats
+from data_models.team_sum_stat import TeamSumStat
 from .team import Team, TeamSchema
 from .season import SeasonSchema
 from models import ModelSchema
@@ -48,7 +48,7 @@ class TeamsSeasonStatsCollection:
         divisions = dict((el.id, el) for el in Division.get_all(db))
         conferences = dict((el.id, el) for el in Conference.get_all(db))
         teams = dict((el.id, el) for el in Team.get_all(db))
-        stats = get_all_teams_sum_stats(db, self.season.id, self.season.regular)
+        stats = TeamSumStat.get_season_stats(db, self.season.id, self.season.regular)
         for st in stats:
             team = _create_team(st.team.id, teams, divisions, conferences)
             self.results.append(TeamSeasonStats(team, st))
