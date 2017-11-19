@@ -128,7 +128,4 @@ class Player(EntityModel):
 
     @classmethod
     def get_goalies(cls, db_conn, columns=None, named_tuple_cls=None):
-        q = cls._create_query().select(columns).where('primary_pos = \'goalie\'')
-        if columns is None:
-            return cls._get_all_from_db(db_conn, q.query)
-        return cls._get_columns_from_db(db_conn, q.query, named_tuple_cls=named_tuple_cls)
+        return cls.get_filtered(db_conn, ['primary_pos'], ['goalie'], columns, named_tuple_cls)
