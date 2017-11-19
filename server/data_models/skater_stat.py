@@ -10,7 +10,7 @@ LOG = get_loader_logger()
 
 class SkaterStat(StatsModel):
     _table_name = 'skater_stats'
-    _query_get_by_id = 'SELECT * FROM skater_stats WHERE player_id = %s AND game_id = %s'
+    _primary_keys = ['player_id', 'game_id']
 
     def __init__(self):
         self.player = None

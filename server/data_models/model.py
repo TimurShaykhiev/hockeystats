@@ -1,9 +1,10 @@
 from db_utils import get_one_from_query_result
+from data_models.query import Query
 
 
 class Model:
     _table_name = ''
-    _query_get_by_id = ''
+    _primary_keys = ['id']
 
     @classmethod
     def from_tuple(cls, fields):
@@ -11,10 +12,32 @@ class Model:
 
     @classmethod
     def from_db(cls, db_conn, *query_params):
-        return cls._get_one_from_db(db_conn, cls._query_get_by_id, query_params)
+        q = cls._create_query()
+        q.select().filter_by(cls._primary_keys)
+        return cls._get_one_from_db(db_conn, q.query, query_params)
 
     def to_tuple(self):
         raise NotImplementedError()
+
+    @classmethod
+    def get_filtered(cls, db_conn, filter_columns, query_params, columns=None, named_tuple_cls=None):
+        """
+        Get filtered results from DB.
+        :param db_conn: DB connection object
+        :param filter_columns: list of column names used in WHERE clause
+        :param query_params: list of query parameters
+        :param columns: list of column names to return
+        :param named_tuple_cls: named tuple to returns
+        :return: List of data models or tuples(named tuples)
+        """
+        q = cls._create_query().select(columns).filter_by(filter_columns)
+        if columns is None:
+            return cls._get_all_from_db(db_conn, q.query, query_params)
+        return cls._get_columns_from_db(db_conn, q.query, query_params, named_tuple_cls)
+
+    @classmethod
+    def _create_query(cls):
+        return Query(cls._table_name)
 
     @classmethod
     def _get_all_from_db(cls, db_conn, query, query_params=None):
@@ -35,3 +58,14 @@ class Model:
         with db_conn.cursor() as cur:
             cur.execute(query, query_params)
             return get_one_from_query_result(cls, cur)
+
+    @classmethod
+    def _get_columns_from_db(cls, db_conn, query, query_params=None, named_tuple_cls=None):
+        """
+         Return all query results as a list of tuples(or named tuples if passed).
+         """
+        with db_conn.cursor() as cur:
+            cur.execute(query, query_params)
+            if named_tuple_cls is not None:
+                return [named_tuple_cls(*i) for i in cur.fetchall()]
+            return cur.fetchall()

@@ -7,7 +7,6 @@ from data_models import convert_if_none, convert_attr_if_none, convert_time_to_s
 
 class Penalty(EventModel):
     _table_name = 'penalty'
-    _query_get_by_id = 'SELECT * FROM penalty WHERE id = %s'
 
     def __init__(self):
         self.id = None

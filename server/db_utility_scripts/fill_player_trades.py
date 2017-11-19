@@ -10,7 +10,7 @@ def main(db):
     """
     This script finds player trades(team id is changed) and saves them to player_trades table.
     """
-    players = Player.get_fields(db, ['id', 'current_team_id', 'primary_pos'])
+    players = Player.get_all(db, ['id', 'current_team_id', 'primary_pos'])
     player_trades = []
     for p in players:
         pid, current_tid, pos = p

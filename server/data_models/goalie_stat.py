@@ -16,7 +16,7 @@ DECISION = {
 
 class GoalieStat(StatsModel):
     _table_name = 'goalie_stats'
-    _query_get_by_id = 'SELECT * FROM goalie_stats WHERE player_id = %s AND game_id = %s'
+    _primary_keys = ['player_id', 'game_id']
 
     DECISION_WINNER = 'winner'
     DECISION_LOSER = 'loser'

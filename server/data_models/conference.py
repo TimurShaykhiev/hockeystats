@@ -4,7 +4,6 @@ from data_models import convert_bool
 
 class Conference(EntityModel):
     _table_name = 'conferences'
-    _query_get_by_id = 'SELECT * FROM conferences WHERE id = %s'
 
     def __init__(self):
         self.id = None

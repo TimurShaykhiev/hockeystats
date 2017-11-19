@@ -64,7 +64,7 @@ def _update_players(db_conn):
     player_info_to_update = []
     player_trades = []
     pt_dict = {}
-    player_team_info = Player.get_fields(db_conn, ['id', 'current_team_id'])
+    player_team_info = Player.get_all(db_conn, ['id', 'current_team_id'])
     # convert list to dict to improve search
     for info in player_team_info:
         pt_dict[info[0]] = info[1]

@@ -3,7 +3,7 @@ from data_models.entity_model import EntityModel
 
 class PlayerTrade(EntityModel):
     _table_name = 'player_trades'
-    _query_get_by_id = 'SELECT * FROM player_trades WHERE player_id = %s'
+    _primary_keys = ['player_id']
 
     def __init__(self, player_id=None, date=None, from_team=None, to_team=None):
         self.player_id = player_id

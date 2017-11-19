@@ -6,7 +6,6 @@ from data_models import convert_bool, convert_attr_if_none
 
 class Team(EntityModel):
     _table_name = 'teams'
-    _query_get_by_id = 'SELECT * FROM teams WHERE id = %s'
 
     def __init__(self):
         self.id = None

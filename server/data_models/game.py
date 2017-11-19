@@ -12,7 +12,6 @@ def convert_str_to_date(date_str, tz_offset):
 
 class Game(Model):
     _table_name = 'games'
-    _query_get_by_id = 'SELECT * FROM games WHERE id = %s'
 
     WIN_TYPE_REGULAR = 'regular'
     WIN_TYPE_OVERTIME = 'overtime'

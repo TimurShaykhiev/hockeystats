@@ -31,7 +31,6 @@ def convert_height(value):
 
 class Player(EntityModel):
     _table_name = 'players'
-    _query_get_by_id = 'SELECT * FROM players WHERE id = %s'
 
     CENTER = 'center'
     RIGHT_WING = 'right wing'
@@ -121,21 +120,15 @@ class Player(EntityModel):
             convert_attr_if_none(self.current_team, 'id'))
 
     @classmethod
-    def get_skaters(cls, db_conn, columns=None):
+    def get_skaters(cls, db_conn, columns=None, named_tuple_cls=None):
+        q = cls._create_query().select(columns).where('primary_pos != \'goalie\'')
         if columns is None:
-            return cls._get_all_from_db(db_conn, 'SELECT * FROM players WHERE primary_pos != \'goalie\'')
-
-        query = 'SELECT {} FROM players WHERE primary_pos != \'goalie\''.format(', '.join(columns))
-        with db_conn.cursor() as cur:
-            cur.execute(query)
-            return cur.fetchall()
+            return cls._get_all_from_db(db_conn, q.query)
+        return cls._get_columns_from_db(db_conn, q.query, named_tuple_cls=named_tuple_cls)
 
     @classmethod
-    def get_goalies(cls, db_conn, columns=None):
+    def get_goalies(cls, db_conn, columns=None, named_tuple_cls=None):
+        q = cls._create_query().select(columns).where('primary_pos = \'goalie\'')
         if columns is None:
-            return cls._get_all_from_db(db_conn, 'SELECT * FROM players WHERE primary_pos = \'goalie\'')
-
-        query = 'SELECT {} FROM players WHERE primary_pos = \'goalie\''.format(', '.join(columns))
-        with db_conn.cursor() as cur:
-            cur.execute(query)
-            return cur.fetchall()
+            return cls._get_all_from_db(db_conn, q.query)
+        return cls._get_columns_from_db(db_conn, q.query, named_tuple_cls=named_tuple_cls)

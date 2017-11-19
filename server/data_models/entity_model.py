@@ -3,13 +3,8 @@ from data_models.model import Model
 
 class EntityModel(Model):
     @classmethod
-    def get_all(cls, db_conn):
-        query = "SELECT * FROM {}".format(cls._table_name)
-        return cls._get_all_from_db(db_conn, query)
-
-    @classmethod
-    def get_fields(cls, db_conn, columns):
-        query = 'SELECT {} FROM {}'.format(', '.join(columns), cls._table_name)
-        with db_conn.cursor() as cur:
-            cur.execute(query)
-            return cur.fetchall()
+    def get_all(cls, db_conn, columns=None, named_tuple_cls=None):
+        q = cls._create_query().select(columns)
+        if columns is None:
+            return cls._get_all_from_db(db_conn, q.query)
+        return cls._get_columns_from_db(db_conn, q.query, named_tuple_cls=named_tuple_cls)

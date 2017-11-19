@@ -4,7 +4,6 @@ from data_models import convert_bool
 
 class Season(EntityModel):
     _table_name = 'seasons'
-    _query_get_by_id = 'SELECT * FROM seasons WHERE id = %s'
 
     STATUS_NOT_STARTED = 'not_started'
     STATUS_REGULAR = 'regular'

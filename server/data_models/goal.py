@@ -17,7 +17,6 @@ GAME_STRENGTH = {
 
 class Goal(EventModel):
     _table_name = 'goals'
-    _query_get_by_id = 'SELECT * FROM goals WHERE id = %s'
 
     STRENGTH_EVEN = 'even'
     STRENGTH_PPG = 'ppg'

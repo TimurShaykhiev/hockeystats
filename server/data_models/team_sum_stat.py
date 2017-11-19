@@ -10,7 +10,7 @@ LOG = get_loader_logger()
 
 class TeamSumStat(SumStatsModel):
     _table_name = 'team_sum_stats'
-    _query_get_by_id = 'SELECT * FROM team_sum_stats WHERE team_id = %s AND season_id = %s AND is_regular = %s'
+    _primary_keys = ['team_id', 'season_id', 'is_regular']
 
     def __init__(self, team=None, season=None, regular=True):
         self.team = team

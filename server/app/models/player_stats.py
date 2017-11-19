@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from marshmallow import fields
 from flask import current_app
 
@@ -9,19 +11,22 @@ from .player import Player, PlayerSchema
 from .season import SeasonSchema
 from models import ModelSchema
 
+PlayerInfo = namedtuple('PlayerInfo', ['name', 'tid', 'pos'])
+
 
 def _get_all_players_info(db, data_getter_func):
     pl_list = data_getter_func(db, ['id', 'name', 'current_team_id', 'primary_pos'])
     # Convert to dict for quick search
-    return dict((pid, (name, tid, pos)) for pid, name, tid, pos in pl_list)
+    return dict((pid, PlayerInfo(name, tid, pos)) for pid, name, tid, pos in pl_list)
 
 
 def _create_player(pid, players):
+    pl_info = players[pid]
     pl = Player()
     pl.id = pid
-    pl.name = players[pid][0]
-    pl.position = players[pid][2][0].upper()
-    pl.team_id = players[pid][1]
+    pl.name = pl_info.name
+    pl.position = pl_info.pos[0].upper()
+    pl.team_id = pl_info.tid
     if pl.team_id is None:
         current_app.logger.warn('Player {} has no team id.'.format(pid))
     return pl

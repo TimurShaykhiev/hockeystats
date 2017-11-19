@@ -29,7 +29,6 @@ def create_from_tuple(fields):
 
 class _TGEvent(EventModel):
     _table_name = 'take_give_away'
-    _query_get_by_id = 'SELECT * FROM take_give_away WHERE id = %s'
 
     def __init__(self):
         self.id = None

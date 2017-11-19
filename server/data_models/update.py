@@ -4,7 +4,7 @@ from data_models.entity_model import EntityModel
 
 class Update(EntityModel):
     _table_name = 'updates'
-    _query_get_by_id = 'SELECT * FROM updates WHERE type = %s'
+    _primary_keys = ['type']
 
     STAT_UPDATE_TYPE = 0
 

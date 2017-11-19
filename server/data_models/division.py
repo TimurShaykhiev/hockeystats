@@ -5,7 +5,6 @@ from data_models import convert_bool, convert_attr_if_none
 
 class Division(EntityModel):
     _table_name = 'divisions'
-    _query_get_by_id = 'SELECT * FROM divisions WHERE id = %s'
 
     def __init__(self):
         self.id = None
