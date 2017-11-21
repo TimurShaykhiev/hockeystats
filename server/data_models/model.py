@@ -20,7 +20,7 @@ class Model:
         raise NotImplementedError()
 
     @classmethod
-    def get_filtered(cls, db_conn, filter_columns, query_params, columns=None, named_tuple_cls=None):
+    def get_filtered(cls, db_conn, filter_columns, query_params, columns=None, named_tuple_cls=None, order_by=None):
         """
         Get filtered results from DB.
         :param db_conn: DB connection object
@@ -28,9 +28,12 @@ class Model:
         :param query_params: list of query parameters
         :param columns: list of column names to return
         :param named_tuple_cls: named tuple to returns
+        :param order_by: list of column names to sort by
         :return: List of data models or tuples(named tuples)
         """
         q = cls._create_query().select(columns).filter_by(filter_columns)
+        if order_by is not None:
+            q.order_by(order_by)
         if columns is None:
             return cls._get_all_from_db(db_conn, q.query, query_params)
         return cls._get_columns_from_db(db_conn, q.query, query_params, named_tuple_cls)

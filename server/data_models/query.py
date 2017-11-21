@@ -26,8 +26,16 @@ class Query:
         return self
 
     def order_by(self, columns):
-        """'columns' is a string of column names in correct SQL format"""
-        self.query += ' ORDER BY ' + columns
+        """
+        'columns' is a list of column names. Column name must have '-' at the beginning if descending order is needed.
+        """
+        self.query += ' ORDER BY '
+        for col in columns:
+            if col[0] == '-':
+                self.query += col[1:] + ' DESC, '
+            else:
+                self.query += col + ', '
+        self.query = self.query[:-2]
         return self
 
     def limit(self, row_number):
