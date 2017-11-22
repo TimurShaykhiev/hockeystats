@@ -19,6 +19,8 @@ class Season:
         self.year = None
         self.current = False
         self.regular = True
+        self.start = None
+        self.end = None
 
     @classmethod
     def create(cls):
@@ -55,6 +57,8 @@ class Season:
         self.id = dm.id
         self.current = dm.current
         self.year = dm.end.year - 1
+        self.start = dm.start
+        self.end = dm.end
 
 
 class SeasonSchema(ModelSchema):
