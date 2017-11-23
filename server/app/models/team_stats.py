@@ -3,7 +3,7 @@ from marshmallow import fields
 from database import get_db
 from data_models.conference import Conference
 from data_models.division import Division
-from data_models.team import Team
+from data_models.team import Team as TeamDm
 from data_models.team_sum_stat import TeamSumStat
 from .team import Team, TeamSchema
 from .season import SeasonSchema
@@ -47,7 +47,7 @@ class TeamsSeasonStatsCollection:
         db = get_db()
         divisions = dict((el.id, el) for el in Division.get_all(db))
         conferences = dict((el.id, el) for el in Conference.get_all(db))
-        teams = dict((el.id, el) for el in Team.get_all(db))
+        teams = dict((el.id, el) for el in TeamDm.get_all(db))
         stats = TeamSumStat.get_season_stats(db, self.season.id, self.season.regular)
         for st in stats:
             team = _create_team(st.team.id, teams, divisions, conferences)

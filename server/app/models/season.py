@@ -74,7 +74,7 @@ class SeasonCollection:
 
     def get_collection(self):
         db = get_db()
-        all_seasons = SeasonDm.get_all(db)
+        all_seasons = SeasonDm.get_all(db, order_by=['-start'])
         if len(all_seasons) == 0:
             current_app.logger.error('Seasons are not found.')
             raise ApiError(404, 'SEASON_NOT_FOUND')
