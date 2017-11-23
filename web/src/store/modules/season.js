@@ -3,7 +3,9 @@ import {logger} from 'Root/logger';
 import {commitNew} from 'Store/utils';
 
 const state = {
-  currentSeason: {}
+  currentSeason: {},
+  allSeasons: {},
+  selectedSeason: {}
 };
 
 const getters = {
@@ -27,6 +29,24 @@ const actions = {
           logger.error(`action: getCurrentSeason error: ${error.message}`);
         }
       );
+  },
+  getAllSeasons({commit, state}) {
+    logger.debug('action: getAllSeasons');
+    if (state.allSeasons.timestamp) {
+      logger.debug('action: getAllSeasons seasons are in storage');
+      return Promise.resolve(state.allSeasons);
+    }
+    return seasonApi.getAllSeasons()
+      .then(
+        (result) => {
+          logger.debug('action: getAllSeasons result received');
+          commitNew(commit, 'setAllSeasons', state.allSeasons, result);
+          return state.allSeasons;
+        },
+        (error) => {
+          logger.error(`action: getAllSeasons error: ${error.message}`);
+        }
+      );
   }
 };
 
@@ -34,6 +54,14 @@ const mutations = {
   setCurrentSeason(state, season) {
     logger.debug('mutation: setCurrentSeason');
     state.currentSeason = season;
+  },
+  setAllSeasons(state, seasons) {
+    logger.debug('mutation: setAllSeasons');
+    state.allSeasons = seasons;
+  },
+  setSelectedSeason(state, season) {
+    logger.debug('mutation: setSelectedSeason');
+    state.selectedSeason = season;
   }
 };
 
