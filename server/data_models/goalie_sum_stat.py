@@ -33,6 +33,21 @@ class GoalieSumStat(SumStatsModel):
         self.shutout = 0
 
     @classmethod
+    def from_json(cls, obj):
+        skater_stat = cls()
+        skater_stat.player = Player()
+        skater_stat.player.id = obj['playerId']
+
+        skater_stat.games = obj['gamesPlayed']
+        skater_stat.assists = obj['assists']
+        skater_stat.goals = obj['goals']
+        skater_stat.shots = obj['shotsAgainst']
+        skater_stat.saves = obj['saves']
+        skater_stat.penalty_minutes = obj['penaltyMinutes']
+        skater_stat.shutout = obj['shutouts']
+        return skater_stat
+
+    @classmethod
     def from_tuple(cls, fields):
         goalie_stat = cls()
         goalie_stat.player = Player()
@@ -78,7 +93,8 @@ class GoalieSumStat(SumStatsModel):
             self.games += 1
         if stat.decision == GoalieStat.DECISION_WINNER:
             self.wins += 1
-        if stat.shots == stat.saves:
+        if stat.shots == stat.saves and stat.toi >= 3600:
+            # if two goaltenders combine for a shutout, neither receives credit for the shutout
             self.shutout += 1
 
     def add_sum_stat(self, sum_stat):
@@ -109,6 +125,23 @@ class GoalieSumStat(SumStatsModel):
                 self.penalty_minutes, self.shots, self.saves, self.pp_saves, self.sh_saves, self.even_saves,
                 self.sh_shots_against, self.even_shots_against, self.pp_shots_against, self.games, self.wins,
                 self.shutout)
+
+    def compare(self, obj, print_diff=False):
+        if obj.games != self.games or obj.assists != self.assists or obj.goals != self.goals or\
+           obj.shots != self.shots or obj.saves != self.saves or obj.penalty_minutes != self.penalty_minutes or\
+           obj.shutout != self.shutout:
+            if print_diff:
+                print('{} {} {} {} {} {} {} {}'.format(self.player.id,
+                                                       obj.assists - self.assists,
+                                                       obj.goals - self.goals,
+                                                       obj.shots - self.shots,
+                                                       obj.saves - self.saves,
+                                                       obj.penalty_minutes - self.penalty_minutes,
+                                                       obj.shutout - self.shutout,
+                                                       obj.games - self.games))
+            return (obj.assists, obj.goals, obj.penalty_minutes, obj.shots, obj.saves, obj.games, obj.shutout,
+                    self.player.id, self.season.id, self.is_regular)
+        return None
 
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format(

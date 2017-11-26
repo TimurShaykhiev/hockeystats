@@ -39,6 +39,17 @@ class TeamSumStat(SumStatsModel):
         self.lose_shootout = 0
 
     @classmethod
+    def from_json(cls, obj):
+        team_stat = cls()
+        team_stat.team = Team()
+        team_stat.team.id = obj['teamId']
+
+        team_stat.games = obj['gamesPlayed']
+        team_stat.goals_for = obj['goalsFor']
+        team_stat.goals_against = obj['goalsAgainst']
+        return team_stat
+
+    @classmethod
     def from_tuple(cls, fields):
         team_stat = cls()
         team_stat.team = Team()
@@ -146,6 +157,16 @@ class TeamSumStat(SumStatsModel):
                 self.face_off_taken, self.blocked, self.takeaways, self.giveaways, self.hits, self.penalty_minutes,
                 self.games, self.win_regular, self.win_overtime, self.win_shootout, self.lose_regular,
                 self.lose_overtime, self.lose_shootout)
+
+    def compare(self, obj, print_diff=False):
+        if obj.games != self.games or obj.goals_against != self.goals_against or obj.goals_for != self.goals_for:
+            if print_diff:
+                print('{} {} {} {}'.format(self.team.id,
+                                           obj.goals_for - self.goals_for,
+                                           obj.goals_against - self.goals_against,
+                                           obj.games - self.games))
+            return obj.goals_for, obj.goals_against, obj.games, self.team.id, self.season.id, self.is_regular
+        return None
 
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
