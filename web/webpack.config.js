@@ -41,6 +41,13 @@ const config = {
           failOnError: true
         }
       }, {
+        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+          name: '[name].[ext]'
+        }
+      }, {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         loader: 'file-loader',
         options: {

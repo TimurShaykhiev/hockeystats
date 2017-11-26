@@ -1,10 +1,16 @@
 export function floatToStr(number, precision, omitInteger=false) {
+  // Convert to string with 'precision' digits after dot(aligned with trailing zeros)
   let factor = Math.pow(10, precision);
-  number = Math.floor(number * factor);
+  number = Math.round(number * factor);
   let str = (number / factor).toString();
-  if (omitInteger) {
-    let i = str.indexOf('.');
-    return (i !== -1) ? str.slice(i) : str;
+  let i = str.indexOf('.');
+  if (i === -1) {
+    if (omitInteger) {
+      return str;
+    }
+    str += '.';
+    i = str.length - 1;
   }
-  return str;
+  str += '0000000000000000000';
+  return str.slice(omitInteger ? i : 0, i + precision + 1);
 }

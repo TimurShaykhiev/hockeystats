@@ -69,14 +69,14 @@ export default {
       }
     },
     seasonChanged() {
-      this.$store.commit('setSelectedSeason', {sid: this.selectedSeason, regular: this.isRegular});
+      this.$store.commit('setSelectedSeason', {id: this.selectedSeason, regular: this.isRegular});
     },
     setSelectedSeason(seasons) {
       let selectedSeason = this.$store.state.season.selectedSeason;
-      if (selectedSeason.sid !== undefined &&
-          seasons.find((el) => el.id === selectedSeason.sid) !== undefined) {
+      if (selectedSeason.id !== undefined &&
+          seasons.find((el) => el.id === selectedSeason.id) !== undefined) {
         // Set selected season from storage
-        this.selectedSeason = selectedSeason.sid;
+        this.selectedSeason = selectedSeason.id;
         this.isRegular = selectedSeason.regular;
       } else {
         // Not in storage yet or seasons list does not contain selected season.

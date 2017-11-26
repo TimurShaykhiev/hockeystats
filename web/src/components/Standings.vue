@@ -27,14 +27,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-
-function getPointsPercentStr(points, games) {
-  let pp = 0;
-  if (games > 0) {
-    pp = points * 100 / (games * 2);
-  }
-  return `${Math.floor(pp)}%`;
-}
+import {floatToStr} from 'Components/utils';
 
 function compareStandings(a, b) {
   // Compare points (the more the better)
@@ -95,8 +88,8 @@ export default {
             hint: 'Points'
           },
           pointsPercent: {
-            label: '%P',
-            hint: '% points'
+            label: 'P%',
+            hint: 'Points Percentage'
           }
         }
       },
@@ -123,7 +116,7 @@ export default {
             hint: 'Очки'
           },
           pointsPercent: {
-            label: '%О',
+            label: 'О%',
             hint: 'Процент набранных очков'
           }
         }
@@ -189,7 +182,7 @@ export default {
           losses: t.stats.loseRegular,
           lossesOT: t.stats.loseOvertime + t.stats.loseShootout,
           points: t.stats.points,
-          pointsPercent: getPointsPercentStr(t.stats.points, t.stats.games)
+          pointsPercent: floatToStr(t.stats.pointPercentage, 1)
         };
       });
     }

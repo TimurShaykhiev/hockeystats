@@ -1,6 +1,6 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
-import {commitNew} from 'Store/utils';
+import {commitNew, getPercentage} from 'Store/utils';
 
 const state = {
   skaterStats: {},
@@ -98,7 +98,7 @@ const mutations = {
       goalie.stats.shutout = s.stats[14];
       // Calculate some stats
       goalie.stats.gaa = getGoalsAgainstAverage(goalie.stats);
-      goalie.stats.svp = getSavePercentage(goalie.stats);
+      goalie.stats.svp = getPercentage(goalie.stats.saves, goalie.stats.shots, true);
 
       newStat.goalies.push(goalie);
     }
@@ -116,13 +116,6 @@ export default {
 function getGoalsAgainstAverage(stats) {
   if (stats.toi > 0) {
     return (stats.shots - stats.saves) * 60 / Math.round(stats.toi / 60);
-  }
-  return 0;
-}
-
-function getSavePercentage(stats) {
-  if (stats.shots > 0) {
-    return stats.saves / stats.shots;
   }
   return 0;
 }

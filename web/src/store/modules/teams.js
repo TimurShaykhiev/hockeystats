@@ -1,6 +1,6 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew} from 'Store/utils';
+import {commitNew, getPercentage} from 'Store/utils';
 
 const state = {
   teamStats: {},
@@ -67,6 +67,13 @@ const mutations = {
       // Calculate some stats
       team.stats.points = (team.stats.winRegular + team.stats.winOvertime + team.stats.winShootout) * 2 +
                           team.stats.loseOvertime + team.stats.loseShootout;
+      team.stats.pointPercentage = getPercentage(team.stats.points, team.stats.games * 2);
+      team.stats.goalsForPerGame = getPercentage(team.stats.goalsFor, team.stats.games, true);
+      team.stats.goalsAgainstPerGame = getPercentage(team.stats.goalsAgainst, team.stats.games, true);
+      team.stats.ppPercentage = getPercentage(team.stats.ppGoals, team.stats.ppOpportunities);
+      team.stats.pkPercentage = 100 - getPercentage(team.stats.shGoalsAgainst, team.stats.shOpportunities);
+      team.stats.shotsPerGame = getPercentage(team.stats.shots, team.stats.games, true);
+      team.stats.faceOffWinsPercentage = getPercentage(team.stats.faceOffWins, team.stats.faceOffTaken);
 
       newStat.teams.push(team);
     }

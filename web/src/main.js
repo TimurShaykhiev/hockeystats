@@ -5,6 +5,7 @@ import router from 'Root/router';
 import store from 'Store/store';
 import {logger, DEBUG} from 'Root/logger';
 import ToggleButton from 'vue-js-toggle-button';
+import VueGoodTable from 'vue-good-table';
 
 require('../styles/styles.less');
 
@@ -14,6 +15,7 @@ if (window.location.search.slice(1, 6) === 'debug') {
 }
 
 Vue.use(ToggleButton);
+Vue.use(VueGoodTable);
 
 new Vue({
   el: '#app',
