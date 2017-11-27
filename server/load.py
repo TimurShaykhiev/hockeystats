@@ -19,7 +19,6 @@ players = {}
 all_games = []
 all_skater_stats = []
 all_goalie_stats = []
-all_tga = []
 all_penalty = []
 all_goals = []
 skater_sum_stats = {}
@@ -103,8 +102,6 @@ def _update_db(db_conn):
         LOG.info('%s rows loaded into goals', num if num else 0)
         num = add_stats.add_penalty(cur, all_penalty)
         LOG.info('%s rows loaded into penalty', num if num else 0)
-        num = add_stats.add_tga(cur, all_tga)
-        LOG.info('%s rows loaded into take_give_away', num if num else 0)
 
         num = add_stats.update_skater_summary_stats(cur, skater_sum_stats)
         LOG.info('%s rows loaded into skater_sum_stats', num if num else 0)
@@ -117,7 +114,7 @@ def _update_db(db_conn):
 
 
 def load(date, db_conn):
-    global players, LOG, all_games, all_skater_stats, all_goalie_stats, all_goals, all_penalty, all_tga, load_date
+    global players, LOG, all_games, all_skater_stats, all_goalie_stats, all_goals, all_penalty, load_date
 
     LOG.info('Load for %s', date)
     result = LOAD_RESULT_SUCCESS
@@ -131,7 +128,7 @@ def load(date, db_conn):
         game_links = get_games_list(date, date)
         for link in game_links:
             LOG.info('Process %s', link)
-            game, skater_stats, goalie_stats, tga, penalty, goals = get_game_info(link)
+            game, skater_stats, goalie_stats, penalty, goals = get_game_info(link)
             if len(skater_stats) == 0 or len(goalie_stats) == 0:
                 LOG.warning('No stats in game info')
                 raise UserWarning
@@ -140,7 +137,6 @@ def load(date, db_conn):
             all_goalie_stats += goalie_stats
             all_goals += goals
             all_penalty += penalty
-            all_tga += tga
 
             for pl in skater_stats:
                 players[pl.player.id] = pl.team.id

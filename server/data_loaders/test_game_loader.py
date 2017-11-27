@@ -2,7 +2,6 @@ from datetime import datetime
 from collections import namedtuple
 from random import randrange
 
-from data_models.take_give_away import Takeaway, Giveaway
 from data_models.penalty import Penalty
 from data_models.goal import Goal
 from data_models.game import Game
@@ -94,8 +93,6 @@ def _create_game_stat(link):
     game.home.pp_opportunities = game.home.pp_goals + randrange(0, 3)
     game.home.face_off_wins = randrange(10, 30)
     game.home.blocked = randrange(5, 15)
-    game.home.takeaways = randrange(5, 15)
-    game.home.giveaways = randrange(5, 15)
     game.home.hits = randrange(5, 15)
     game.home.penalty_minutes = randrange(0, 20)
     game.away = Game.TeamStat()
@@ -109,8 +106,6 @@ def _create_game_stat(link):
     game.away.pp_opportunities = game.away.pp_goals + randrange(0, 3)
     game.away.face_off_wins = randrange(10, 30)
     game.away.blocked = randrange(5, 15)
-    game.away.takeaways = randrange(5, 15)
-    game.away.giveaways = randrange(5, 15)
     game.away.hits = randrange(5, 15)
     game.away.penalty_minutes = randrange(0, 20)
     game.is_regular = True
@@ -127,7 +122,6 @@ def get_games_list(start, end):
 
 
 def get_game_info(link):
-    tg_aways = []
     goals = []
     penalties = []
     skater_stats = []
@@ -166,18 +160,6 @@ def get_game_info(link):
     for i in range(0, 10):
         n = randrange(0, 20)
         pl = skaters[n]
-        tga = Takeaway() if n % 2 == 0 else Giveaway()
-        tga.date = game.date
-        tga.game = game
-        tga.team = pl.current_team
-        tga.player = pl
-        tga.coord_x = randrange(-99, 100)
-        tga.coord_y = randrange(-42, 43)
-        tg_aways.append(tga)
-
-    for i in range(0, 10):
-        n = randrange(0, 20)
-        pl = skaters[n]
         goal = Goal()
         goal.date = game.date
         goal.game = game
@@ -201,4 +183,4 @@ def get_game_info(link):
         pen.coord_y = randrange(-42, 43)
         penalties.append(pen)
 
-    return game, skater_stats, goalie_stats, tg_aways, penalties, goals
+    return game, skater_stats, goalie_stats, penalties, goals

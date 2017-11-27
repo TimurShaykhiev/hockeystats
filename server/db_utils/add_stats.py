@@ -7,7 +7,7 @@ from data_models.team_sum_stat import TeamSumStat
 def add_games(db_cur, games):
     num = db_cur.executemany('INSERT INTO games VALUES '
                              '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
-                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                              [g.to_tuple() for g in games])
     return num
 
@@ -37,13 +37,6 @@ def add_penalty(db_cur, penalty):
                              'secondary_type, period_num, period_time, coord_x, coord_y) '
                              'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                              [p.to_tuple() for p in penalty])
-    return num
-
-
-def add_tga(db_cur, tga):
-    num = db_cur.executemany('INSERT INTO take_give_away (team_id, game_id, date, player_id, type, period_num, '
-                             'period_time, coord_x, coord_y) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                             [t.to_tuple() for t in tga])
     return num
 
 
@@ -113,13 +106,13 @@ def update_team_summary_stats(db_cur, team_sum_stats):
                 'UPDATE team_sum_stats '
                 'SET goals_for = %s, goals_against = %s, shots = %s, pp_goals = %s, '
                 'pp_opportunities = %s, sh_goals_against = %s, sh_opportunities = %s, '
-                'face_off_wins = %s, face_off_taken = %s, blocked = %s, takeaways = %s, giveaways = %s, '
+                'face_off_wins = %s, face_off_taken = %s, blocked = %s, '
                 'hits = %s, penalty_minutes = %s, games = %s, win_regular = %s, win_overtime = %s, '
                 'win_shootout = %s, lose_regular = %s, lose_overtime = %s, lose_shootout = %s '
                 'WHERE team_id = %s AND season_id = %s AND is_regular = %s', fields)
         else:
             num += db_cur.execute(
                 'INSERT INTO team_sum_stats VALUES '
-                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                 team_sum_stats[(team_id, season_id, regular)].to_tuple())
     return num

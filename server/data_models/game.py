@@ -29,8 +29,6 @@ class Game(Model):
             self.pp_opportunities = 0
             self.face_off_wins = 0
             self.blocked = 0
-            self.takeaways = 0
-            self.giveaways = 0
             self.hits = 0
             self.penalty_minutes = 0
 
@@ -115,39 +113,35 @@ class Game(Model):
         game.home.pp_opportunities = fields[12]
         game.home.face_off_wins = fields[13]
         game.home.blocked = fields[14]
-        game.home.takeaways = fields[15]
-        game.home.giveaways = fields[16]
-        game.home.hits = fields[17]
-        game.home.penalty_minutes = fields[18]
-        game.away.goals = fields[19]
-        game.away.goals_period1 = fields[20]
-        game.away.goals_period2 = fields[21]
-        game.away.goals_period3 = fields[22]
-        game.away.shots = fields[23]
-        game.away.pp_goals = fields[24]
-        game.away.pp_opportunities = fields[25]
-        game.away.face_off_wins = fields[26]
-        game.away.blocked = fields[27]
-        game.away.takeaways = fields[28]
-        game.away.giveaways = fields[29]
-        game.away.hits = fields[30]
-        game.away.penalty_minutes = fields[31]
-        game.face_off_taken = fields[32]
+        game.home.hits = fields[15]
+        game.home.penalty_minutes = fields[16]
+        game.away.goals = fields[17]
+        game.away.goals_period1 = fields[18]
+        game.away.goals_period2 = fields[19]
+        game.away.goals_period3 = fields[20]
+        game.away.shots = fields[21]
+        game.away.pp_goals = fields[22]
+        game.away.pp_opportunities = fields[23]
+        game.away.face_off_wins = fields[24]
+        game.away.blocked = fields[25]
+        game.away.hits = fields[26]
+        game.away.penalty_minutes = fields[27]
+        game.face_off_taken = fields[28]
         return game
 
     def to_tuple(self):
         return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,
                 self.home.goals, self.home.goals_period1, self.home.goals_period2, self.home.goals_period3,
                 self.home.shots, self.home.pp_goals, self.home.pp_opportunities, self.home.face_off_wins,
-                self.home.blocked, self.home.takeaways, self.home.giveaways, self.home.hits, self.home.penalty_minutes,
+                self.home.blocked, self.home.hits, self.home.penalty_minutes,
                 self.away.goals, self.away.goals_period1, self.away.goals_period2, self.away.goals_period3,
                 self.away.shots, self.away.pp_goals, self.away.pp_opportunities, self.away.face_off_wins,
-                self.away.blocked, self.away.takeaways, self.away.giveaways, self.away.hits, self.away.penalty_minutes,
+                self.away.blocked, self.away.hits, self.away.penalty_minutes,
                 self.face_off_taken)
 
     def __str__(self):
         return ('{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t'
-                '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(
+                '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n').format(
             self.id,
             self.date,
             convert_bool(self.is_regular),
@@ -163,8 +157,6 @@ class Game(Model):
             self.home.pp_opportunities,
             self.home.face_off_wins,
             self.home.blocked,
-            self.home.takeaways,
-            self.home.giveaways,
             self.home.hits,
             self.home.penalty_minutes,
             self.away.goals,
@@ -176,8 +168,6 @@ class Game(Model):
             self.away.pp_opportunities,
             self.away.face_off_wins,
             self.away.blocked,
-            self.away.takeaways,
-            self.away.giveaways,
             self.away.hits,
             self.away.penalty_minutes,
             self.face_off_taken)

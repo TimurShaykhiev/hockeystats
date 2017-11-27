@@ -91,8 +91,6 @@ CREATE TABLE IF NOT EXISTS games
   home_pp_opportunities TINYINT UNSIGNED NOT NULL,
   home_face_off_wins TINYINT UNSIGNED NOT NULL,
   home_blocked TINYINT UNSIGNED NOT NULL,
-  home_takeaways TINYINT UNSIGNED NOT NULL,
-  home_giveaways TINYINT UNSIGNED NOT NULL,
   home_hits TINYINT UNSIGNED NOT NULL,
   home_penalty_minutes TINYINT UNSIGNED NOT NULL,
   away_goals TINYINT UNSIGNED NOT NULL,
@@ -104,8 +102,6 @@ CREATE TABLE IF NOT EXISTS games
   away_pp_opportunities TINYINT UNSIGNED NOT NULL,
   away_face_off_wins TINYINT UNSIGNED NOT NULL,
   away_blocked TINYINT UNSIGNED NOT NULL,
-  away_takeaways TINYINT UNSIGNED NOT NULL,
-  away_giveaways TINYINT UNSIGNED NOT NULL,
   away_hits TINYINT UNSIGNED NOT NULL,
   away_penalty_minutes TINYINT UNSIGNED NOT NULL,
   face_off_taken TINYINT UNSIGNED NOT NULL,
@@ -216,24 +212,6 @@ CREATE TABLE IF NOT EXISTS penalty
   CONSTRAINT penalty_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
 );
 
-# period time in seconds
-CREATE TABLE IF NOT EXISTS take_give_away
-(
-  id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-  team_id BIGINT(20) UNSIGNED NOT NULL,
-  game_id BIGINT(20) UNSIGNED NOT NULL,
-  date DATE NOT NULL,
-  player_id BIGINT(20) UNSIGNED NOT NULL,
-  type ENUM('takeaway', 'giveaway') NOT NULL,
-  period_num TINYINT UNSIGNED NOT NULL,
-  period_time SMALLINT UNSIGNED NOT NULL,
-  coord_x TINYINT,
-  coord_y TINYINT,
-  CONSTRAINT take_give_away_player_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
-  CONSTRAINT take_give_away_teams_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE,
-  CONSTRAINT take_give_away_games_fk FOREIGN KEY (game_id) REFERENCES games (id) ON UPDATE CASCADE
-);
-
 
 CREATE TABLE IF NOT EXISTS team_sum_stats
 (
@@ -250,8 +228,6 @@ CREATE TABLE IF NOT EXISTS team_sum_stats
   face_off_wins SMALLINT UNSIGNED NOT NULL,
   face_off_taken SMALLINT UNSIGNED NOT NULL,
   blocked SMALLINT UNSIGNED NOT NULL,
-  takeaways SMALLINT UNSIGNED NOT NULL,
-  giveaways SMALLINT UNSIGNED NOT NULL,
   hits SMALLINT UNSIGNED NOT NULL,
   penalty_minutes SMALLINT UNSIGNED NOT NULL,
   games TINYINT UNSIGNED NOT NULL,

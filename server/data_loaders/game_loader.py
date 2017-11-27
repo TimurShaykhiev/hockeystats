@@ -1,6 +1,5 @@
 import requests
 
-from data_models import take_give_away as tga
 from data_models.penalty import Penalty
 from data_models.goal import Goal
 from data_models.game import Game
@@ -40,12 +39,10 @@ def get_game_info(game_link):
         game - game data model
         skater_stats - list of skater stat data models
         goalie_stats - list of goalkeeper stat data models
-        tg_aways - list of takeaway/giveaway data models
         penalties - list of penalty data models
         goals - list of goal data models
     """
     game_obj = requests.get(NHL_STATS_DOMAIN + game_link).json()
-    tg_aways = []
     goals = []
     penalties = []
     skater_stats = []
@@ -61,11 +58,7 @@ def get_game_info(game_link):
     events = game_obj['liveData']['plays']['allPlays']
     for evt in events:
         evt_type = evt['result']['eventTypeId']
-        if evt_type == 'TAKEAWAY' or evt_type == 'GIVEAWAY':
-            t = tga.create_from_json(evt, game.id, game.date)
-            tg_aways.append(t)
-            _update_team_stats_tga(game, t)
-        elif evt_type == 'PENALTY':
+        if evt_type == 'PENALTY':
             p = Penalty.from_json(evt, game.id, game.date)
             penalties.append(p)
             _update_team_stats_penalty(game, p)
@@ -73,7 +66,7 @@ def get_game_info(game_link):
             g = Goal.from_json(evt, game.id, game.date)
             goals.append(g)
             _update_team_stats_goal(game, g)
-    return game, skater_stats, goalie_stats, tg_aways, penalties, goals
+    return game, skater_stats, goalie_stats, penalties, goals
 
 
 def _add_player_stats(game, players, team_stats, goalie_stats, skater_stats):
@@ -109,16 +102,3 @@ def _update_team_stats_goal(game, goal):
             game.home.pp_goals += 1
         else:
             game.away.pp_goals += 1
-
-
-def _update_team_stats_tga(game, tg_away):
-    if game.home.team.id == tg_away.team.id:
-        if type(tg_away) == tga.Takeaway:
-            game.home.takeaways += 1
-        else:
-            game.home.giveaways += 1
-    else:
-        if type(tg_away) == tga.Takeaway:
-            game.away.takeaways += 1
-        else:
-            game.away.giveaways += 1
