@@ -53,17 +53,15 @@ const mutations = {
       team.stats.faceOffWins = s.stats[7];
       team.stats.faceOffTaken = s.stats[8];
       team.stats.blocked = s.stats[9];
-      team.stats.takeaways = s.stats[10];
-      team.stats.giveaways = s.stats[11];
-      team.stats.hits = s.stats[12];
-      team.stats.penaltyMinutes = s.stats[13];
-      team.stats.games = s.stats[14];
-      team.stats.winRegular = s.stats[15];
-      team.stats.winOvertime = s.stats[16];
-      team.stats.winShootout = s.stats[17];
-      team.stats.loseRegular = s.stats[18];
-      team.stats.loseOvertime = s.stats[19];
-      team.stats.loseShootout = s.stats[20];
+      team.stats.hits = s.stats[10];
+      team.stats.penaltyMinutes = s.stats[11];
+      team.stats.games = s.stats[12];
+      team.stats.winRegular = s.stats[13];
+      team.stats.winOvertime = s.stats[14];
+      team.stats.winShootout = s.stats[15];
+      team.stats.loseRegular = s.stats[16];
+      team.stats.loseOvertime = s.stats[17];
+      team.stats.loseShootout = s.stats[18];
       // Calculate some stats
       team.stats.points = (team.stats.winRegular + team.stats.winOvertime + team.stats.winShootout) * 2 +
                           team.stats.loseOvertime + team.stats.loseShootout;
