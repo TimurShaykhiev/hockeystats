@@ -39,16 +39,16 @@ def _configure_logging(app):
         current_app.logger.debug(request.url)
 
 
-def _configure_blueprints(app):
-    import api
-    app.register_blueprint(api.season_stats_api)
-    app.register_blueprint(api.season_api)
+def _configure_blueprints(flask_app):
+    import app.api as api
+    flask_app.register_blueprint(api.season_stats_api)
+    flask_app.register_blueprint(api.season_api)
 
 
-def _configure_error_handlers(app):
-    from api.response_utils import ApiError
+def _configure_error_handlers(flask_app):
+    from app.api.response_utils import ApiError
 
-    @app.errorhandler(ApiError)
+    @flask_app.errorhandler(ApiError)
     def handle_invalid_usage(error):
         current_app.logger.error('Request failed %s, %s', error.status_code, error.api_err_code)
         return error.get_response()

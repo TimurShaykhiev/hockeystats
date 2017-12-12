@@ -3,14 +3,14 @@ from collections import namedtuple
 from marshmallow import fields
 from flask import current_app
 
-from database import get_db
+from app.database import get_db
 from data_models.player import Player as PlayerDm
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.player_trade import PlayerTrade
 from .player import Player, PlayerSchema
 from .season import SeasonSchema
-from models import ModelSchema
+from . import ModelSchema
 
 PlayerInfo = namedtuple('PlayerInfo', ['name', 'tid', 'pos', 'trades'])
 PlayerTradeInfo = namedtuple('PlayerTradeInfo', ['date', 'from_team', 'to_team'])

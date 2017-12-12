@@ -1,13 +1,13 @@
 from marshmallow import fields
 
-from database import get_db
+from app.database import get_db
 from data_models.conference import Conference
 from data_models.division import Division
 from data_models.team import Team as TeamDm
 from data_models.team_sum_stat import TeamSumStat
 from .team import Team, TeamSchema
 from .season import SeasonSchema
-from models import ModelSchema
+from . import ModelSchema
 
 
 def _create_team(tid, teams, divisions, conferences):

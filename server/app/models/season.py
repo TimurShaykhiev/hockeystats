@@ -1,10 +1,10 @@
 from marshmallow import fields
 from flask import request, current_app
 
-from database import get_db
-from models import ModelSchema
+from app.database import get_db
+from . import ModelSchema
 from data_models.season import Season as SeasonDm
-from api.response_utils import ApiError, InvalidQueryParams
+from app.api.response_utils import ApiError, InvalidQueryParams
 
 SEASON_ID_QUERY_PARAM = 'sid'
 SEASON_TYPE_QUERY_PARAM = 'stype'

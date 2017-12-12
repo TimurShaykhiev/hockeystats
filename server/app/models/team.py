@@ -1,6 +1,6 @@
 from marshmallow import fields
 
-from models import ModelSchema
+from . import ModelSchema
 
 
 class Team:
