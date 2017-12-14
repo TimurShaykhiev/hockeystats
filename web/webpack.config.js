@@ -23,7 +23,7 @@ const config = {
     rules: [{
         test: /\.less$/,
         use: extractLess.extract({
-          use: ['css-loader', 'less-loader', 'postcss-loader']
+          use: ['css-loader', 'postcss-loader', 'less-loader']
         })
       }, {
         test: /\.vue$/,
@@ -45,7 +45,8 @@ const config = {
         loader: 'url-loader',
         options: {
           limit: 8192,
-          name: '[name].[ext]'
+          name: '[name].[ext]',
+          outputPath: 'images/'
         }
       }, {
         test: /\.(eot|svg|ttf|woff|woff2)$/,

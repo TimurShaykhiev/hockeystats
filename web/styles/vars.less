@@ -1,0 +1,18 @@
+
+.small-desktop(@rules) {
+  @media (max-width: 1280px) { @rules(); }
+}
+
+.desktop(@rules) {
+  @media (min-width: 1281px) { @rules(); }
+}
+
+// Wide desktop
+@page-width-desktop: 1400px;
+@page-min-width-desktop: 1280px;
+@table-font-size-desktop: 14px;
+
+// Small desktop
+@page-width-sm-desktop: 1000px;
+@page-min-width-sm-desktop: 750px;
+@table-font-size-sm-desktop: 12px;

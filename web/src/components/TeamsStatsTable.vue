@@ -17,7 +17,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {floatToStr} from 'Components/utils';
+import {floatToStr, getSeasonName} from 'Components/utils';
 
 export default {
   name: 'teams-stats-table',
@@ -26,14 +26,10 @@ export default {
   i18n: {
     messages: {
       en: {
-        tableCaptionReg: 'Regular season',
-        tableCaptionPlayoff: 'Playoff',
         teamName: 'Team'
       },
       ru: {
-        tableCaptionReg: '',
-        tableCaptionPlayoff: '',
-        teamName: ''
+        teamName: 'Команда'
       }
     }
   },
@@ -50,14 +46,7 @@ export default {
         return '';
       }
       let all = this.$store.state.season.allSeasons.seasons;
-      for (let s of all) {
-        if (s.id === selSeason.id) {
-          let years = `${s.year}-${s.year % 100 + 1}`;
-          let str = selSeason.regular ? 'tableCaptionReg' : 'tableCaptionPlayoff';
-          return `${this.$t(str)} ${years}`;
-        }
-      }
-      return '';
+      return getSeasonName(selSeason, all, (str) => this.$t(str));
     },
 
     columns() {
@@ -212,7 +201,14 @@ export default {
 </script>
 
 <style lang="less">
+  @import '../../styles/vars.less';
+
   .team-stats-table__table {
-    font-size: 14px;
+    .desktop({
+      font-size: @table-font-size-desktop;
+    });
+    .small-desktop({
+      font-size: @table-font-size-sm-desktop;
+    });
   }
 </style>

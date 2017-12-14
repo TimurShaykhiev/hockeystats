@@ -14,3 +14,21 @@ export function floatToStr(number, precision, omitInteger=false) {
   str += '0000000000000000000';
   return str.slice(omitInteger ? i : 0, i + precision + 1);
 }
+
+export function toiToStr(timeOnIce) {
+  let toi = Math.floor(timeOnIce);
+  let min = Math.floor(toi / 60);
+  let sec = toi % 60;
+  return sec < 10 ? `${min}:0${sec}` : `${min}:${sec}`;
+}
+
+export function getSeasonName(selectedSeason, seasons, translateFunc) {
+  for (let s of seasons) {
+    if (s.id === selectedSeason.id) {
+      let years = `${s.year}-${s.year % 100 + 1}`;
+      let str = selectedSeason.regular ? 'season.regular' : 'season.playoff';
+      return `${translateFunc(str)} ${years}`;
+    }
+  }
+  return '';
+}

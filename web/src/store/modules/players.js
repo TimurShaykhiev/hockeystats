@@ -68,6 +68,15 @@ const mutations = {
       skater.stats.ppToi = s.stats[17];
       skater.stats.shToi = s.stats[18];
       skater.stats.games = s.stats[19];
+      // Calculate some stats
+      skater.stats.points = skater.stats.goals + skater.stats.assists;
+      skater.stats.ppPoints = skater.stats.ppGoals + skater.stats.ppAssists;
+      skater.stats.shPoints = skater.stats.shGoals + skater.stats.shAssists;
+      skater.stats.pointsPerGame = getPercentage(skater.stats.points, skater.stats.games, true);
+      skater.stats.toiPerGame = getPercentage(skater.stats.toi, skater.stats.games, true);
+      skater.stats.shootingPercentage = getPercentage(skater.stats.goals, skater.stats.shots);
+      skater.stats.faceOffWinsPercentage = getPercentage(skater.stats.faceOffWins, skater.stats.faceOffTaken);
+
       newStat.skaters.push(skater);
     }
     state.skaterStats = newStat;

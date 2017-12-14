@@ -1,7 +1,5 @@
 @import 'fonts.less';
-
-@pageWidth: 1000px;
-@pageMinWidth: 750px;
+@import 'vars.less';
 
 body {
   font-family: 'Open Sans', 'OpenSansFallback', sans-serif;
@@ -23,10 +21,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .wrapper {
-  max-width: @pageWidth;
-  min-width: @pageMinWidth;
   margin: auto;
   border: 1px solid black;
+  .desktop({
+    max-width: @page-width-desktop;
+    min-width: @page-min-width-desktop;
+  });
+  .small-desktop({
+    max-width: @page-width-sm-desktop;
+    min-width: @page-min-width-sm-desktop;
+  });
 }
 
 .button {
