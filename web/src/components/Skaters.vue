@@ -1,7 +1,6 @@
 <template>
   <div class="">
     <season-picker type="all"></season-picker>
-    <h1>This is Players page.</h1>
     <skaters-stats-table></skaters-stats-table>
   </div>
 </template>
@@ -11,7 +10,7 @@ import SeasonPicker from 'Components/SeasonPicker';
 import SkatersStatsTable from 'Components/SkatersStatsTable';
 
 export default {
-  name: 'players',
+  name: 'skaters',
   components: {SeasonPicker, SkatersStatsTable},
   props: {
   },

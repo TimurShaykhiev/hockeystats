@@ -10,8 +10,11 @@
         <router-link tag="li" :to="{name: 'teams'}">
           <a>{{$t("navBar.teams")}}</a>
         </router-link>
-        <router-link tag="li" :to="{name: 'players'}">
-          <a>{{$t("navBar.players")}}</a>
+        <router-link tag="li" :to="{name: 'skaters'}">
+          <a>{{$t("navBar.skaters")}}</a>
+        </router-link>
+        <router-link tag="li" :to="{name: 'goalies'}">
+          <a>{{$t("navBar.goalies")}}</a>
         </router-link>
       </ul>
     </nav>
@@ -36,7 +39,8 @@ export default {
         navBar: {
           home: 'Home',
           teams: 'Teams',
-          players: 'Players'
+          skaters: 'Skaters',
+          goalies: 'Goaltenders'
         },
         chooseLang: {
           rus: 'Русский',
@@ -48,7 +52,8 @@ export default {
         navBar: {
           home: 'Главная',
           teams: 'Команды',
-          players: 'Игроки'
+          skaters: 'Игроки',
+          goalies: 'Вратари'
         },
         chooseLang: {
           rus: 'Русский',

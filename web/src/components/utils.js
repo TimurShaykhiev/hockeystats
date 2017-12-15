@@ -32,3 +32,13 @@ export function getSeasonName(selectedSeason, seasons, translateFunc) {
   }
   return '';
 }
+
+export function getPaginationText(translateFunc) {
+  return {
+    next: translateFunc('pagination.next'),
+    prev: translateFunc('pagination.prev'),
+    rowsPerPage: translateFunc('pagination.rowsPerPage'),
+    ofText: translateFunc('pagination.ofText'),
+    allText: translateFunc('pagination.allText')
+  };
+}

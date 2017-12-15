@@ -2,7 +2,8 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from 'Components/Home';
 import Teams from 'Components/Teams';
-import Players from 'Components/Players';
+import Skaters from 'Components/Skaters';
+import Goalies from 'Components/Goalies';
 
 Vue.use(VueRouter);
 
@@ -11,9 +12,13 @@ const routes = [{
     name: 'teams',
     component: Teams
   }, {
-    path: '/players',
-    name: 'players',
-    component: Players
+    path: '/skaters',
+    name: 'skaters',
+    component: Skaters
+  }, {
+    path: '/goalies',
+    name: 'goalies',
+    component: Goalies
   }, {
     path: '/',
     name: 'home',

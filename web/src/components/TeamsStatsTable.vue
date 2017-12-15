@@ -23,16 +23,6 @@ export default {
   name: 'teams-stats-table',
   props: {
   },
-  i18n: {
-    messages: {
-      en: {
-        teamName: 'Team'
-      },
-      ru: {
-        teamName: 'Команда'
-      }
-    }
-  },
   data() {
     return {};
   },
@@ -51,8 +41,8 @@ export default {
 
     columns() {
       return [{
-        label: this.$t('teamName'),
-        hint: this.$t('teamName'),
+        label: this.$t('statNames.teamShort'),
+        hint: this.$t('statNames.team'),
         field: 'teamName',
         sortable: true
       }, {

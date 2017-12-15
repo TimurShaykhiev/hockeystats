@@ -82,7 +82,7 @@ export default {
         skaterPoint: 'Очки',
         skaterPlusMinus: 'Плюс-Минус',
         goalieGaa: 'Коэф. надёжности',
-        goalieSavePercentage: '% ОБ'
+        goalieSavePercentage: '%ОБ'
       }
     }
   },

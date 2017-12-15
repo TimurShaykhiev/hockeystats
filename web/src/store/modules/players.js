@@ -106,6 +106,9 @@ const mutations = {
       goalie.stats.wins = s.stats[13];
       goalie.stats.shutout = s.stats[14];
       // Calculate some stats
+      goalie.stats.points = goalie.stats.goals + goalie.stats.assists;
+      goalie.stats.losses = goalie.stats.games - goalie.stats.wins;
+      goalie.stats.goalsAgainst = goalie.stats.shots - goalie.stats.saves;
       goalie.stats.gaa = getGoalsAgainstAverage(goalie.stats);
       goalie.stats.svp = getPercentage(goalie.stats.saves, goalie.stats.shots, true);
 

@@ -4,12 +4,12 @@
       <caption>{{caption}}</caption>
       <tr>
         <th colspan="2"></th>
-        <th :title="$t('standingsHeader.gamesPlayed.hint')">{{$t('standingsHeader.gamesPlayed.label')}}</th>
+        <th :title="$t('statNames.games')">{{$t('statNames.gamesShort')}}</th>
         <th :title="$t('standingsHeader.wins.hint')">{{$t("standingsHeader.wins.label")}}</th>
         <th :title="$t('standingsHeader.losses.hint')">{{$t("standingsHeader.losses.label")}}</th>
         <th :title="$t('standingsHeader.lossesOT.hint')">{{$t("standingsHeader.lossesOT.label")}}</th>
-        <th :title="$t('standingsHeader.points.hint')">{{$t("standingsHeader.points.label")}}</th>
-        <th :title="$t('standingsHeader.pointsPercent.hint')">{{$t("standingsHeader.pointsPercent.label")}}</th>
+        <th :title="$t('statNames.points')">{{$t("statNames.pointsShort")}}</th>
+        <th :title="$t('statNames.pointPercentage')">{{$t("statNames.pointPercentageShort")}}</th>
       </tr>
       <tr v-for="elem in dataSet">
         <td class="rank-cell" :class="elem.colorMark">{{elem.rank}}</td>
@@ -67,10 +67,6 @@ export default {
     messages: {
       en: {
         standingsHeader: {
-          gamesPlayed: {
-            label: 'GP',
-            hint: 'Games played'
-          },
           wins: {
             label: 'W',
             hint: 'Wins(2 points)'
@@ -82,23 +78,11 @@ export default {
           lossesOT: {
             label: 'OT',
             hint: 'Overtime/shootout losses(1 point)'
-          },
-          points: {
-            label: 'P',
-            hint: 'Points'
-          },
-          pointsPercent: {
-            label: 'P%',
-            hint: 'Points Percentage'
           }
         }
       },
       ru: {
         standingsHeader: {
-          gamesPlayed: {
-            label: 'И',
-            hint: 'Игры'
-          },
           wins: {
             label: 'В',
             hint: 'Победы(2 очка)'
@@ -110,14 +94,6 @@ export default {
           lossesOT: {
             label: 'ОТ',
             hint: 'Поражения в овертайме и по буллитам(1 очко)'
-          },
-          points: {
-            label: 'О',
-            hint: 'Очки'
-          },
-          pointsPercent: {
-            label: 'О%',
-            hint: 'Процент набранных очков'
           }
         }
       }
