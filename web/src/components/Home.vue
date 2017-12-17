@@ -1,6 +1,5 @@
 <template>
   <div class="">
-    <h1>This is Home page.</h1>
     <div class="container-row">
       <leaders-preview type="skaterGoal"></leaders-preview>
       <leaders-preview type="skaterAssist"></leaders-preview>

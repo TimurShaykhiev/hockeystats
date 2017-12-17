@@ -181,9 +181,7 @@ export default {
         this.$store.dispatch('getTeamStats', {
           reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
         });
-        return true;
       }
-      return false;
     }
   }
 };

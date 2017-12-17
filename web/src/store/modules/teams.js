@@ -4,7 +4,8 @@ import {commitNew, getPercentage} from 'Store/utils';
 
 const state = {
   teamStats: {},
-  conferences: []
+  conferences: [],
+  divisions: []
 };
 
 const getters = {
@@ -24,6 +25,9 @@ const actions = {
           commitNew(commit, 'setTeamStats', state.teamStats, result);
           if (state.conferences.length === 0) {
             commit('setConferences', result);
+          }
+          if (state.divisions.length === 0) {
+            commit('setDivisions', result);
           }
           return state.teamStats;
         },
@@ -87,6 +91,17 @@ const mutations = {
     state.conferences = Object.keys(conf).map((key) => {
       return {id: Number(key), name: conf[key]};
     });
+  },
+
+  setDivisions(state, stats) {
+    logger.debug('mutation: setDivisions');
+    let div = {};
+    for (let s of stats.results) {
+      div[s.team.did] = {name: s.team.division, cid: s.team.cid};
+    }
+    state.divisions = Object.keys(div).map((key) => {
+      return {id: Number(key), name: div[key].name, cid: div[key].cid};
+    }).sort((a, b) => a.id - b.id);
   }
 };
 

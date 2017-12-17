@@ -80,6 +80,12 @@ let locales = {
         5: 'Western conference',
         6: 'Eastern conference'
       },
+      divisions: {
+        15: 'Pacific',
+        16: 'Central',
+        17: 'Atlantic',
+        18: 'Metropolitan'
+      },
       statNames: {
         season: 'Season',
         seasonShort: 'Season',
@@ -257,6 +263,12 @@ let locales = {
       conferences: {
         5: 'Западная конференция',
         6: 'Восточная конференция'
+      },
+      divisions: {
+        15: 'Тихоокеанский',
+        16: 'Центральный',
+        17: 'Атлантический',
+        18: 'Столичный'
       },
       statNames: {
         season: 'Сезон',

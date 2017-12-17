@@ -200,9 +200,7 @@ export default {
         this.$store.dispatch('getSkaterStats', {
           reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
         });
-        return true;
       }
-      return false;
     }
   }
 };
