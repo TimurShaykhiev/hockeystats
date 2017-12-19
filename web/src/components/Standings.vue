@@ -13,7 +13,9 @@
       </tr>
       <tr v-for="elem in dataSet">
         <td class="rank-cell" :class="elem.colorMark">{{elem.rank}}</td>
-        <td class="name-cell">{{elem.name}}</td>
+        <td class="name-cell">
+          <router-link :to="{name: 'team', params: {id: elem.id}}">{{elem.name}}</router-link>
+        </td>
         <td class="number-cell">{{elem.games}}</td>
         <td class="number-cell secondary-cell">{{elem.wins}}</td>
         <td class="number-cell secondary-cell">{{elem.losses}}</td>
@@ -152,6 +154,7 @@ export default {
         return {
           rank: ++i,
           colorMark: getColorMarkClass(i),
+          id: t.team.id,
           name: this.$t(`teams.${t.team.id}`),
           games: t.stats.games,
           wins: t.stats.winRegular + t.stats.winOvertime + t.stats.winShootout,
@@ -214,6 +217,10 @@ export default {
         width: 180px;
         text-align: left;
         padding-left: 10px;
+        a {
+          color: black;
+          text-decoration: none;
+        }
       }
       &.secondary-cell {
         color: #959595;

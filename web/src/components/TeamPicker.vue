@@ -6,7 +6,7 @@
         <div v-for="el in divisions" class="team-picker__div-container container-col">
           <h3 class="team-picker__div-name">{{el.name}}</h3>
           <div v-for="team in teams[el.id]" class="team-picker__team">
-            {{team.name}}
+            <router-link :to="{name: 'team', params: {id: team.id}}">{{team.name}}</router-link>
           </div>
         </div>
       </div>
@@ -34,7 +34,7 @@ export default {
   },
   data() {
     return {
-      showTeams: true
+      showTeams: false
     };
   },
   created() {
@@ -97,9 +97,12 @@ export default {
   }
   .team-picker__team {
     margin: 3px 0;
-    color: lightgrey;
-    &:hover {
-      color: white;
+    a {
+      color: lightgrey;
+      text-decoration: none;
+      &:hover {
+        color: white;
+      }
     }
   }
 </style>

@@ -4,10 +4,15 @@ import Home from 'Components/Home';
 import Teams from 'Components/Teams';
 import Skaters from 'Components/Skaters';
 import Goalies from 'Components/Goalies';
+import TeamInfo from 'Components/TeamInfo';
 
 Vue.use(VueRouter);
 
 const routes = [{
+    path: '/team/:id',
+    name: 'team',
+    component: TeamInfo
+  }, {
     path: '/teams',
     name: 'teams',
     component: Teams

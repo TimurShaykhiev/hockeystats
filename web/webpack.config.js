@@ -3,6 +3,7 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const devBuild = process.env.NODE_ENV === 'development';
 
@@ -12,6 +13,7 @@ const extractLess = new ExtractTextPlugin({
 
 const DIST_DIR = path.resolve(__dirname, 'dist');
 const SRC_DIR = path.resolve(__dirname, 'src');
+const ASSETS_DIR = path.resolve(__dirname, 'assets');
 
 const config = {
   entry: SRC_DIR + '/main.js',
@@ -35,7 +37,7 @@ const config = {
       }, {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
-        exclude: /node_modules/,
+        include: SRC_DIR,
         options: {
           failOnWarning: false,
           failOnError: true
@@ -51,6 +53,7 @@ const config = {
       }, {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         loader: 'file-loader',
+        include: [ASSETS_DIR + '/fonts'],
         options: {
           name: '[name].[ext]',
           outputPath: 'fonts/'
@@ -64,14 +67,16 @@ const config = {
       Root: SRC_DIR,
       Components: SRC_DIR + '/components',
       Api: SRC_DIR + '/api',
-      Store: SRC_DIR + '/store'
+      Store: SRC_DIR + '/store',
+      Assets: ASSETS_DIR
     }
   },
   plugins: [
     extractLess,
     new HtmlWebpackPlugin({
       template: 'index.template'
-    })
+    }),
+    new CopyWebpackPlugin([{from: ASSETS_DIR + '/images/team*.svg', to: 'images', flatten: true}])
   ],
   devServer: {
     contentBase: DIST_DIR,
