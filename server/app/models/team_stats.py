@@ -5,37 +5,21 @@ from data_models.conference import Conference
 from data_models.division import Division
 from data_models.team import Team as TeamDm
 from data_models.team_sum_stat import TeamSumStat
+from statistics.team_season import get_teams_stats
 from .team import Team, TeamSchema
 from .season import SeasonSchema
-from . import ModelSchema
-
-
-def _create_team(tid, teams, divisions, conferences):
-    t = teams[tid]
-    team = Team()
-    team.id = t.id
-    team.name = t.name
-    team.abbreviation = t.abbreviation
-    if t.division is not None:
-        d = divisions[t.division.id]
-        team.division_id = d.id
-        team.division_name = d.name
-        if d.conference is not None:
-            c = conferences[d.conference.id]
-            team.conference_id = c.id
-            team.conference_name = c.name
-    return team
+from . import ModelSchema, StatValue
 
 
 class TeamSeasonStats:
-    def __init__(self, team, stats_dm):
+    def __init__(self, team, stats):
         self.team = team
-        self.stats_dm = stats_dm
+        self.stats = stats
 
 
 class TeamSeasonStatsSchema(ModelSchema):
     team = fields.Nested(TeamSchema)
-    stats = fields.Function(lambda obj: obj.stats_dm.to_tuple()[3:], attribute='stats_dm')
+    stats = fields.List(StatValue())
 
 
 class TeamsSeasonStatsCollection:
@@ -48,10 +32,11 @@ class TeamsSeasonStatsCollection:
         divisions = dict((el.id, el) for el in Division.get_all(db))
         conferences = dict((el.id, el) for el in Conference.get_all(db))
         teams = dict((el.id, el) for el in TeamDm.get_all(db))
-        stats = TeamSumStat.get_season_stats(db, self.season.id, self.season.regular)
+        stats_from_db = TeamSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
+        stats = get_teams_stats(stats_from_db)
         for st in stats:
-            team = _create_team(st.team.id, teams, divisions, conferences)
-            self.results.append(TeamSeasonStats(team, st))
+            team = Team.create(st[0], teams, divisions, conferences)
+            self.results.append(TeamSeasonStats(team, st[1:]))
         schema = TeamsSeasonStatsCollectionSchema()
         return schema.dumps(self)
 

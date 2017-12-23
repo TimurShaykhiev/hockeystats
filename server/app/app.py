@@ -43,6 +43,7 @@ def _configure_blueprints(flask_app):
     import app.api as api
     flask_app.register_blueprint(api.season_stats_api)
     flask_app.register_blueprint(api.season_api)
+    flask_app.register_blueprint(api.team_api)
 
 
 def _configure_error_handlers(flask_app):

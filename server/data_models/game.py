@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
-from data_models.model import Model
-from data_models.team import Team
-from data_models import convert_bool
+from .model import Model
+from .team import Team
+from . import convert_bool
 
 
 def convert_str_to_date(date_str, tz_offset):
@@ -128,6 +128,12 @@ class Game(Model):
         game.away.penalty_minutes = fields[27]
         game.face_off_taken = fields[28]
         return game
+
+    @classmethod
+    def get_team_games(cls, db_conn, team_id, from_date, to_date, regular):
+        q = cls._create_query().select()
+        q.where('date >= %s AND date <= %s AND is_regular = %s AND (home_team_id = %s OR away_team_id = %s)')
+        return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
 
     def to_tuple(self):
         return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,
