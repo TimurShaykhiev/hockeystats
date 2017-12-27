@@ -1,13 +1,3 @@
-from db_utils import get_all_from_query_result
-from data_models.player import Player
-
-
-def get_players_by_team(db, team_id):
-    with db.cursor() as cur:
-        cur.execute('SELECT * FROM players WHERE current_team_id = %s', [team_id])
-        return get_all_from_query_result(Player, cur)
-
-
 def add_players(db, players):
     with db as cur:
         num = cur.executemany('INSERT INTO players VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',

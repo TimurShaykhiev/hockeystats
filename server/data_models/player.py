@@ -129,3 +129,12 @@ class Player(EntityModel):
     @classmethod
     def get_goalies(cls, db_conn, columns=None, named_tuple_cls=None):
         return cls.get_filtered(db_conn, ['primary_pos'], ['goalie'], columns, named_tuple_cls)
+
+    @classmethod
+    def get_ever_played_in_team(cls, db_conn, team_id, traded_players, columns=None):
+        q = cls._create_query().select(columns)
+        q.where('current_team_id = %s OR id IN ({})'.format(','.join(['%s'] * len(traded_players))))
+        traded_players.insert(0, team_id)  # just to avoid list copy
+        if columns is None:
+            return cls._get_all_from_db(db_conn, q.query, traded_players)
+        return cls._get_columns_from_db(db_conn, q.query, traded_players)

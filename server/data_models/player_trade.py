@@ -20,6 +20,13 @@ class PlayerTrade(EntityModel):
         trade.to_team = fields[3]
         return trade
 
+    @classmethod
+    def get_for_team(cls, db, team_id):
+        q = cls._create_query().select()
+        q.where('from_team_id = %s OR to_team_id = %s')
+        q.order_by(['date'])
+        return cls._get_all_from_db(db, q.query, [team_id, team_id])
+
     def to_tuple(self):
         return self.player_id, self.date, self.from_team, self.to_team
 

@@ -38,3 +38,8 @@ def find_rate(obj_row_idx, values_col, desc_order=True):
     else:
         indices = np.argsort(values_col)
     return find_index(indices, obj_row_idx) + 1
+
+
+def get_rate_and_avg(arr, column, obj_row_idx, desc_order=True):
+    col = arr[:, column]
+    return find_rate(obj_row_idx, col, desc_order), col.mean()

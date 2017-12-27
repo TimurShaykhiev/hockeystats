@@ -1,7 +1,7 @@
 import numpy as np
 
 from .games import get_team_home_away_stats
-from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, find_rate
+from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, get_rate_and_avg
 
 '''
 Numpy arrays contain stats for all teams only. These are the stats calculated in _calc_teams_stats and the ones
@@ -40,7 +40,7 @@ COL_PP_PERCENTAGE = 1
 COL_PK_PERCENTAGE = 2
 COL_GOAL_FOR_PER_GAME = 3
 COL_GOAL_AGAINST_PER_GAME = 4
-COL_GOAL_FACE_OFF_WIN_PERCENTAGE = 5
+COL_FACE_OFF_WIN_PERCENTAGE = 5
 
 TEAM_STATS_FP_ARRAY_LEN = 6
 
@@ -90,7 +90,7 @@ def _calc_teams_stats(arr_int, arr_fp):
     arr_fp[:, COL_PK_PERCENTAGE] = 100 - percentage(arr_int[:, COL_SH_GOALS_AGAINST], arr_int[:, COL_SH_OPPORTUNITIES])
     arr_fp[:, COL_GOAL_FOR_PER_GAME] = fraction(arr_int[:, COL_GOALS_FOR], arr_int[:, COL_GAMES])
     arr_fp[:, COL_GOAL_AGAINST_PER_GAME] = fraction(arr_int[:, COL_GOALS_AGAINST], arr_int[:, COL_GAMES])
-    arr_fp[:, COL_GOAL_FACE_OFF_WIN_PERCENTAGE] = \
+    arr_fp[:, COL_FACE_OFF_WIN_PERCENTAGE] = \
         percentage(arr_int[:, COL_FACE_OFF_WINS], arr_int[:, COL_FACE_OFF_TAKEN])
 
 
@@ -130,18 +130,13 @@ def _calc_team_ext_stats(arr_int, arr_fp, team_row_idx, ha_stats):
     ]
 
     ratings = []
-    ratings.extend(_get_rate_and_avg(arr_fp, COL_PP_PERCENTAGE, team_row_idx))
-    ratings.extend(_get_rate_and_avg(arr_fp, COL_PK_PERCENTAGE, team_row_idx))
-    ratings.extend(_get_rate_and_avg(arr_fp, COL_GOAL_FOR_PER_GAME, team_row_idx))
-    ratings.extend(_get_rate_and_avg(arr_fp, COL_GOAL_AGAINST_PER_GAME, team_row_idx, False))
-    ratings.extend(_get_rate_and_avg(arr_fp, COL_GOAL_FACE_OFF_WIN_PERCENTAGE, team_row_idx))
-    ratings.extend(_get_rate_and_avg(arr_fp, COL_SHOOTING_PERCENTAGE, team_row_idx))
+    ratings.extend(get_rate_and_avg(arr_fp, COL_PP_PERCENTAGE, team_row_idx))
+    ratings.extend(get_rate_and_avg(arr_fp, COL_PK_PERCENTAGE, team_row_idx))
+    ratings.extend(get_rate_and_avg(arr_fp, COL_GOAL_FOR_PER_GAME, team_row_idx))
+    ratings.extend(get_rate_and_avg(arr_fp, COL_GOAL_AGAINST_PER_GAME, team_row_idx, False))
+    ratings.extend(get_rate_and_avg(arr_fp, COL_FACE_OFF_WIN_PERCENTAGE, team_row_idx))
+    ratings.extend(get_rate_and_avg(arr_fp, COL_SHOOTING_PERCENTAGE, team_row_idx))
     return ext_stats, ratings
-
-
-def _get_rate_and_avg(arr, column, team_row_idx, desc_order=True):
-    col = arr[:, column]
-    return find_rate(team_row_idx, col, desc_order), col.mean()
 
 
 def team_points(arr):

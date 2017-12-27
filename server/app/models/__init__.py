@@ -1,6 +1,9 @@
 # Models in this package represent objects returned by API.
+from flask import request
 from marshmallow import Schema, fields
 import numpy as np
+
+from app.api.response_utils import InvalidQueryParams
 
 
 class ModelSchema(Schema):
@@ -16,3 +19,16 @@ class StatValue(fields.Number):
         else:
             self.num_type = float
         return super()._serialize(value, attr, obj)
+
+
+def get_locale():
+    locale_query_param = 'locale'
+    default_locale = 'en'
+    supported_locales = ['en', 'ru']
+    locale = request.args.get(locale_query_param, type=str)
+    if locale is None:
+        raise InvalidQueryParams()
+
+    if locale in supported_locales:
+        return locale
+    return default_locale
