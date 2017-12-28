@@ -3,7 +3,8 @@ from flask import request
 from marshmallow import Schema, fields
 import numpy as np
 
-from app.api.response_utils import InvalidQueryParams
+DEFAULT_LOCALE = 'en'
+SUPPORTED_LOCALES = ['en', 'ru']
 
 
 class ModelSchema(Schema):
@@ -23,12 +24,5 @@ class StatValue(fields.Number):
 
 def get_locale():
     locale_query_param = 'locale'
-    default_locale = 'en'
-    supported_locales = ['en', 'ru']
     locale = request.args.get(locale_query_param, type=str)
-    if locale is None:
-        raise InvalidQueryParams()
-
-    if locale in supported_locales:
-        return locale
-    return default_locale
+    return locale if locale in SUPPORTED_LOCALES else DEFAULT_LOCALE

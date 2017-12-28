@@ -56,7 +56,7 @@ def main(db):
 
 
 if __name__ == '__main__':
-    db_conn = Db.connect('localhost', 'hockstats', 'hockstats', 'NHL_STATS')
+    db_conn = Db.connect('localhost', 'hockstats', 'hockstats', 'NHL_STATS', charset='utf8')
     try:
         main(db_conn)
     finally:

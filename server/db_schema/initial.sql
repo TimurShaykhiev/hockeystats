@@ -309,3 +309,11 @@ CREATE TABLE IF NOT EXISTS player_trades
   CONSTRAINT player_trades_from_team_id_fk FOREIGN KEY (from_team_id) REFERENCES teams (id) ON UPDATE CASCADE,
   CONSTRAINT player_trades_to_team_id_fk FOREIGN KEY (to_team_id) REFERENCES teams (id) ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS translations
+(
+  resource_type ENUM('conf_name', 'div_name', 'team_name', 'team_abbr', 'team_venue_name', 'player_name') NOT NULL,
+  resource_id BIGINT(20) UNSIGNED NOT NULL,
+  ru VARCHAR(255),
+  CONSTRAINT translations_pk PRIMARY KEY (resource_type, resource_id)
+);
