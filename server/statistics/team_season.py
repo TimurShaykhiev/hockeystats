@@ -40,19 +40,20 @@ COL_PP_PERCENTAGE = 1
 COL_PK_PERCENTAGE = 2
 COL_GOAL_FOR_PER_GAME = 3
 COL_GOAL_AGAINST_PER_GAME = 4
-COL_FACE_OFF_WIN_PERCENTAGE = 5
+COL_SHOTS_PER_GAME = 5
+COL_FACE_OFF_WIN_PERCENTAGE = 6
 
-TEAM_STATS_FP_ARRAY_LEN = 6
+TEAM_STATS_FP_ARRAY_LEN = 7
 
-COL_SHOOTING_PERCENTAGE = 6
+COL_SHOOTING_PERCENTAGE = 7
 
-TEAM_STATS_EXT_FP_ARRAY_LEN = 7
+TEAM_STATS_EXT_FP_ARRAY_LEN = 8
 
-INT_ARRAY_RESULT_COLUMNS =\
-    list(range(COL_TEAM_ID, COL_FACE_OFF_WINS)) + list(range(COL_PENALTY_MINUTES, TEAM_STATS_INT_ARRAY_LEN))
+INT_ARRAY_RESULT_COLUMNS = [COL_TEAM_ID, COL_GOALS_FOR, COL_GOALS_AGAINST, COL_GAMES, COL_WIN_REGULAR,
+                            COL_WIN_OVERTIME, COL_WIN_SHOOTOUT, COL_LOSE_REGULAR, COL_LOSE_OVERTIME, COL_LOSE_SHOOTOUT,
+                            COL_POINTS]
 
-EXT_INT_ARRAY_RESULT_COLUMNS =\
-    list(range(COL_GOALS_FOR, COL_FACE_OFF_WINS)) + list(range(COL_PENALTY_MINUTES, TEAM_STATS_INT_ARRAY_LEN))
+EXT_INT_ARRAY_RESULT_COLUMNS = [COL_GOALS_FOR, COL_GOALS_AGAINST, COL_PP_GOALS, COL_SH_GOALS_AGAINST]
 
 
 def get_teams_stats(team_stats):
@@ -90,6 +91,7 @@ def _calc_teams_stats(arr_int, arr_fp):
     arr_fp[:, COL_PK_PERCENTAGE] = 100 - percentage(arr_int[:, COL_SH_GOALS_AGAINST], arr_int[:, COL_SH_OPPORTUNITIES])
     arr_fp[:, COL_GOAL_FOR_PER_GAME] = fraction(arr_int[:, COL_GOALS_FOR], arr_int[:, COL_GAMES])
     arr_fp[:, COL_GOAL_AGAINST_PER_GAME] = fraction(arr_int[:, COL_GOALS_AGAINST], arr_int[:, COL_GAMES])
+    arr_fp[:, COL_SHOTS_PER_GAME] = fraction(arr_int[:, COL_SHOTS], arr_int[:, COL_GAMES])
     arr_fp[:, COL_FACE_OFF_WIN_PERCENTAGE] = \
         percentage(arr_int[:, COL_FACE_OFF_WINS], arr_int[:, COL_FACE_OFF_TAKEN])
 
@@ -100,9 +102,7 @@ def _calc_team_ext_stats(arr_int, arr_fp, team_row_idx, ha_stats):
     row = arr_int[team_row_idx, :]
     shots_against = ha_stats.home_sa + ha_stats.away_sa
     ext_stats = [
-        shots_against,  # shots against
         fraction(shots_against, row[COL_GAMES]),  # shots against per game
-        fraction(row[COL_SHOTS], row[COL_GAMES]),  # shots per game
         percentage(row[COL_GOALS_AGAINST], shots_against),  # opponent shooting percentage
         fraction(row[COL_GOALS_FOR], row[COL_GOALS_AGAINST]),  # scoring efficiency ratio
         fraction(row[COL_SHOTS], shots_against),  # shot efficiency ratio
