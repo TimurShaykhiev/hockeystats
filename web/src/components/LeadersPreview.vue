@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams} from 'Store/types';
+import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
 import {floatToStr} from 'Components/utils';
 
 const ITEMS_TO_SHOW = 5;
@@ -90,6 +90,7 @@ export default {
     return {};
   },
   created() {
+    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
     this.$store.dispatch('getCurrentSeason').then((season) => {
       this.$store.dispatch(typesMap[this.type].action, {
         reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
@@ -98,8 +99,9 @@ export default {
   },
   computed: {
     dataSet() {
+      let allTeams = this.$store.state.teams.allTeams.teams;
       let allStats = this[typesMap[this.type].getStats]();
-      if (allStats === undefined) {
+      if (!allTeams || !allStats) {
         return [];
       }
       allStats = allStats.slice();
@@ -124,7 +126,7 @@ export default {
       return statsToShow.map((x) => {
         return {
           name: x.player.name,
-          team: this.$t(`teams.${x.player.tid}`),
+          team: allTeams[x.player.tid].name,
           value: showValueFunc ? showValueFunc(getValueFunc(x)) : getValueFunc(x)
         };
       });

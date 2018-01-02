@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams} from 'Store/types';
+import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
 import {floatToStr, toiToStr, getSeasonName, getPaginationText} from 'Components/utils';
 
 export default {
@@ -33,6 +33,7 @@ export default {
     return {};
   },
   created() {
+    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
     this.requestGoalieStats();
   },
   computed: {
@@ -150,6 +151,10 @@ export default {
     },
 
     rows() {
+      let allTeams = this.$store.state.teams.allTeams.teams;
+      if (!allTeams) {
+        return [];
+      }
       let selSeason = this.$store.state.season.selectedSeason;
       let stats = this.$store.state.players.goalieStats;
       let goalieStats = stats.goalies;
@@ -160,7 +165,7 @@ export default {
       return goalieStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
         rowData.name = t.player.name;
-        rowData.team = this.$t(`teamsShort.${t.player.tid}`);
+        rowData.team = allTeams[t.player.tid].abbr;
         rowData.toi = toiToStr(rowData.toi);
         rowData.gaa = floatToStr(rowData.gaa, 2);
         rowData.svp = floatToStr(rowData.svp, 3, true);

@@ -8,8 +8,8 @@ export class SeasonRequestParams {
   }
   getQueryParams() {
     return [
-      {name: 'sid', value: this.seasonId},
-      {name: 'stype', value: this.seasonType},
+      {name: 'sid', value: this.seasonId, required: true},
+      {name: 'stype', value: this.seasonType, required: true},
       {name: 'limit', value: this.limit},
       {name: 'locale', value: this.locale}
     ];
@@ -20,5 +20,17 @@ export class SeasonRequestParams {
       return false;
     }
     return this.seasonId === season.seasonId && this.seasonType === season.seasonType;
+  }
+}
+
+export class LocaleRequestParams {
+  constructor(store) {
+    // English locale is default, it can be omitted in request.
+    this.locale = store.state.userLocale !== 'en' ? store.state.userLocale : null;
+  }
+  getQueryParams() {
+    return [
+      {name: 'locale', value: this.locale}
+    ];
   }
 }

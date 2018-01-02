@@ -1,6 +1,6 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
-import {commitNew, getPercentage} from 'Store/utils';
+import {commitNew} from 'Store/utils';
 
 const state = {
   skaterStats: {},
@@ -51,31 +51,18 @@ const mutations = {
       skater.stats.assists = s.stats[0];
       skater.stats.goals = s.stats[1];
       skater.stats.shots = s.stats[2];
-      skater.stats.hits = s.stats[3];
-      skater.stats.ppGoals = s.stats[4];
-      skater.stats.ppAssists = s.stats[5];
-      skater.stats.penaltyMinutes = s.stats[6];
-      skater.stats.faceOffWins = s.stats[7];
-      skater.stats.faceOffTaken = s.stats[8];
-      skater.stats.takeaways = s.stats[9];
-      skater.stats.giveaways = s.stats[10];
-      skater.stats.shGoals = s.stats[11];
-      skater.stats.shAssists = s.stats[12];
-      skater.stats.blocked = s.stats[13];
-      skater.stats.plusMinus = s.stats[14];
-      skater.stats.toi = s.stats[15];
-      skater.stats.evenToi = s.stats[16];
-      skater.stats.ppToi = s.stats[17];
-      skater.stats.shToi = s.stats[18];
-      skater.stats.games = s.stats[19];
-      // Calculate some stats
-      skater.stats.points = skater.stats.goals + skater.stats.assists;
-      skater.stats.ppPoints = skater.stats.ppGoals + skater.stats.ppAssists;
-      skater.stats.shPoints = skater.stats.shGoals + skater.stats.shAssists;
-      skater.stats.pointsPerGame = getPercentage(skater.stats.points, skater.stats.games, true);
-      skater.stats.toiPerGame = getPercentage(skater.stats.toi, skater.stats.games, true);
-      skater.stats.shootingPercentage = getPercentage(skater.stats.goals, skater.stats.shots);
-      skater.stats.faceOffWinsPercentage = getPercentage(skater.stats.faceOffWins, skater.stats.faceOffTaken);
+      skater.stats.ppGoals = s.stats[3];
+      skater.stats.penaltyMinutes = s.stats[4];
+      skater.stats.shGoals = s.stats[5];
+      skater.stats.plusMinus = s.stats[6];
+      skater.stats.games = s.stats[7];
+      skater.stats.points = s.stats[8];
+      skater.stats.ppPoints = s.stats[9];
+      skater.stats.shPoints = s.stats[10];
+      skater.stats.pointsPerGame = s.stats[11];
+      skater.stats.toiPerGame = s.stats[12];
+      skater.stats.shootingPercentage = s.stats[13];
+      skater.stats.faceOffWinsPercentage = s.stats[14];
 
       newStat.skaters.push(skater);
     }
@@ -96,21 +83,14 @@ const mutations = {
       goalie.stats.penaltyMinutes = s.stats[3];
       goalie.stats.shots = s.stats[4];
       goalie.stats.saves = s.stats[5];
-      goalie.stats.ppSaves = s.stats[6];
-      goalie.stats.shSaves = s.stats[7];
-      goalie.stats.evenSaves = s.stats[8];
-      goalie.stats.shShotsAgainst = s.stats[9];
-      goalie.stats.evenShotsAgainst = s.stats[10];
-      goalie.stats.ppShotsAgainst = s.stats[11];
-      goalie.stats.games = s.stats[12];
-      goalie.stats.wins = s.stats[13];
-      goalie.stats.shutout = s.stats[14];
-      // Calculate some stats
-      goalie.stats.points = goalie.stats.goals + goalie.stats.assists;
-      goalie.stats.losses = goalie.stats.games - goalie.stats.wins;
-      goalie.stats.goalsAgainst = goalie.stats.shots - goalie.stats.saves;
-      goalie.stats.gaa = getGoalsAgainstAverage(goalie.stats);
-      goalie.stats.svp = getPercentage(goalie.stats.saves, goalie.stats.shots, true);
+      goalie.stats.games = s.stats[6];
+      goalie.stats.wins = s.stats[7];
+      goalie.stats.shutout = s.stats[8];
+      goalie.stats.points = s.stats[9];
+      goalie.stats.losses = s.stats[10];
+      goalie.stats.goalsAgainst = s.stats[11];
+      goalie.stats.gaa = s.stats[12];
+      goalie.stats.svp = s.stats[13];
 
       newStat.goalies.push(goalie);
     }
@@ -124,10 +104,3 @@ export default {
   actions,
   mutations
 };
-
-function getGoalsAgainstAverage(stats) {
-  if (stats.toi > 0) {
-    return (stats.shots - stats.saves) * 60 / Math.round(stats.toi / 60);
-  }
-  return 0;
-}

@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams} from 'Store/types';
+import {LocaleRequestParams} from 'Store/types';
 import Utils from 'Root/utils';
 
 export default {
@@ -38,12 +38,7 @@ export default {
     };
   },
   created() {
-    let season = this.$store.state.season.selectedSeason;
-    if (season.id !== undefined) {
-      this.$store.dispatch('getTeamStats', {
-        reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
-      });
-    }
+    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
   },
   computed: {
     divisions() {
@@ -56,17 +51,19 @@ export default {
 
     teams() {
       let divisions = this.$store.state.teams.divisions;
-      let teamStats = this.$store.state.teams.teamStats.teams;
-      if (divisions.length === 0 || !teamStats) {
+      let allTeams = this.$store.state.teams.allTeams.teams;
+      if (divisions.length === 0 || !allTeams) {
         return {};
       }
       let teams = {};
       for (let d of divisions) {
-        let divTeams = teamStats.filter((t) => t.team.did === d.id);
-        let arr = divTeams.map((t) => {
-          return {id: t.team.id, name: this.$t(`teams.${t.team.id}`)};
-        });
-        teams[d.id] = Utils.sortBy(arr, (e) => e.name);
+        let divTeams = [];
+        for (let key of Object.keys(allTeams)) {
+          if (allTeams[key].did === d.id) {
+            divTeams.push({id: allTeams[key].id, name: allTeams[key].name});
+          }
+        }
+        teams[d.id] = Utils.sortBy(divTeams, (e) => e.name);
       }
       return teams;
     }

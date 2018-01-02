@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams} from 'Store/types';
+import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
 import {floatToStr, getSeasonName} from 'Components/utils';
 
 export default {
@@ -35,6 +35,7 @@ export default {
     return {};
   },
   created() {
+    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
     this.requestTeamStats();
   },
   computed: {
@@ -161,6 +162,10 @@ export default {
     },
 
     rows() {
+      let allTeams = this.$store.state.teams.allTeams.teams;
+      if (!allTeams) {
+        return [];
+      }
       let selSeason = this.$store.state.season.selectedSeason;
       let stats = this.$store.state.teams.teamStats;
       let teamStats = stats.teams;
@@ -170,8 +175,8 @@ export default {
       }
       return teamStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
-        rowData.teamId = t.team.id;
-        rowData.teamName = this.$t(`teams.${t.team.id}`);
+        rowData.teamId = t.id;
+        rowData.teamName = allTeams[t.id].name;
         rowData.pointPercentage = floatToStr(rowData.pointPercentage, 1);
         rowData.goalsForPerGame = floatToStr(rowData.goalsForPerGame, 2);
         rowData.goalsAgainstPerGame = floatToStr(rowData.goalsAgainstPerGame, 2);

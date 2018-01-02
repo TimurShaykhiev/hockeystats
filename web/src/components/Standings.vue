@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams} from 'Store/types';
+import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
 import {floatToStr} from 'Components/utils';
 
 function compareStandings(a, b) {
@@ -105,6 +105,7 @@ export default {
     return {};
   },
   created() {
+    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
     this.$store.dispatch('getCurrentSeason').then((season) => {
       this.$store.dispatch('getTeamStats', {
         reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
@@ -113,33 +114,50 @@ export default {
   },
   computed: {
     conferenceId() {
-      let conferences = this.$store.state.teams.conferences;
-      if (conferences.length === 0) {
+      let allTeams = this.$store.state.teams.allTeams.teams;
+      let teamStats = this.$store.state.teams.teamStats.teams;
+      if (!allTeams || !teamStats) {
         return '';
       }
-      if (this.num === '1') {
-        return Math.min(conferences[0].id, conferences[1].id);
+      let conferences = [];
+      for (let st of teamStats) {
+        // We know there can be only 2 conferences
+        if (conferences.length === 0) {
+          conferences.push(allTeams[st.id].cid);
+        } else if (allTeams[st.id].cid !== conferences[0]) {
+          conferences.push(allTeams[st.id].cid);
+          break;
+        }
       }
-      return Math.max(conferences[0].id, conferences[1].id);
+      if (this.num === '1') {
+        return Math.min(conferences[0], conferences[1]);
+      }
+      return Math.max(conferences[0], conferences[1]);
     },
     caption() {
       let cid = this.conferenceId;
       if (cid) {
-        return this.$t(`conferences.${cid}`);
+        let conferences = this.$store.state.teams.conferences;
+        for (let c of conferences) {
+          if (c.id === cid) {
+            return c.name;
+          }
+        }
       }
       return '';
     },
     dataSet() {
+      let allTeams = this.$store.state.teams.allTeams.teams;
       let teamStats = this.$store.state.teams.teamStats.teams;
       let cid = this.conferenceId;
-      if (!teamStats || !cid) {
+      if (!allTeams || !teamStats || !cid) {
         return [];
       }
 
-      let confStats = teamStats.filter((el) => el.team.cid === cid);
-      let did1 = confStats[0].team.did;
-      let div1 = confStats.filter((el) => el.team.did === did1).sort(compareStandings);
-      let div2 = confStats.filter((el) => el.team.did !== did1).sort(compareStandings);
+      let confStats = teamStats.filter((el) => allTeams[el.id].cid === cid);
+      let did1 = allTeams[confStats[0].id].did;
+      let div1 = confStats.filter((el) => allTeams[el.id].did === did1).sort(compareStandings);
+      let div2 = confStats.filter((el) => allTeams[el.id].did !== did1).sort(compareStandings);
       // Put together 3 top teams from each division and sort them
       let result = div1.slice(0, 3).concat(div2.slice(0, 3));
       result.sort(compareStandings);
@@ -154,8 +172,8 @@ export default {
         return {
           rank: ++i,
           colorMark: getColorMarkClass(i),
-          id: t.team.id,
-          name: this.$t(`teams.${t.team.id}`),
+          id: t.id,
+          name: allTeams[t.id].name,
           games: t.stats.games,
           wins: t.stats.winRegular + t.stats.winOvertime + t.stats.winShootout,
           losses: t.stats.loseRegular,

@@ -1,8 +1,9 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew, getPercentage} from 'Store/utils';
+import {commitNew} from 'Store/utils';
 
 const state = {
+  allTeams: {},
   teamStats: {},
   conferences: [],
   divisions: []
@@ -12,6 +13,31 @@ const getters = {
 };
 
 const actions = {
+  getAllTeams({commit, state}, {reqParams}) {
+    logger.debug('action: getAllTeams');
+    if (state.allTeams.timestamp) {
+      logger.debug('action: getAllTeams all teams are in storage');
+      return Promise.resolve(state.allTeams);
+    }
+    return teamsApi.getAllTeams(reqParams)
+      .then(
+        (result) => {
+          logger.debug('action: getAllTeams result received');
+          commitNew(commit, 'setAllTeams', state.allTeams, result);
+          if (state.conferences.length === 0) {
+            commit('setConferences', result);
+          }
+          if (state.divisions.length === 0) {
+            commit('setDivisions', result);
+          }
+          return state.allTeams;
+        },
+        (error) => {
+          logger.error(`action: getAllTeams error: ${error.message}`);
+        }
+      );
+  },
+
   getTeamStats({commit, state}, {reqParams}) {
     logger.debug('action: getTeamStats');
     if (reqParams.isSeasonEqual(state.teamStats.season)) {
@@ -23,12 +49,6 @@ const actions = {
         (result) => {
           logger.debug('action: getTeamStats result received');
           commitNew(commit, 'setTeamStats', state.teamStats, result);
-          if (state.conferences.length === 0) {
-            commit('setConferences', result);
-          }
-          if (state.divisions.length === 0) {
-            commit('setDivisions', result);
-          }
           return state.teamStats;
         },
         (error) => {
@@ -39,6 +59,16 @@ const actions = {
 };
 
 const mutations = {
+  setAllTeams(state, teams) {
+    let allTeams = {};
+    allTeams.timestamp = teams.timestamp;
+    allTeams.teams = {};
+    for (let t of teams.teams) {
+      allTeams.teams[t.id] = t;
+    }
+    state.allTeams = allTeams;
+  },
+
   setTeamStats(state, stats) {
     logger.debug('mutation: setTeamStats');
     let newStat = {};
@@ -46,58 +76,50 @@ const mutations = {
     newStat.season = stats.season;
     newStat.teams = [];
     for (let s of stats.results) {
-      let team = {team: s.team, stats: {}};
+      let team = {id: s.id, stats: {}};
       team.stats.goalsFor = s.stats[0];
       team.stats.goalsAgainst = s.stats[1];
-      team.stats.shots = s.stats[2];
-      team.stats.ppGoals = s.stats[3];
-      team.stats.ppOpportunities = s.stats[4];
-      team.stats.shGoalsAgainst = s.stats[5];
-      team.stats.shOpportunities = s.stats[6];
-      team.stats.faceOffWins = s.stats[7];
-      team.stats.faceOffTaken = s.stats[8];
-      team.stats.blocked = s.stats[9];
-      team.stats.hits = s.stats[10];
-      team.stats.penaltyMinutes = s.stats[11];
-      team.stats.games = s.stats[12];
-      team.stats.winRegular = s.stats[13];
-      team.stats.winOvertime = s.stats[14];
-      team.stats.winShootout = s.stats[15];
-      team.stats.loseRegular = s.stats[16];
-      team.stats.loseOvertime = s.stats[17];
-      team.stats.loseShootout = s.stats[18];
-      // Calculate some stats
-      team.stats.points = (team.stats.winRegular + team.stats.winOvertime + team.stats.winShootout) * 2 +
-                          team.stats.loseOvertime + team.stats.loseShootout;
-      team.stats.pointPercentage = getPercentage(team.stats.points, team.stats.games * 2);
-      team.stats.goalsForPerGame = getPercentage(team.stats.goalsFor, team.stats.games, true);
-      team.stats.goalsAgainstPerGame = getPercentage(team.stats.goalsAgainst, team.stats.games, true);
-      team.stats.ppPercentage = getPercentage(team.stats.ppGoals, team.stats.ppOpportunities);
-      team.stats.pkPercentage = 100 - getPercentage(team.stats.shGoalsAgainst, team.stats.shOpportunities);
-      team.stats.shotsPerGame = getPercentage(team.stats.shots, team.stats.games, true);
-      team.stats.faceOffWinsPercentage = getPercentage(team.stats.faceOffWins, team.stats.faceOffTaken);
+      team.stats.games = s.stats[2];
+      team.stats.winRegular = s.stats[3];
+      team.stats.winOvertime = s.stats[4];
+      team.stats.winShootout = s.stats[5];
+      team.stats.loseRegular = s.stats[6];
+      team.stats.loseOvertime = s.stats[7];
+      team.stats.loseShootout = s.stats[8];
+      team.stats.points = s.stats[9];
+      team.stats.pointPercentage = s.stats[10];
+      team.stats.ppPercentage = s.stats[11];
+      team.stats.pkPercentage = s.stats[12];
+      team.stats.goalsForPerGame = s.stats[13];
+      team.stats.goalsAgainstPerGame = s.stats[14];
+      team.stats.shotsPerGame = s.stats[15];
+      team.stats.faceOffWinsPercentage = s.stats[16];
 
       newStat.teams.push(team);
     }
     state.teamStats = newStat;
   },
 
-  setConferences(state, stats) {
+  setConferences(state, teams) {
     logger.debug('mutation: setConferences');
     let conf = {};
-    for (let s of stats.results) {
-      conf[s.team.cid] = s.team.conference;
+    for (let team of teams.teams) {
+      if (team.cid) {
+        conf[team.cid] = team.conference;
+      }
     }
     state.conferences = Object.keys(conf).map((key) => {
       return {id: Number(key), name: conf[key]};
     });
   },
 
-  setDivisions(state, stats) {
+  setDivisions(state, teams) {
     logger.debug('mutation: setDivisions');
     let div = {};
-    for (let s of stats.results) {
-      div[s.team.did] = {name: s.team.division, cid: s.team.cid};
+    for (let team of teams.teams) {
+      if (team.did) {
+        div[team.did] = {name: team.division, cid: team.cid};
+      }
     }
     state.divisions = Object.keys(div).map((key) => {
       return {id: Number(key), name: div[key].name, cid: div[key].cid};
