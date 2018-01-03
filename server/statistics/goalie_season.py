@@ -44,8 +44,7 @@ GOALIE_STATS_EXT_FP_ARRAY_LEN = 3
 INT_ARRAY_RESULT_COLUMNS = [COL_PLAYER_ID, COL_TOI, COL_ASSISTS, COL_GOALS, COL_PENALTY_MINUTES, COL_SHOTS, COL_SAVES,
                             COL_GAMES, COL_WINS, COL_SHUTOUT, COL_POINTS, COL_LOSSES, COL_GOALS_AGAINST]
 
-EXT_INT_ARRAY_RESULT_COLUMNS = [COL_TOI, COL_ASSISTS, COL_GOALS, COL_PENALTY_MINUTES, COL_SHOTS, COL_SAVES, COL_GAMES,
-                                COL_WINS, COL_SHUTOUT, COL_POINTS, COL_LOSSES, COL_GOALS_AGAINST]
+EXT_INT_ARRAY_RESULT_COLUMNS = [COL_SAVES, COL_WINS, COL_SHUTOUT, COL_GOALS_AGAINST]
 
 
 def get_goalies_stats(goalie_stats):
@@ -91,7 +90,7 @@ def _calc_goalie_ext_stats(arr_int, arr_fp, goalie_row_idx):
     ext_stats = [
         even_ga,  # even strength goals against
         row[COL_PP_SHOTS_AGAINST] - row[COL_PP_SAVES],  # PP goals against
-        row[COL_SH_SHOTS_AGAINST] - row[COL_SH_SAVES],  # PP goals against
+        row[COL_SH_SHOTS_AGAINST] - row[COL_SH_SAVES],  # SH goals against
         fraction(row[COL_SAVES], row[COL_GAMES]),  # saves per game
         fraction(row[COL_SHOTS], row[COL_GOALS_AGAINST]),  # shots against per goal
         percentage(even_ga, row[COL_GOALS_AGAINST])  # even strength goals against percentage
