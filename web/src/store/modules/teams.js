@@ -5,6 +5,7 @@ import {commitNew} from 'Store/utils';
 const state = {
   allTeams: {},
   teamStats: {},
+  teamSeasonInfo: {},
   conferences: [],
   divisions: []
 };
@@ -42,7 +43,7 @@ const actions = {
     logger.debug('action: getTeamStats');
     if (reqParams.isSeasonEqual(state.teamStats.season)) {
       logger.debug('action: getTeamStats season is in storage');
-      return Promise.resolve(state['teamStats']);
+      return Promise.resolve(state.teamStats);
     }
     return teamsApi.getTeamStats(reqParams)
       .then(
@@ -53,6 +54,26 @@ const actions = {
         },
         (error) => {
           logger.error(`action: getTeamStats error: ${error.message}`);
+        }
+      );
+  },
+
+  getTeamSeasonInfo({commit, state}, {teamId, reqParams}) {
+    logger.debug('action: getTeamSeasonInfo');
+    if (state.teamSeasonInfo.team && teamId === state.teamSeasonInfo.team.id &&
+        reqParams.isSeasonEqual(state.teamSeasonInfo.season)) {
+      logger.debug('action: getTeamSeasonInfo team info is in storage');
+      return Promise.resolve(state.teamSeasonInfo);
+    }
+    return teamsApi.getTeamSeasonInfo(teamId, reqParams)
+      .then(
+        (result) => {
+          logger.debug('action: getTeamSeasonInfo result received');
+          commitNew(commit, 'setTeamSeasonInfo', state.teamSeasonInfo, result);
+          return state.teamSeasonInfo;
+        },
+        (error) => {
+          logger.error(`action: getTeamSeasonInfo error: ${error.message}`);
         }
       );
   }
@@ -98,6 +119,66 @@ const mutations = {
       newStat.teams.push(team);
     }
     state.teamStats = newStat;
+  },
+
+  setTeamSeasonInfo(state, info) {
+    logger.debug('mutation: setTeamSeasonInfo');
+    let teamInfo = {};
+    teamInfo.timestamp = info.timestamp;
+    teamInfo.season = info.season;
+    teamInfo.team = info.team;
+
+    teamInfo.goalsFor = info.stats[0];
+    teamInfo.goalsAgainst = info.stats[1];
+    teamInfo.ppGoals = info.stats[2];
+    teamInfo.shGoalsAgainst = info.stats[3];
+    teamInfo.pointPercentage = info.stats[4];
+    teamInfo.ppPercentage = info.stats[5];
+    teamInfo.pkPercentage = info.stats[6];
+    teamInfo.goalsForPerGame = info.stats[7];
+    teamInfo.goalsAgainstPerGame = info.stats[8];
+    teamInfo.shotsPerGame = info.stats[9];
+    teamInfo.faceOffWinsPercentage = info.stats[10];
+    teamInfo.shootingPercentage = info.stats[11];
+    teamInfo.shotsAgainstPerGame = info.stats[12];
+    teamInfo.oppShootingPercentage = info.stats[13];
+    teamInfo.scoringEfficiencyRatio = info.stats[14];
+    teamInfo.shotEfficiencyRatio = info.stats[15];
+    teamInfo.penaltyEfficiencyRatio = info.stats[16];
+    teamInfo.pointsPerGame = info.stats[17];
+    teamInfo.ppGoalsPerGame = info.stats[18];
+    teamInfo.shGoalsAgainstPerGame = info.stats[19];
+    teamInfo.ppPerGame = info.stats[20];
+    teamInfo.shPerGame = info.stats[21];
+    teamInfo.savePercentage = info.stats[22];
+    teamInfo.oppSavePercentage = info.stats[23];
+    teamInfo.shutouts = info.stats[24];
+    teamInfo.homeGoals = info.stats[25];
+    teamInfo.awayGoals = info.stats[26];
+    teamInfo.homeGoalsAgainst = info.stats[27];
+    teamInfo.awayGoalsAgainst = info.stats[28];
+    teamInfo.homeShots = info.stats[29];
+    teamInfo.awayShots = info.stats[30];
+    teamInfo.homeShotsAgainst = info.stats[31];
+    teamInfo.awayShotsAgainst = info.stats[32];
+    teamInfo.homePPPercentage = info.stats[33];
+    teamInfo.awayPPPercentage = info.stats[34];
+    teamInfo.homePKPercentage = info.stats[35];
+    teamInfo.awayPKPercentage = info.stats[36];
+    teamInfo.ppPercentageRate = info.stats[37];
+    teamInfo.ppPercentageAvg = info.stats[38];
+    teamInfo.pkPercentageRate = info.stats[39];
+    teamInfo.pkPercentageAvg = info.stats[40];
+    teamInfo.goalsForPerGameRate = info.stats[41];
+    teamInfo.goalsForPerGameAvg = info.stats[42];
+    teamInfo.goalsAgainstPerGameRate = info.stats[43];
+    teamInfo.goalsAgainstPerGameAvg = info.stats[44];
+    teamInfo.faceOffWinsPercentageRate = info.stats[45];
+    teamInfo.faceOffWinsPercentageAvg = info.stats[46];
+    teamInfo.shootingPercentageRate = info.stats[47];
+    teamInfo.shootingPercentageAvg = info.stats[48];
+
+    state.teamSeasonInfo = teamInfo;
   },
 
   setConferences(state, teams) {

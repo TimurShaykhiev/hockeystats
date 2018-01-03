@@ -15,5 +15,13 @@ export default {
       query: reqParams.getQueryParams()
     };
     return makeRequest(reqData);
+  },
+
+  getTeamSeasonInfo(teamId, reqParams) {
+    let reqData = {
+      path: ['team', teamId, 'stats'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };
