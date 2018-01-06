@@ -42,3 +42,12 @@ export function getPaginationText(translateFunc) {
     allText: translateFunc('pagination.allText')
   };
 }
+
+export function numberToOrdinal(num, translateFunc) {
+  // Now it is applicable for english and russian languages only
+  let rem = num % 100;
+  if (rem === 11 || rem === 12 || rem === 12) {
+    return `${num}${translateFunc('ordinalNumbers[0]')}`;
+  }
+  return `${num}${translateFunc(`ordinalNumbers[${num % 10}]`)}`;
+}

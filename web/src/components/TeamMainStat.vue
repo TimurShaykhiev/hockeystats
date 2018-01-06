@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {floatToStr} from 'Components/utils';
+import {floatToStr, numberToOrdinal} from 'Components/utils';
 
 export default {
   name: 'team-main-stat',
@@ -46,13 +46,11 @@ export default {
     return {
       caption: this.label.toUpperCase(),
       statValue: floatToStr(this.value, 2),
-      placeInRate: this.rating,
+      placeInRate: numberToOrdinal(this.rating, (str) => this.$t(str)),
       leagueAverage: floatToStr(this.average, 2),
       statBarHeight: `${Math.round(this.value / Math.max(this.value, this.average) * 100)}px`,
       avgBarHeight: `${Math.round(this.average / Math.max(this.value, this.average) * 100)}px`
     };
-  },
-  created() {
   },
   computed: {
     statQualityClass() {
@@ -61,8 +59,6 @@ export default {
       }
       return this.value <= this.average ? 'good-stat' : 'bad-stat';
     }
-  },
-  methods: {
   }
 };
 
@@ -78,7 +74,6 @@ export default {
     width: 220px;
   }
   .team-main-stat__value {
-    margin: 0;
     font-size: 3em;
   }
   .team-main-stat__caption {
@@ -86,7 +81,6 @@ export default {
     font-size: 1em;
   }
   .team-main-stat__rating {
-    margin: 0;
     font-size: 2em;
   }
   .team-main-stat__average {

@@ -96,7 +96,18 @@ let locales = {
         shutouts: 'Shutouts',
         shutoutsShort: 'SO',
         timeOnIce: 'Time On Ice',
-        timeOnIceShort: 'TOI'
+        timeOnIceShort: 'TOI',
+        shotsAgainstPerGame: 'Shots Against Per Game',
+        oppShootingPercentage: 'Opponent Shooting Percentage',
+        scoringEfficiencyRatio: 'Scoring Efficiency Ratio',
+        shotEfficiencyRatio: 'Shot Efficiency Ratio',
+        penaltyEfficiencyRatio: 'Penalty Efficiency Ratio',
+        ppGoalsPerGame: 'Power Play Goals Per Game',
+        ppPerGame: 'Power Plays Per Game',
+        shGoalsAgainst: 'Short Handed Goals Against',
+        shGoalsAgainstPerGame: 'Short Handed Goals Against Per Game',
+        shPerGame: 'Penalty Kills Per Game',
+        oppSavePercentage: 'Opponent Save Percentage'
       },
       season: {
         regular: 'Regular season',
@@ -115,7 +126,8 @@ let locales = {
         rowsPerPage: 'Rows Per Page',
         ofText: 'of',
         allText: 'All'
-      }
+      },
+      ordinalNumbers: ['TH', 'ST', 'ND', 'RD', 'TH', 'TH', 'TH', 'TH', 'TH', 'TH']
     },
     ru: {
       statNames: {
@@ -204,7 +216,18 @@ let locales = {
         shutouts: 'Матчи на ноль',
         shutoutsShort: 'СМ',
         timeOnIce: 'Время на льду',
-        timeOnIceShort: 'ВРМ'
+        timeOnIceShort: 'ВРМ',
+        shotsAgainstPerGame: 'В среднем бросков по своим воротам за матч',
+        oppShootingPercentage: 'Процент реализации бросков противника',
+        scoringEfficiencyRatio: 'Отношение забитых/пропущенных голов',
+        shotEfficiencyRatio: 'Отношение своих/чужих бросков',
+        penaltyEfficiencyRatio: 'Отношение своих/чужих штрафных минут',
+        ppGoalsPerGame: 'Голов в большинстве в среднем за матч',
+        ppPerGame: 'Розыгрышей большинства в среднем за матч',
+        shGoalsAgainst: 'Пропущенные голы в меньшинстве',
+        shGoalsAgainstPerGame: 'Пропущенных голов в меньшинстве в среднем за матч',
+        shPerGame: 'Розыгрышей меньшинства в среднем за матч',
+        oppSavePercentage: 'Процент отраженных бросков противника'
       },
       season: {
         regular: 'Регулярный сезон',
@@ -223,7 +246,8 @@ let locales = {
         rowsPerPage: 'Строк на стр.',
         ofText: 'из',
         allText: 'Все'
-      }
+      },
+      ordinalNumbers: ['й', 'й', 'й', 'й', 'й', 'й', 'й', 'й', 'й', 'й']
     }
   }
 };
