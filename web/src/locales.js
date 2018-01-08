@@ -221,7 +221,7 @@ let locales = {
         oppShootingPercentage: 'Процент реализации бросков противника',
         scoringEfficiencyRatio: 'Отношение забитых/пропущенных голов',
         shotEfficiencyRatio: 'Отношение своих/чужих бросков',
-        penaltyEfficiencyRatio: 'Отношение своих/чужих штрафных минут',
+        penaltyEfficiencyRatio: 'Отношение чужих/своих штрафных минут',
         ppGoalsPerGame: 'Голов в большинстве в среднем за матч',
         ppPerGame: 'Розыгрышей большинства в среднем за матч',
         shGoalsAgainst: 'Пропущенные голы в меньшинстве',

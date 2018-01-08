@@ -79,29 +79,29 @@ export default {
 </script>
 
 <style lang="less">
-  @textColor: white;
+  @import '../../styles/vars.less';
 
   .header {
     align-items: center;
-    height: 80px;
-    background: blue;
+    height: 5rem;
+    background: @header-color;
   }
   .header__logo {
-    width: 60px;
-    height: 60px;
-    margin: 5px;
+    width: 4rem;
+    height: 4rem;
+    margin: 0.5rem;
     background: darkblue;
-    color: @textColor;
+    color: @header-text-color;
     cursor: pointer;
   }
   .header__caption {
-    margin-left: 20px;
-    font-size: 24px;
-    color: @textColor;
+    margin-left: 1.25rem;
+    font-size: 1.5rem;
+    color: @header-text-color;
     cursor: pointer;
   }
   .header__nav-bar {
-    margin-left: 50px;
+    margin-left: 3rem;
     ul {
       list-style-type: none;
       margin: 0;
@@ -111,9 +111,9 @@ export default {
         float: left;
         a {
           display: block;
-          color: @textColor;
+          color: @header-text-color;
           text-align: center;
-          padding: 16px;
+          padding: 1rem;
           text-decoration: none;
         &:hover {
           background-color: lightgray;
@@ -123,12 +123,12 @@ export default {
     }
   }
   .header__change-lang {
-    margin: auto 10px auto auto;
-    color: @textColor;
-    font-size: 12px;
+    margin: auto 0.8rem auto auto;
+    color: @header-text-color;
+    font-size: 0.75rem;
     ul {
       list-style-type: none;
-      margin: 5px 0;
+      margin: 0.4rem 0;
       padding: 0;
       overflow: hidden;
       text-align: right;

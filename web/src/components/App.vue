@@ -30,14 +30,14 @@ export default {
     margin: 5px;
   }
   .main-content {
-    flex: 5 5 0px;
+    flex: 5 5 0;
     margin: 10px;
   }
   .side-banner {
     background: lightgrey;
     max-width: 120px;
     min-width: 120px;
-    flex: 1 1 0px;
+    flex: 1 1 0;
     margin: 5px;
   }
 </style>

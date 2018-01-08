@@ -44,30 +44,31 @@ export default {
 
   .stats-block {
     font-family: @header-font;
-    margin: 30px;
-    border: dimgray 1px solid;
+    margin: 2rem;
+    border: 1px solid @border-color;
   }
   .stats-block__caption {
-    background: darkcyan;
+    color: @header-text-color;
+    background: @header-color;
     height: 2.5em;
-    padding-left: 20px;
+    padding-left: 1rem;
+  }
+  .stats-block__block {
+    justify-content: space-around;
   }
   .stats-block__item {
-    margin: 5px;
+    margin: .5rem;
+    max-width: 12rem;
     min-width: 10rem;
     height: 10rem;
     text-align: center;
-    border-left: dimgray 1px solid;
-    &:first-of-type {
-      border-left: none;
-    }
   }
   .stats-block__value {
     font-size: 3rem;
   }
   .stats-block__name {
-    color: darkcyan;
+    color: @header-color;
     font-size: 1rem;
-    margin: 0 0.5rem;
+    margin: 0 .5rem;
   }
 </style>

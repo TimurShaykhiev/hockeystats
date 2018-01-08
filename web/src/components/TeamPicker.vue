@@ -78,27 +78,31 @@ export default {
 </script>
 
 <style lang="less">
+  @team-picker-background-color: #708090;
+  @team-picker-text-color: #FFF;
+  @team-picker-team-link-color: #D3D3D3;
+
   .team-picker {
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
   }
   .team-picker__container {
-    border: 1px solid slategrey;
+    border: 1px solid @team-picker-background-color;
     border-radius: 10px;
-    background: slategrey;
+    background: @team-picker-background-color;
   }
   .team-picker__div-container {
-    margin: 10px 20px;
+    margin: .6rem .75rem;
   }
   .team-picker__div-name {
-    color: white;
+    color: @team-picker-text-color;
   }
   .team-picker__team {
-    margin: 3px 0;
+    margin: .25rem 0;
     a {
-      color: lightgrey;
+      color: @team-picker-team-link-color;
       text-decoration: none;
       &:hover {
-        color: white;
+        color: @team-picker-text-color;
       }
     }
   }

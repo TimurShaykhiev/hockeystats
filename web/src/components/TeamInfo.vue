@@ -1,10 +1,12 @@
 <template>
-  <div class="team-info">
+  <div class="team-info container-col">
     <div class="team-info__caption container-row">
       <img :src="logoUrl" class="team-info__logo">
       <h1 class="team-info__name">{{teamName}}</h1>
     </div>
-    <season-picker type="all"/>
+    <div class="team-info__season-picker container-row">
+      <season-picker type="all"/>
+    </div>
     <div class="container-row">
       <team-main-stat v-for="el in ratings"
         :key="el.id" :label="el.label" :value="el.value" :rating="el.rate" :average="el.avg" :sortOrder="el.sortOrder">
@@ -115,12 +117,6 @@ export default {
         value: teamInfo.shootingPercentage,
         rate: teamInfo.shootingPercentageRate,
         avg: teamInfo.shootingPercentageAvg
-      }, {
-        id: 'faceOffWinsPercentage',
-        label: this.$t('statNames.faceOffWinsPercentage'),
-        value: teamInfo.faceOffWinsPercentage,
-        rate: teamInfo.faceOffWinsPercentageRate,
-        avg: teamInfo.faceOffWinsPercentageAvg
       }];
     },
 
@@ -367,13 +363,19 @@ export default {
 <style lang="less">
   .team-info__caption {
     align-items: center;
+    padding: 0 3rem;
   }
   .team-info__logo {
-    width: 150px;
-    height: 150px;
+    width: 10rem;
+    height: 10rem;
   }
   .team-info__name {
-    font-size: 3em;
-    margin: 0 0 0 40px;
+    font-size: 3rem;
+    margin: 0 0 0 2.5rem;
+  }
+  .team-info__season-picker {
+    justify-content: flex-end;
+    padding: 0 2rem;
+    margin: 1rem 0;
   }
 </style>

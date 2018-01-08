@@ -145,35 +145,33 @@ export default {
 </script>
 
 <style lang="less">
+  @import '../../styles/vars.less';
+
   .preview-table {
-    margin: 10px;
+    margin: .75rem;
     table {
       border-collapse: collapse;
-      border: 1px solid black;
-      width: 250px;
+      border: 1px solid @border-color;
+      width: 16rem;
       table-layout: fixed;
     }
     caption {
       height: 2em;
-      color: white;
-      background: black;
+      color: @header-text-color;
+      background: @header-color;
       line-height: 2em;
-      font-size: 1.3em;
+      font-size: 1.3rem;
     }
     tr {
       height: 2em;
-      &:first-of-type {
-        height: 3em;
-        font-size: 1.5em;
-      }
       &:nth-of-type(odd) {
-        background: #e1e1e1;
+        background-color: @table-striped-color;
       }
     }
     td {
-      padding: 0 10px;
+      padding: 0 .6rem;
       &:nth-of-type(even) {
-        width: 50px;
+        width: 3rem;
         text-align: center;
       }
       overflow: hidden;
@@ -183,7 +181,7 @@ export default {
           display: block;
         }
         &.preview-table__team-name {
-          font-size: 12px;
+          font-size: .75rem;
         }
       }
     }

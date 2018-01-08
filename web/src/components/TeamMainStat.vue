@@ -67,51 +67,55 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
+  @good-stat-color: #008000;
+  @bad-stat-color: #8B0000;
+  @bar-width: 2.5rem;
+
   .team-main-stat {
-    margin: 5px 10px;
+    margin: 0.4rem 0.8rem;
     align-items: center;
     text-align: center;
-    width: 220px;
+    width: 13rem;
   }
   .team-main-stat__value {
-    font-size: 3em;
+    font-size: 3rem;
   }
   .team-main-stat__caption {
-    margin: 0 10px;
-    font-size: 1em;
+    margin: 0 0.8rem;
+    font-size: 1rem;
   }
   .team-main-stat__rating {
-    font-size: 2em;
+    font-size: 2rem;
   }
   .team-main-stat__average {
     font-family: @header-font;
-    font-size: 0.85em;
-    width: 80px;
+    font-size: 0.85rem;
+    width: @bar-width * 2;
   }
   .team-main-stat__average-bars {
     justify-content: center;
     align-items: flex-end;
   }
   .team-main-stat__bar {
-    width: 40px;
+    width: @bar-width;
     .team-main-stat__bar-rect {
-      background: darkgray;
+      background: #A9A9A9;
       &.good-stat {
-        background: green;
+        background: @good-stat-color;
       }
       &.bad-stat {
-        background: darkred;
+        background: @bad-stat-color;
       }
     }
   }
   .team-main-stat__avg-label {
     text-align: right;
-    padding: 0 10px;
+    padding: 0 0.8rem;
   }
   .good-stat {
-    color: green;
+    color: @good-stat-color;
   }
   .bad-stat {
-    color: darkred;
+    color: @bad-stat-color;
   }
 </style>

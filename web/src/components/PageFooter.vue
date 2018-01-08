@@ -23,7 +23,7 @@ export default {
 
 <style lang="less">
   .footer {
-    height: 100px;
+    height: 6rem;
     background: green;
   }
 </style>

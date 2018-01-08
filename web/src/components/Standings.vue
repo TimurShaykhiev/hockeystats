@@ -191,20 +191,23 @@ export default {
 </script>
 
 <style lang="less">
+  @import '../../styles/vars.less';
+
   .standings-table {
-    margin: 10px;
+    margin: .7rem;
     table {
       border-collapse: collapse;
-      font-size: 16px;
+      font-size: 1rem;
     }
     caption {
       text-align: left;
-      padding-left: 20px;
-      background: darkgrey;
+      padding-left: 1.25rem;
+      color: @header-text-color;
+      background: @header-color;
       line-height: 2em;
     }
     tr {
-      border-bottom: 1px solid black;
+      border-bottom: 1px solid @border-color;
       border-collapse: collapse;
       &:last-of-type {
         border-bottom: none;
@@ -219,29 +222,29 @@ export default {
       border: none;
       text-align: center;
       &.rank-cell {
-        width: 30px;
-        background-color: white;
+        width: 2rem;
+        background-color: #FFF;
         &.division-top {
-          background-color: green;
+          background-color: #008000;
         }
         &.wild-card {
-          background-color: orange;
+          background-color: #FFA500;
         }
       }
       &.number-cell {
-        width: 40px;
+        width: 2.5rem;
       }
       &.name-cell {
-        width: 180px;
+        width: 11rem;
         text-align: left;
-        padding-left: 10px;
+        padding-left: .7rem;
         a {
           color: black;
           text-decoration: none;
         }
       }
       &.secondary-cell {
-        color: #959595;
+        color: @text-color-faded;
       }
     }
   }
