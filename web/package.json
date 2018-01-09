@@ -41,7 +41,6 @@
     "vue": "^2.4.4",
     "vue-good-table": "^1.17.0",
     "vue-i18n": "^7.3.1",
-    "vue-js-toggle-button": "^1.2.0",
     "vue-router": "^2.7.0",
     "vuex": "^2.4.1",
     "whatwg-fetch": "^2.0.3"

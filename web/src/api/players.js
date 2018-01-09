@@ -31,5 +31,13 @@ export default {
       query: reqParams.getQueryParams()
     };
     return makeRequest(reqData);
+  },
+
+  getSkaterSeasons(playerId) {
+    return makeRequest({path: ['skater', playerId, 'seasons']});
+  },
+
+  getGoalieSeasons(playerId) {
+    return makeRequest({path: ['goalie', playerId, 'seasons']});
   }
 };

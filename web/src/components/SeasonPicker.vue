@@ -1,16 +1,9 @@
 <template>
-  <div class="season-picker">
-    <label>{{$t("seasonLabel")}}
-      <select v-model="selectedSeason" @change="seasonChanged">
-        <option v-for="el in seasonsList" :value="el.value">{{el.name}}</option>
-      </select>
-    </label>
-    <toggle-button v-model="isRegular"
-                   :labels="labels"
-                   :color="{checked: '#7DCE94', unchecked: '#82C7EB'}"
-                   :width="100"
-                   @change="seasonChanged">
-    </toggle-button>
+  <div class="season-picker container-row">
+    <h4 class="season-picker__label">{{$t("seasonLabel")}}</h4>
+    <select class="season-picker__select" v-model="selectedSeason" @change="seasonChanged">
+      <option v-for="el in seasonsList" :value="el.value">{{el.name}}</option>
+    </select>
   </div>
 </template>
 
@@ -25,26 +18,35 @@ export default {
     messages: {
       en: {
         seasonLabel: 'Season',
-        regularLabel: 'Regular',
         playoffLabel: 'Playoff'
       },
       ru: {
         seasonLabel: 'Сезон',
-        regularLabel: 'Регулярный',
         playoffLabel: 'Плей-офф'
       }
     }
   },
   data() {
     return {
-      labels: {checked: this.$t('regularLabel'), unchecked: this.$t('playoffLabel')},
-      selectedSeason: '',
-      isRegular: true
+      // for playoff season id is negative
+      selectedSeason: null
     };
   },
   created() {
     if (this.type === 'all') {
       this.$store.dispatch('getAllSeasons').then((result) => {
+        this.setSelectedSeason(result.seasons);
+      });
+    } else if (this.type === 'team') {
+      this.$store.dispatch('getTeamSeasons', {teamId: this.$route.params.id}).then((result) => {
+        this.setSelectedSeason(result.seasons);
+      });
+    } else if (this.type === 'skater') {
+      this.$store.dispatch('getSkaterSeasons', {teamId: this.$route.params.id}).then((result) => {
+        this.setSelectedSeason(result.seasons);
+      });
+    } else if (this.type === 'goalie') {
+      this.$store.dispatch('getGoalieSeasons', {teamId: this.$route.params.id}).then((result) => {
         this.setSelectedSeason(result.seasons);
       });
     }
@@ -57,7 +59,16 @@ export default {
       }
       let result = [];
       for (let el of seasons) {
-        result.push({name: `${el.year}-${el.year % 100 + 1}`, value: el.id});
+        let name;
+        let id;
+        if (el.regular) {
+          name = `${el.year}-${el.year % 100 + 1}`;
+          id = el.id;
+        } else {
+          name = `${el.year}-${el.year % 100 + 1} ${this.$t('playoffLabel')}`;
+          id = -el.id;
+        }
+        result.push({name: name, value: id});
       }
       return result;
     }
@@ -66,22 +77,27 @@ export default {
     getSeasons() {
       if (this.type === 'all') {
         return this.$store.state.season.allSeasons.seasons;
+      } else if (this.type === 'team') {
+        return this.$store.state.teams.teamSeasons.seasons;
+      } else if (this.type === 'skater') {
+        return this.$store.state.players.skaterSeasons.seasons;
+      } else if (this.type === 'goalie') {
+        return this.$store.state.players.goalieSeasons.seasons;
       }
     },
     seasonChanged() {
-      this.$store.commit('setSelectedSeason', {id: this.selectedSeason, regular: this.isRegular});
+      this.$store.commit('setSelectedSeason', {id: Math.abs(this.selectedSeason), regular: this.selectedSeason > 0});
     },
     setSelectedSeason(seasons) {
       let selectedSeason = this.$store.state.season.selectedSeason;
       if (selectedSeason.id !== undefined &&
           seasons.find((el) => el.id === selectedSeason.id) !== undefined) {
         // Set selected season from storage
-        this.selectedSeason = selectedSeason.id;
-        this.isRegular = selectedSeason.regular;
+        this.selectedSeason = selectedSeason.regular ? selectedSeason.id : -selectedSeason.id;
       } else {
         // Not in storage yet or seasons list does not contain selected season.
         // Set first season in list as selected.
-        this.selectedSeason = seasons[0].id;
+        this.selectedSeason = seasons[0].regular ? seasons[0].id : -seasons[0].id;
         this.seasonChanged();
       }
     }
@@ -91,4 +107,13 @@ export default {
 </script>
 
 <style lang="less">
+  .season-picker {
+    font-size: 1.2rem;
+  }
+  .season-picker__label {
+    margin: 0 .8rem;
+  }
+  .season-picker__select {
+    border-radius: 4px;
+  }
 </style>

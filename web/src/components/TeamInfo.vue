@@ -5,7 +5,7 @@
       <h1 class="team-info__name">{{teamName}}</h1>
     </div>
     <div class="team-info__season-picker container-row">
-      <season-picker type="all"/>
+      <season-picker type="team"/>
     </div>
     <div class="container-row">
       <team-main-stat v-for="el in ratings"

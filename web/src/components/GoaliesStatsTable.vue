@@ -39,10 +39,10 @@ export default {
   computed: {
     tableCaption() {
       let selSeason = this.$store.state.season.selectedSeason;
-      if (selSeason.id === undefined) {
+      let all = this.$store.state.season.allSeasons.seasons;
+      if (selSeason.id === undefined || all === undefined) {
         return '';
       }
-      let all = this.$store.state.season.allSeasons.seasons;
       return getSeasonName(selSeason, all, (str) => this.$t(str));
     },
 

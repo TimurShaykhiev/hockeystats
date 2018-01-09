@@ -23,5 +23,9 @@ export default {
       query: reqParams.getQueryParams()
     };
     return makeRequest(reqData);
+  },
+
+  getTeamSeasons(teamId) {
+    return makeRequest({path: ['team', teamId, 'seasons']});
   }
 };

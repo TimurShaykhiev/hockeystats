@@ -6,6 +6,7 @@ const state = {
   allTeams: {},
   teamStats: {},
   teamSeasonInfo: {},
+  teamSeasons: {},
   conferences: [],
   divisions: []
 };
@@ -74,6 +75,25 @@ const actions = {
         },
         (error) => {
           logger.error(`action: getTeamSeasonInfo error: ${error.message}`);
+        }
+      );
+  },
+
+  getTeamSeasons({commit, state}, {teamId}) {
+    logger.debug('action: getTeamSeasons');
+    if (teamId === state.teamSeasons.teamId) {
+      logger.debug('action: getTeamSeasons team seasons in storage');
+      return Promise.resolve(state.teamSeasons);
+    }
+    return teamsApi.getTeamSeasons(teamId)
+      .then(
+        (result) => {
+          logger.debug('action: getTeamSeasons result received');
+          commitNew(commit, 'setTeamSeasons', state.teamSeasons, result);
+          return state.teamSeasons;
+        },
+        (error) => {
+          logger.error(`action: getTeamSeasons error: ${error.message}`);
         }
       );
   }
@@ -179,6 +199,15 @@ const mutations = {
     teamInfo.shootingPercentageAvg = info.stats[48];
 
     state.teamSeasonInfo = teamInfo;
+  },
+
+  setTeamSeasons(state, result) {
+    logger.debug('mutation: setTeamSeasons');
+    state.teamSeasons = {
+      timestamp: result.timestamp,
+      seasons: result.seasons,
+      teamId: result.id
+    };
   },
 
   setConferences(state, teams) {

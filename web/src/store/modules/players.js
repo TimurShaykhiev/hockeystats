@@ -6,7 +6,9 @@ const state = {
   skaterStats: {},
   goalieStats: {},
   skaterSeasonInfo: {},
-  goalieSeasonInfo: {}
+  goalieSeasonInfo: {},
+  skaterSeasons: {},
+  goalieSeasons: {}
 };
 
 const getters = {
@@ -51,6 +53,25 @@ function getPlayerSeasonInfo(actName, mutName, stateName, commit, state, playerI
     );
 }
 
+function getPlayerSeasons(actName, mutName, stateName, commit, state, playerId) {
+  logger.debug(`action: ${actName}`);
+  if (playerId === state[stateName].playerId) {
+    logger.debug(`action: ${actName} player seasons in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  return playersApi[actName](playerId)
+    .then(
+      (result) => {
+        logger.debug(`action: ${actName} result received`);
+        commitNew(commit, mutName, state[stateName], result);
+        return state[stateName];
+      },
+      (error) => {
+        logger.error(`action: ${actName} error: ${error.message}`);
+      }
+    );
+}
+
 const actions = {
   getSkaterStats({commit, state}, {reqParams}) {
     return getPlayersStats('getSkaterStats', 'setSkaterStats', 'skaterStats', commit, state, reqParams);
@@ -68,6 +89,16 @@ const actions = {
   getGoalieSeasonInfo({commit, state}, {playerId, reqParams}) {
     return getPlayerSeasonInfo('getGoalieSeasonInfo', 'setGoalieSeasonInfo', 'goalieSeasonInfo',
       commit, state, playerId, reqParams);
+  },
+
+  getSkaterSeasons({commit, state}, {playerId}) {
+    return getPlayerSeasons('getSkaterSeasons', 'setSkaterSeasons', 'skaterSeasons',
+      commit, state, playerId);
+  },
+
+  getGoalieSeasons({commit, state}, {playerId}) {
+    return getPlayerSeasons('getGoalieSeasons', 'setGoalieSeasons', 'goalieSeasons',
+      commit, state, playerId);
   }
 };
 
@@ -213,6 +244,24 @@ const mutations = {
     goalieInfo.shutoutRate = info.stats[17];
 
     state.goalieSeasonInfo = goalieInfo;
+  },
+
+  setSkaterSeasons(state, result) {
+    logger.debug('mutation: setSkaterSeasons');
+    state.skaterSeasons = {
+      timestamp: result.timestamp,
+      seasons: result.seasons,
+      playerId: result.id
+    };
+  },
+
+  setGoalieSeasons(state, result) {
+    logger.debug('mutation: setGoalieSeasons');
+    state.goalieSeasons = {
+      timestamp: result.timestamp,
+      seasons: result.seasons,
+      playerId: result.id
+    };
   }
 };
 
