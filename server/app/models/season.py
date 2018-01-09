@@ -82,14 +82,18 @@ class SeasonCollection:
             season = Season()
             season.set_from_data_model(s)
             self.seasons.append(season)
-        schema = SeasonCollectionSchema()
+        schema = _SeasonCollectionSchema()
         return schema.dumps(self)
+
+
+class _SeasonCollectionSchema(ModelSchema):
+    seasons = fields.Nested(SeasonSchema, many=True)
 
 
 class _FilteredSeasonCollection:
     def __init__(self, object_id, object_dm_cls, object_id_field):
         self.seasons = []
-        self._obj_id = object_id
+        self.obj_id = object_id
         self._obj_dm_cls = object_dm_cls
         self._obj_id_field = object_id_field
 
@@ -98,7 +102,7 @@ class _FilteredSeasonCollection:
         all_seasons = _get_all_seasons(db)
         seasons = self._get_obj_seasons(db)
         self._set_seasons(all_seasons, seasons)
-        schema = SeasonCollectionSchema()
+        schema = _FilteredSeasonCollectionSchema()
         return schema.dumps(self)
 
     def _set_seasons(self, all_seasons, obj_seasons):
@@ -115,7 +119,7 @@ class _FilteredSeasonCollection:
                 self.seasons.append(season)
 
     def _get_obj_seasons(self, db):
-        return self._obj_dm_cls.get_filtered(db, [self._obj_id_field], [self._obj_id],
+        return self._obj_dm_cls.get_filtered(db, [self._obj_id_field], [self.obj_id],
                                              columns=['season_id', 'is_regular'])
 
 
@@ -134,7 +138,8 @@ class GoalieSeasonCollection(_FilteredSeasonCollection):
         super().__init__(player_id, GoalieSumStat, 'player_id')
 
 
-class SeasonCollectionSchema(ModelSchema):
+class _FilteredSeasonCollectionSchema(ModelSchema):
+    id = fields.Integer(attribute='obj_id')
     seasons = fields.Nested(SeasonSchema, many=True)
 
 
