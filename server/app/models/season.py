@@ -4,6 +4,9 @@ from flask import request, current_app
 from app.database import get_db
 from . import ModelSchema
 from data_models.season import Season as SeasonDm
+from data_models.team_sum_stat import TeamSumStat
+from data_models.goalie_sum_stat import GoalieSumStat
+from data_models.skater_sum_stat import SkaterSumStat
 from app.api.response_utils import ApiError, InvalidQueryParams
 
 SEASON_ID_QUERY_PARAM = 'sid'
@@ -74,18 +77,70 @@ class SeasonCollection:
 
     def get_collection(self):
         db = get_db()
-        all_seasons = SeasonDm.get_all(db, order_by=['-start'])
-        if len(all_seasons) == 0:
-            current_app.logger.error('Seasons are not found.')
-            raise ApiError(404, 'SEASON_NOT_FOUND')
+        all_seasons = _get_all_seasons(db)
         for s in all_seasons:
             season = Season()
             season.set_from_data_model(s)
             self.seasons.append(season)
-        self.seasons.sort(key=lambda x: x.year, reverse=True)
         schema = SeasonCollectionSchema()
         return schema.dumps(self)
 
 
+class _FilteredSeasonCollection:
+    def __init__(self, object_id, object_dm_cls, object_id_field):
+        self.seasons = []
+        self._obj_id = object_id
+        self._obj_dm_cls = object_dm_cls
+        self._obj_id_field = object_id_field
+
+    def get_collection(self):
+        db = get_db()
+        all_seasons = _get_all_seasons(db)
+        seasons = self._get_obj_seasons(db)
+        self._set_seasons(all_seasons, seasons)
+        schema = SeasonCollectionSchema()
+        return schema.dumps(self)
+
+    def _set_seasons(self, all_seasons, obj_seasons):
+        seasons = dict(((sid, regular), True) for sid, regular in obj_seasons)
+        for s in all_seasons:
+            if (s.id, False) in seasons:
+                season = Season()
+                season.set_from_data_model(s)
+                season.regular = False
+                self.seasons.append(season)
+            if (s.id, True) in seasons:
+                season = Season()
+                season.set_from_data_model(s)
+                self.seasons.append(season)
+
+    def _get_obj_seasons(self, db):
+        return self._obj_dm_cls.get_filtered(db, [self._obj_id_field], [self._obj_id],
+                                             columns=['season_id', 'is_regular'])
+
+
+class TeamSeasonCollection(_FilteredSeasonCollection):
+    def __init__(self, team_id):
+        super().__init__(team_id, TeamSumStat, 'team_id')
+
+
+class SkaterSeasonCollection(_FilteredSeasonCollection):
+    def __init__(self, player_id):
+        super().__init__(player_id, SkaterSumStat, 'player_id')
+
+
+class GoalieSeasonCollection(_FilteredSeasonCollection):
+    def __init__(self, player_id):
+        super().__init__(player_id, GoalieSumStat, 'player_id')
+
+
 class SeasonCollectionSchema(ModelSchema):
     seasons = fields.Nested(SeasonSchema, many=True)
+
+
+def _get_all_seasons(db):
+    all_seasons = SeasonDm.get_all(db, order_by=['-start'])
+    if len(all_seasons) == 0:
+        current_app.logger.error('Seasons are not found.')
+        raise ApiError(404, 'SEASON_NOT_FOUND')
+    return all_seasons

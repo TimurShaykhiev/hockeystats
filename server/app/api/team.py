@@ -1,8 +1,9 @@
 from flask import Blueprint
 
 from app.models.team_info import TeamInfo
-from app.models.season import Season
-from .response_utils import response, CACHE_TYPE_CURRENT_SEASON_STATS, CACHE_TYPE_OLD_SEASON_STATS
+from app.models.season import Season, TeamSeasonCollection
+from .response_utils import response, CACHE_TYPE_CURRENT_SEASON_STATS, CACHE_TYPE_OLD_SEASON_STATS, \
+    CACHE_TYPE_SEASONS_DATA
 
 team_api = Blueprint('team_api', __name__, url_prefix='/api/team')
 
@@ -13,3 +14,8 @@ def team_stats(team_id):
     team_info = TeamInfo(team_id, season)
     return response(team_info.get_info(),
                     CACHE_TYPE_CURRENT_SEASON_STATS if season.current else CACHE_TYPE_OLD_SEASON_STATS)
+
+
+@team_api.route('/<int:team_id>/seasons')
+def team_seasons(team_id):
+    return response(TeamSeasonCollection(team_id).get_collection(), CACHE_TYPE_SEASONS_DATA)
