@@ -79,6 +79,11 @@ class SeasonCollection:
         db = get_db()
         all_seasons = _get_all_seasons(db)
         for s in all_seasons:
+            if s.status == SeasonDm.STATUS_PLAY_OFF or s.status == SeasonDm.STATUS_FINISHED:
+                season = Season()
+                season.set_from_data_model(s)
+                season.regular = False
+                self.seasons.append(season)
             season = Season()
             season.set_from_data_model(s)
             self.seasons.append(season)
