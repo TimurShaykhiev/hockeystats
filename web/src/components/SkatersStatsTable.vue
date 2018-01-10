@@ -17,6 +17,14 @@
       <template slot="table-column" scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
+      <template slot="table-row" scope="props">
+        <td v-for="el in columns" class="skater-stats-table__cell" v-if="!el.hidden && el.field">
+          <router-link v-if="el.field === 'name'" :to="{name: 'skater', params: {id: props.row.playerId}}">
+            {{props.row[el.field]}}
+          </router-link>
+          <span v-else>{{props.row[el.field]}}</span>
+        </td>
+      </template>
     </vue-good-table>
   </div>
 </template>
@@ -187,6 +195,7 @@ export default {
       }
       return skaterStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
+        rowData.playerId = t.player.id;
         rowData.name = t.player.name;
         rowData.team = allTeams[t.player.tid].abbr;
         rowData.position = this.$t(`playerPosition.${t.player.pos}`);
@@ -215,12 +224,18 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
-  .skater-stats-table__table {
+  .skaters-stats-table__table {
     .desktop({
       font-size: @table-font-size-desktop;
     });
     .small-desktop({
       font-size: @table-font-size-sm-desktop;
     });
+  }
+  .skater-stats-table__cell {
+    a {
+      color: black;
+      text-decoration: none;
+    }
   }
 </style>

@@ -17,6 +17,14 @@
       <template slot="table-column" scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
+      <template slot="table-row" scope="props">
+        <td v-for="el in columns" class="goalie-stats-table__cell" v-if="!el.hidden && el.field">
+          <router-link v-if="el.field === 'name'" :to="{name: 'goalie', params: {id: props.row.playerId}}">
+            {{props.row[el.field]}}
+          </router-link>
+          <span v-else>{{props.row[el.field]}}</span>
+        </td>
+      </template>
     </vue-good-table>
   </div>
 </template>
@@ -164,6 +172,7 @@ export default {
       }
       return goalieStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
+        rowData.playerId = t.player.id;
         rowData.name = t.player.name;
         rowData.team = allTeams[t.player.tid].abbr;
         rowData.toi = toiToStr(rowData.toi);
@@ -197,5 +206,11 @@ export default {
     .small-desktop({
       font-size: @table-font-size-sm-desktop;
     });
+  }
+  .goalie-stats-table__cell {
+    a {
+      color: black;
+      text-decoration: none;
+    }
   }
 </style>

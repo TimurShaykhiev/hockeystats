@@ -42,11 +42,11 @@ export default {
         this.setSelectedSeason(result.seasons);
       });
     } else if (this.type === 'skater') {
-      this.$store.dispatch('getSkaterSeasons', {teamId: this.$route.params.id}).then((result) => {
+      this.$store.dispatch('getSkaterSeasons', {playerId: this.$route.params.id}).then((result) => {
         this.setSelectedSeason(result.seasons);
       });
     } else if (this.type === 'goalie') {
-      this.$store.dispatch('getGoalieSeasons', {teamId: this.$route.params.id}).then((result) => {
+      this.$store.dispatch('getGoalieSeasons', {playerId: this.$route.params.id}).then((result) => {
         this.setSelectedSeason(result.seasons);
       });
     }

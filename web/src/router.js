@@ -5,6 +5,8 @@ import Teams from 'Components/Teams';
 import Skaters from 'Components/Skaters';
 import Goalies from 'Components/Goalies';
 import TeamInfo from 'Components/TeamInfo';
+import SkaterInfo from 'Components/SkaterInfo';
+import GoalieInfo from 'Components/GoalieInfo';
 
 Vue.use(VueRouter);
 
@@ -12,6 +14,14 @@ const routes = [{
     path: '/team/:id',
     name: 'team',
     component: TeamInfo
+  }, {
+    path: '/skater/:id',
+    name: 'skater',
+    component: SkaterInfo
+  }, {
+    path: '/goalie/:id',
+    name: 'goalie',
+    component: GoalieInfo
   }, {
     path: '/teams',
     name: 'teams',

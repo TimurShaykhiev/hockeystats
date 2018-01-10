@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {floatToStr} from 'Components/utils';
+import {floatToStr, toiToStr} from 'Components/utils';
 
 export default {
   name: 'stats-block',
@@ -27,9 +27,14 @@ export default {
   computed: {
     stats() {
       return this.items.map((el) => {
-        let valueStr = el.precision ? floatToStr(el.value, el.precision) : el.value.toString();
-        if (el.percentage) {
-          valueStr += '%';
+        let valueStr;
+        if (el.time) {
+          valueStr = toiToStr(el.value);
+        } else {
+          valueStr = el.precision ? floatToStr(el.value, el.precision) : el.value.toString();
+          if (el.percentage) {
+            valueStr += '%';
+          }
         }
         return {name: el.name.toUpperCase(), value: valueStr};
       });

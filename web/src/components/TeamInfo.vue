@@ -8,9 +8,7 @@
       <season-picker type="team"/>
     </div>
     <div class="container-row">
-      <team-main-stat v-for="el in ratings"
-        :key="el.id" :label="el.label" :value="el.value" :rating="el.rate" :average="el.avg" :sortOrder="el.sortOrder">
-      </team-main-stat>
+      <team-main-stat v-for="el in ratings" :key="el.id"  v-bind="el"/>
     </div>
     <stats-block :caption="$t('teamInfo.goalStatistics')" :items="goalStats"/>
     <stats-block :caption="$t('teamInfo.shootingStatistics')" :items="shootingStats"/>
@@ -90,33 +88,33 @@ export default {
         id: 'goalsForPerGame',
         label: this.$t('statNames.goalsForPerGame'),
         value: teamInfo.goalsForPerGame,
-        rate: teamInfo.goalsForPerGameRate,
-        avg: teamInfo.goalsForPerGameAvg
+        rating: teamInfo.goalsForPerGameRate,
+        average: teamInfo.goalsForPerGameAvg
       }, {
         id: 'goalsAgainstPerGame',
         label: this.$t('statNames.goalsAgainstPerGame'),
         value: teamInfo.goalsAgainstPerGame,
-        rate: teamInfo.goalsAgainstPerGameRate,
-        avg: teamInfo.goalsAgainstPerGameAvg,
+        rating: teamInfo.goalsAgainstPerGameRate,
+        average: teamInfo.goalsAgainstPerGameAvg,
         sortOrder: 'asc'
       }, {
         id: 'ppPercentage',
         label: this.$t('statNames.ppPercentage'),
         value: teamInfo.ppPercentage,
-        rate: teamInfo.ppPercentageRate,
-        avg: teamInfo.ppPercentageAvg
+        rating: teamInfo.ppPercentageRate,
+        average: teamInfo.ppPercentageAvg
       }, {
         id: 'pkPercentage',
         label: this.$t('statNames.pkPercentage'),
         value: teamInfo.pkPercentage,
-        rate: teamInfo.pkPercentageRate,
-        avg: teamInfo.pkPercentageAvg
+        rating: teamInfo.pkPercentageRate,
+        average: teamInfo.pkPercentageAvg
       }, {
         id: 'shootingPercentage',
         label: this.$t('statNames.shootingPercentage'),
         value: teamInfo.shootingPercentage,
-        rate: teamInfo.shootingPercentageRate,
-        avg: teamInfo.shootingPercentageAvg
+        rating: teamInfo.shootingPercentageRate,
+        average: teamInfo.shootingPercentageAvg
       }];
     },
 

@@ -12,7 +12,7 @@
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
       <template slot="table-row" scope="props">
-        <td v-for="el in columns" class="team-stats-table__cell">
+        <td v-for="el in columns" class="team-stats-table__cell" v-if="!el.hidden && el.field">
           <router-link v-if="el.field === 'teamName'" :to="{name: 'team', params: {id: props.row.teamId}}">
             {{props.row[el.field]}}
           </router-link>
