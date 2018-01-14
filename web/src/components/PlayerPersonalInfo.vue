@@ -4,12 +4,14 @@
       <img :src="logoUrl" class="player-personal-info__logo">
       <h1 class="player-personal-info__player-name">{{name}}</h1>
     </div>
+    <hr class="player-personal-info__divider"/>
     <div class="player-personal-info__vitals container-row">
       <div v-for="el in vitals" class="player-personal-info__item">
         <h1 class="player-personal-info__value">{{el.value}}</h1>
         <h3 class="player-personal-info__name">{{el.name}}</h3>
       </div>
     </div>
+    <hr class="player-personal-info__divider"/>
   </div>
 </template>
 
@@ -72,11 +74,13 @@ export default {
     }
   },
   data() {
-    return {
-      logoUrl: `images/team${this.tid}.svg`
-    };
+    return {};
   },
   computed: {
+    logoUrl() {
+      return `images/team${this.tid}.svg`;
+    },
+
     vitals() {
       return [
         {name: this.$t('playerPersonalInfo.position'), value: this.$t(`position.${this.pos}`)},
@@ -95,7 +99,7 @@ export default {
   @import '../../styles/vars.less';
 
   .player-personal-info {
-    margin: 1rem 0;
+    margin-bottom: 1rem;
   }
   .player-personal-info__title {
     align-items: center;
@@ -106,12 +110,11 @@ export default {
     height: 10rem;
   }
   .player-personal-info__player-name {
-    font-size: 3rem;
+    font-size: 4rem;
     margin: 0 0 0 2.5rem;
   }
   .player-personal-info__vitals {
     justify-content: space-around;
-    border: 1px solid @border-color;
   }
   .player-personal-info__item {
     margin: .5rem;
@@ -126,5 +129,12 @@ export default {
   .player-personal-info__name {
     font-size: 1rem;
     margin: 0 .5rem;
+  }
+  .player-personal-info__divider {
+    background: @border-color;
+    height: .25rem;
+    width: 95%;
+    margin: 1rem 2.5%;
+    border: none;
   }
 </style>

@@ -4,6 +4,7 @@
       <img :src="logoUrl" class="team-info__logo">
       <h1 class="team-info__name">{{teamName}}</h1>
     </div>
+    <hr class="team-info__divider"/>
     <div class="team-info__season-picker container-row">
       <season-picker type="team"/>
     </div>
@@ -359,6 +360,8 @@ export default {
 </script>
 
 <style lang="less">
+  @import '../../styles/vars.less';
+
   .team-info__caption {
     align-items: center;
     padding: 0 3rem;
@@ -368,12 +371,19 @@ export default {
     height: 10rem;
   }
   .team-info__name {
-    font-size: 3rem;
+    font-size: 4rem;
     margin: 0 0 0 2.5rem;
   }
   .team-info__season-picker {
     justify-content: flex-end;
     padding: 0 2rem;
     margin: 1rem 0;
+  }
+  .team-info__divider {
+    background: @border-color;
+    height: .25rem;
+    width: 95%;
+    margin: 1rem 2.5%;
+    border: none;
   }
 </style>

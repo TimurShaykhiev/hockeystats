@@ -58,7 +58,6 @@ export default {
     text-align: center;
     width: 13rem;
     padding: .4rem 0;
-    background: @table-striped-color;
   }
   .player-main-stat__value {
     font-size: 3rem;
