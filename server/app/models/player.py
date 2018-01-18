@@ -20,9 +20,10 @@ class Player:
         self.name = ''
         self.position = ''
         self.team_id = None
+        self.trades = []
 
     @classmethod
-    def create(cls, player_id, season=None, players=None):
+    def create(cls, player_id, season=None, players=None, save_trades=False):
         pl = cls()
         pl.id = player_id
         trades = []
@@ -37,8 +38,10 @@ class Player:
         else:
             db = get_db()
             pl._get_from_db(db)
-            if season is not None and not season.current:
+            if (season is not None and not season.current) or save_trades:
                 trades = PlayerTrade.get_filtered(db, ['player_id'], [player_id], order_by=['date'])
+                if save_trades:
+                    pl.trades = trades
         pl.team_id = get_player_team_for_season(pl.team_id, season, trades)
         return pl
 

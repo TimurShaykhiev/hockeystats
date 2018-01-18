@@ -7,9 +7,10 @@ from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.player_trade import PlayerTrade
 from statistics.skater_season import get_skaters_stats
 from statistics.goalie_season import get_goalies_stats
-from .player import Player, PlayerSchema, PlayerInfo
+from .player import Player, PlayerInfo
 from .season import SeasonSchema
-from . import ModelSchema, StatValue
+from .season_stats import PlayerSeasonStats, PlayerSeasonStatsSchema
+from . import ModelSchema
 
 
 def _get_all_players_info(db, data_getter_func, check_trades):
@@ -24,18 +25,7 @@ def _get_all_players_info(db, data_getter_func, check_trades):
     return info
 
 
-class PlayerSeasonStats:
-    def __init__(self, player, stats):
-        self.player = player
-        self.stats = stats
-
-
-class PlayerSeasonStatsSchema(ModelSchema):
-    player = fields.Nested(PlayerSchema)
-    stats = fields.List(StatValue())
-
-
-class PlayerSeasonStatsCollection:
+class _PlayerSeasonStatsCollection:
     def __init__(self, season):
         self.season = season
         self.results = []
@@ -50,12 +40,12 @@ class PlayerSeasonStatsCollection:
         stats = self.calc_stats_func(stats_from_db)
         for st in stats:
             pl = Player.create(st[0], self.season, players)
-            self.results.append(PlayerSeasonStats(pl, st[1:]))
-        schema = PlayerSeasonStatsCollectionSchema()
+            self.results.append(PlayerSeasonStats(pl, st[3:]))
+        schema = _PlayerSeasonStatsCollectionSchema()
         return schema.dumps(self)
 
 
-class SkatersSeasonStatsCollection(PlayerSeasonStatsCollection):
+class SkatersSeasonStatsCollection(_PlayerSeasonStatsCollection):
     def __init__(self, season):
         super().__init__(season)
         self.get_players_func = PlayerDm.get_skaters
@@ -63,7 +53,7 @@ class SkatersSeasonStatsCollection(PlayerSeasonStatsCollection):
         self.calc_stats_func = get_skaters_stats
 
 
-class GoaliesSeasonStatsCollection(PlayerSeasonStatsCollection):
+class GoaliesSeasonStatsCollection(_PlayerSeasonStatsCollection):
     def __init__(self, season):
         super().__init__(season)
         self.get_players_func = PlayerDm.get_goalies
@@ -71,6 +61,6 @@ class GoaliesSeasonStatsCollection(PlayerSeasonStatsCollection):
         self.calc_stats_func = get_goalies_stats
 
 
-class PlayerSeasonStatsCollectionSchema(ModelSchema):
+class _PlayerSeasonStatsCollectionSchema(ModelSchema):
     season = fields.Nested(SeasonSchema)
     results = fields.Nested(PlayerSeasonStatsSchema, many=True)

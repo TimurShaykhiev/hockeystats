@@ -11,6 +11,7 @@ LOG = get_loader_logger()
 class TeamSumStat(SumStatsModel):
     _table_name = 'team_sum_stats'
     _primary_keys = ['team_id', 'season_id', 'is_regular']
+    _object_id_field = 'team_id'
 
     def __init__(self, team=None, season=None, regular=True):
         self.team = team

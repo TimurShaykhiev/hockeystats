@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from app.models.player_info import GoalieInfo
+from app.models.player_info import GoalieInfo, GoalieAllSeasonStatsCollection
 from app.models.season import Season, GoalieSeasonCollection
 from .response_utils import response, CACHE_TYPE_CURRENT_SEASON_STATS, CACHE_TYPE_OLD_SEASON_STATS, \
     CACHE_TYPE_SEASONS_DATA
@@ -19,3 +19,8 @@ def goalie_stats(player_id):
 @goalie_api.route('/<int:player_id>/seasons')
 def goalie_seasons(player_id):
     return response(GoalieSeasonCollection(player_id).get_collection(), CACHE_TYPE_SEASONS_DATA)
+
+
+@goalie_api.route('/<int:player_id>/all-stats')
+def goalie_all_stats(player_id):
+    return response(GoalieAllSeasonStatsCollection(player_id).get_collection(), CACHE_TYPE_CURRENT_SEASON_STATS)

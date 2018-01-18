@@ -131,6 +131,14 @@ class Player(EntityModel):
         return cls.get_filtered(db_conn, ['primary_pos'], ['goalie'], columns, named_tuple_cls)
 
     @classmethod
+    def get_by_ids(cls, db_conn, id_array, columns=None, named_tuple_cls=None):
+        q = cls._create_query().select(columns)
+        q.where('id IN ({})'.format(','.join(['%s'] * len(id_array))))
+        if columns is None:
+            return cls._get_all_from_db(db_conn, q.query, id_array)
+        return cls._get_columns_from_db(db_conn, q.query, id_array, named_tuple_cls)
+
+    @classmethod
     def get_ever_played_in_team(cls, db_conn, team_id, traded_players, columns=None):
         q = cls._create_query().select(columns)
         q.where('current_team_id = %s OR id IN ({})'.format(','.join(['%s'] * len(traded_players))))

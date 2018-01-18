@@ -28,7 +28,7 @@ class TeamsSeasonStatsCollection:
         stats_from_db = TeamSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
         stats = get_teams_stats(stats_from_db)
         for st in stats:
-            self.results.append(TeamSeasonStats(st[0], st[1:]))
+            self.results.append(TeamSeasonStats(st[0], st[3:]))
         schema = TeamsSeasonStatsCollectionSchema()
         return schema.dumps(self)
 

@@ -10,6 +10,7 @@ LOG = get_loader_logger()
 class SkaterSumStat(SumStatsModel):
     _table_name = 'skater_sum_stats'
     _primary_keys = ['player_id', 'season_id', 'is_regular']
+    _object_id_field = 'player_id'
 
     def __init__(self, player=None, season=None, regular=True):
         self.player = player

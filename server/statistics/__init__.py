@@ -16,13 +16,7 @@ def percentage(a, b):
 def stats_to_array(stats, arr_len):
     # arr_len can be more than original number of stats. Array'll have additional space for computed stats
     data = np.zeros([len(stats), arr_len], dtype=INT_ARRAY_DATA_TYPE)
-    data_iter = data.flat
-    idx = 0
-    for st in stats:
-        # remove season info from stats
-        data_iter[idx] = st[0]  # object id
-        data_iter[idx + 1:idx + len(st) - 2] = st[3:]  # object stats
-        idx += arr_len
+    data[:, 0:len(stats[0])] = stats
     return data
 
 

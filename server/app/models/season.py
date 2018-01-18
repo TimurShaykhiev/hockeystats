@@ -77,7 +77,7 @@ class SeasonCollection:
 
     def get_collection(self):
         db = get_db()
-        all_seasons = _get_all_seasons(db)
+        all_seasons = get_all_seasons(db)
         for s in all_seasons:
             if s.status == SeasonDm.STATUS_PLAY_OFF or s.status == SeasonDm.STATUS_FINISHED:
                 season = Season()
@@ -104,7 +104,7 @@ class _FilteredSeasonCollection:
 
     def get_collection(self):
         db = get_db()
-        all_seasons = _get_all_seasons(db)
+        all_seasons = get_all_seasons(db)
         seasons = self._get_obj_seasons(db)
         self._set_seasons(all_seasons, seasons)
         schema = _FilteredSeasonCollectionSchema()
@@ -148,7 +148,7 @@ class _FilteredSeasonCollectionSchema(ModelSchema):
     seasons = fields.Nested(SeasonSchema, many=True)
 
 
-def _get_all_seasons(db):
+def get_all_seasons(db):
     all_seasons = SeasonDm.get_all(db, order_by=['-start'])
     if len(all_seasons) == 0:
         current_app.logger.error('Seasons are not found.')
