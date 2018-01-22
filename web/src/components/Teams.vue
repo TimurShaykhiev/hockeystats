@@ -1,8 +1,8 @@
 <template>
   <div class="">
-    <team-picker></team-picker>
-    <season-picker type="all"></season-picker>
-    <teams-stats-table></teams-stats-table>
+    <team-picker/>
+    <season-picker type="all"/>
+    <teams-stats-table type="all"/>
   </div>
 </template>
 

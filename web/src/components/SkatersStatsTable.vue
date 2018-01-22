@@ -4,20 +4,20 @@
       :title="tableCaption"
       :columns="columns"
       :rows="rows"
-      :paginate="true"
+      :paginate="showPagination"
       :perPage="30"
       :nextText="paginationText.next"
       :prevText="paginationText.prev"
       :rowsPerPageText="paginationText.rowsPerPage"
       :ofText="paginationText.ofText"
       :allText="paginationText.allText"
-      :lineNumbers="true"
-      :defaultSortBy="{field: 'points', type: 'desc'}"
+      :lineNumbers="showLineNumbers"
+      :defaultSortBy="defaultSortColumn"
       styleClass="table condensed table-bordered table-striped skaters-stats-table__table">
-      <template slot="table-column" scope="props">
+      <template slot="table-column" slot-scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
-      <template slot="table-row" scope="props">
+      <template slot="table-row" slot-scope="props">
         <td v-for="el in columns" class="skater-stats-table__cell" v-if="!el.hidden && el.field">
           <router-link v-if="el.field === 'name'" :to="{name: 'skater', params: {id: props.row.playerId}}">
             {{props.row[el.field]}}
@@ -31,39 +31,72 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {floatToStr, toiToStr, getSeasonName, getPaginationText} from 'Components/utils';
+import {floatToStr, toiToStr, getSeasonName, getPaginationText, seasonToStr} from 'Components/utils';
+
+const TYPE_ALL = 'all';
+const TYPE_TEAM = 'team';
+const TYPE_PLAYER = 'player';
 
 export default {
   name: 'skaters-stats-table',
   props: {
+    type: {type: String, required: true}
   },
   i18n: {
     messages: {
       en: {
         position: 'Player Position',
-        positionShort: 'Pos'
+        positionShort: 'Pos',
+        captionPlayerType: 'Carrier Statistics(since season 2013-14)',
+        captionTeamType: 'Skater Statistics'
       },
       ru: {
         position: 'Амплуа игрока',
-        positionShort: 'Поз'
+        positionShort: 'Поз',
+        captionPlayerType: 'Статистика за карьеру(с сезона 2013-14)',
+        captionTeamType: 'Статистика игроков'
       }
     }
   },
   data() {
-    return {};
+    return {
+      showLineNumbers: this.type !== TYPE_PLAYER,
+      showPagination: this.type === TYPE_ALL
+    };
   },
   created() {
-    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
-    this.requestSkaterStats();
+    if (this.type === TYPE_TEAM) {
+      this.requestTeamPlayersStats();
+    } else {
+      this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
+      if (this.type === TYPE_ALL) {
+        this.requestSkaterStats();
+      } else {
+        this.requestSkaterAllStats();
+      }
+    }
   },
   computed: {
     tableCaption() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let all = this.$store.state.season.allSeasons.seasons;
-      if (selSeason.id === undefined || all === undefined) {
-        return '';
+      if (this.type === TYPE_ALL) {
+        let selSeason = this.$store.state.season.selectedSeason;
+        let all = this.$store.state.season.allSeasons.seasons;
+        if (selSeason.id === undefined || all === undefined) {
+          return '';
+        }
+        return getSeasonName(selSeason, all, (str) => this.$t(str));
+      } else if (this.type === TYPE_TEAM) {
+        return this.$t('captionTeamType');
+      } else {
+        return this.$t('captionPlayerType');
       }
-      return getSeasonName(selSeason, all, (str) => this.$t(str));
+    },
+
+    defaultSortColumn() {
+      if (this.type === TYPE_PLAYER) {
+        return {field: 'seasonName', type: 'asc'};
+      }
+      return {field: 'points', type: 'desc'};
     },
 
     columns() {
@@ -71,109 +104,118 @@ export default {
         label: '',
         hint: '',
         field: 'name',
-        sortable: true,
-        filterable: true,
-        placeholder: ''
+        sortable: this.canSortRows(),
+        filterable: this.type === TYPE_ALL,
+        placeholder: '',
+        hidden: this.type === TYPE_PLAYER
+      }, {
+        label: this.$t('statNames.seasonShort'),
+        hint: this.$t('statNames.season'),
+        field: 'seasonName',
+        sortable: this.canSortRows(),
+        hidden: this.type !== TYPE_PLAYER
       }, {
         label: this.$t('statNames.teamShort'),
         hint: this.$t('statNames.team'),
         field: 'team',
-        sortable: true
+        sortable: this.canSortRows(),
+        hidden: this.type === TYPE_TEAM
       }, {
         label: this.$t('positionShort'),
         hint: this.$t('position'),
         field: 'position',
-        sortable: true
+        sortable: this.canSortRows(),
+        hidden: this.type === TYPE_PLAYER
       }, {
         label: this.$t('statNames.gamesShort'),
         hint: this.$t('statNames.games'),
         field: 'games',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.goalsShort'),
         hint: this.$t('statNames.goals'),
         field: 'goals',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.assistsShort'),
         hint: this.$t('statNames.assists'),
         field: 'assists',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.pointsShort'),
         hint: this.$t('statNames.points'),
         field: 'points',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.plusMinusShort'),
         hint: this.$t('statNames.plusMinus'),
         field: 'plusMinus',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.penaltyMinutesShort'),
         hint: this.$t('statNames.penaltyMinutes'),
         field: 'penaltyMinutes',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.pointsPerGameShort'),
         hint: this.$t('statNames.pointsPerGame'),
         field: 'pointsPerGame',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.ppGoalsShort'),
         hint: this.$t('statNames.ppGoals'),
         field: 'ppGoals',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.ppPointsShort'),
         hint: this.$t('statNames.ppPoints'),
         field: 'ppPoints',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.shGoalsShort'),
         hint: this.$t('statNames.shGoals'),
         field: 'shGoals',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.shPointsShort'),
         hint: this.$t('statNames.shPoints'),
         field: 'shPoints',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.shotsShort'),
         hint: this.$t('statNames.shots'),
         field: 'shots',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.shootingPercentageShort'),
         hint: this.$t('statNames.shootingPercentage'),
         field: 'shootingPercentage',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.toiPerGameShort'),
         hint: this.$t('statNames.toiPerGame'),
         field: 'toiPerGame',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }, {
         label: this.$t('statNames.faceOffWinsPercentageShort'),
         hint: this.$t('statNames.faceOffWinsPercentage'),
         field: 'faceOffWinsPercentage',
         type: 'number',
-        sortable: true
+        sortable: this.canSortRows()
       }];
     },
 
@@ -183,22 +225,49 @@ export default {
 
     rows() {
       let allTeams = this.$store.state.teams.allTeams.teams;
-      if (!allTeams) {
+      if (!allTeams && this.type !== TYPE_TEAM) {
         return [];
       }
-      let selSeason = this.$store.state.season.selectedSeason;
-      let stats = this.$store.state.players.skaterStats;
-      let skaterStats = stats.skaters;
-      if (!skaterStats || selSeason.id !== stats.season.id || selSeason.regular !== stats.season.regular) {
-        this.requestSkaterStats();
-        return [];
+
+      let skaterStats;
+      if (this.type === TYPE_PLAYER) {
+        let stats = this.$store.state.players.skaterAllStats;
+        skaterStats = stats.seasons;
+        if (!stats.player || stats.player.id !== parseInt(this.$route.params.id)) {
+          this.requestSkaterAllStats();
+          return [];
+        }
+      } else {
+        let selSeason = this.$store.state.season.selectedSeason;
+        let stats = this.type === TYPE_ALL ?
+          this.$store.state.players.skaterStats :
+          this.$store.state.teams.teamPlayersStats;
+        skaterStats = stats.skaters;
+        if (!skaterStats || selSeason.id !== stats.season.id || selSeason.regular !== stats.season.regular) {
+          if (this.type === TYPE_ALL) {
+            this.requestSkaterStats();
+          } else {
+            this.requestTeamPlayersStats();
+          }
+          return [];
+        }
       }
+
       return skaterStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
-        rowData.playerId = t.player.id;
-        rowData.name = t.player.name;
-        rowData.team = allTeams[t.player.tid].abbr;
-        rowData.position = this.$t(`playerPosition.${t.player.pos}`);
+        if (this.type !== TYPE_PLAYER) {
+          rowData.playerId = t.player.id;
+          rowData.name = t.player.name;
+          rowData.position = this.$t(`playerPosition.${t.player.pos}`);
+        }
+        if (this.type === TYPE_ALL) {
+          rowData.team = allTeams[t.player.tid].abbr;
+        } else if (this.type === TYPE_PLAYER) {
+          rowData.team = allTeams[t.teamId].abbr;
+        }
+        if (this.type === TYPE_PLAYER) {
+          rowData.seasonName = seasonToStr(t.season, (str) => this.$t(str));
+        }
         rowData.toiPerGame = toiToStr(rowData.toiPerGame);
         rowData.pointsPerGame = floatToStr(rowData.pointsPerGame, 2);
         rowData.shootingPercentage = floatToStr(rowData.shootingPercentage, 2);
@@ -215,6 +284,24 @@ export default {
           reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
         });
       }
+    },
+
+    requestTeamPlayersStats() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.$store.dispatch('getTeamPlayersStats', {
+          teamId: this.$route.params.id,
+          reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+        });
+      }
+    },
+
+    requestSkaterAllStats() {
+      this.$store.dispatch('getSkaterAllStats', {playerId: this.$route.params.id});
+    },
+
+    canSortRows() {
+      return this.type !== TYPE_PLAYER;
     }
   }
 };

@@ -22,6 +22,12 @@ export function toiToStr(timeOnIce) {
   return sec < 10 ? `${min}:0${sec}` : `${min}:${sec}`;
 }
 
+export function seasonToStr(season, translateFunc) {
+  let years = `${season.year}-${season.year % 100 + 1}`;
+  let str = season.regular ? 'season.regular' : 'season.playoff';
+  return `${translateFunc(str)} ${years}`;
+}
+
 export function getSeasonName(selectedSeason, seasons, translateFunc) {
   for (let s of seasons) {
     if (s.id === selectedSeason.id) {

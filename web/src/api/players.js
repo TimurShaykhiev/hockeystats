@@ -39,5 +39,13 @@ export default {
 
   getGoalieSeasons(playerId) {
     return makeRequest({path: ['goalie', playerId, 'seasons']});
+  },
+
+  getSkaterAllStats(playerId) {
+    return makeRequest({path: ['skater', playerId, 'all-stats']});
+  },
+
+  getGoalieAllStats(playerId) {
+    return makeRequest({path: ['goalie', playerId, 'all-stats']});
   }
 };

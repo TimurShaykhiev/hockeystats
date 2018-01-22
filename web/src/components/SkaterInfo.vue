@@ -7,6 +7,7 @@
     <div class="container-row">
       <player-main-stat v-for="el in ratings" :key="el.id" v-bind="el"/>
     </div>
+    <skaters-stats-table type="player"/>
     <stats-block :caption="$t('skaterInfo.pointStatistics')" :items="pointStats"/>
     <stats-block :caption="$t('skaterInfo.goalStatistics')" :items="goalStats"/>
     <stats-block :caption="$t('skaterInfo.assistStatistics')" :items="assistStats"/>
@@ -22,10 +23,11 @@ import PlayerMainStat from 'Components/PlayerMainStat';
 import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
 import SeasonPicker from 'Components/SeasonPicker';
 import StatsBlock from 'Components/StatsBlock';
+import SkatersStatsTable from 'Components/SkatersStatsTable';
 
 export default {
   name: 'skater-info',
-  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo},
+  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo, SkatersStatsTable},
   props: {
   },
   i18n: {

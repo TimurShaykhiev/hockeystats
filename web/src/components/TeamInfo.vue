@@ -11,6 +11,9 @@
     <div class="container-row">
       <team-main-stat v-for="el in ratings" :key="el.id"  v-bind="el"/>
     </div>
+    <teams-stats-table type="team"/>
+    <skaters-stats-table type="team"/>
+    <goalies-stats-table type="team"/>
     <stats-block :caption="$t('teamInfo.goalStatistics')" :items="goalStats"/>
     <stats-block :caption="$t('teamInfo.shootingStatistics')" :items="shootingStats"/>
     <stats-block :caption="$t('teamInfo.advancedStatistics')" :items="advancedStats"/>
@@ -27,10 +30,13 @@ import {SeasonRequestParams} from 'Store/types';
 import TeamMainStat from 'Components/TeamMainStat';
 import SeasonPicker from 'Components/SeasonPicker';
 import StatsBlock from 'Components/StatsBlock';
+import TeamsStatsTable from 'Components/TeamsStatsTable';
+import SkatersStatsTable from 'Components/SkatersStatsTable';
+import GoaliesStatsTable from 'Components/GoaliesStatsTable';
 
 export default {
   name: 'team-info',
-  components: {TeamMainStat, SeasonPicker, StatsBlock},
+  components: {TeamMainStat, SeasonPicker, StatsBlock, TeamsStatsTable, SkatersStatsTable, GoaliesStatsTable},
   props: {
   },
   i18n: {

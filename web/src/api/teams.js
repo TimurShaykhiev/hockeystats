@@ -27,5 +27,17 @@ export default {
 
   getTeamSeasons(teamId) {
     return makeRequest({path: ['team', teamId, 'seasons']});
+  },
+
+  getTeamAllStats(teamId) {
+    return makeRequest({path: ['team', teamId, 'all-stats']});
+  },
+
+  getTeamPlayersStats(teamId, reqParams) {
+    let reqData = {
+      path: ['team', teamId, 'players', 'stats'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };

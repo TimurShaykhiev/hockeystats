@@ -7,6 +7,7 @@
     <div class="container-row">
       <player-main-stat v-for="el in ratings" :key="el.id" v-bind="el"/>
     </div>
+    <goalies-stats-table type="player"/>
     <stats-block :caption="$t('goalieInfo.saveStatistics')" :items="saveStats"/>
     <stats-block :caption="$t('goalieInfo.goalStatistics')" :items="goalStats"/>
   </div>
@@ -18,10 +19,11 @@ import PlayerMainStat from 'Components/PlayerMainStat';
 import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
 import SeasonPicker from 'Components/SeasonPicker';
 import StatsBlock from 'Components/StatsBlock';
+import GoaliesStatsTable from 'Components/GoaliesStatsTable';
 
 export default {
   name: 'goalie-info',
-  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo},
+  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo, GoaliesStatsTable},
   props: {
   },
   i18n: {

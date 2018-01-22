@@ -1,12 +1,14 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew} from 'Store/utils';
+import {commitNew, processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject} from 'Store/utils';
 
 const state = {
   allTeams: {},
   teamStats: {},
   teamSeasonInfo: {},
   teamSeasons: {},
+  teamPlayersStats: {},
+  teamAllStats: {},
   conferences: [],
   divisions: []
 };
@@ -14,11 +16,42 @@ const state = {
 const getters = {
 };
 
+function getTeamsDataBySeason(actName, mutName, stateName, commit, state, reqParams) {
+  logger.debug(`action: ${actName}`);
+  if (reqParams.isSeasonEqual(state[stateName].season)) {
+    logger.debug(`action: ${actName} data is in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  let requestPromise = teamsApi[actName](reqParams);
+  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+}
+
+function getTeamDataByIdAndSeason(actName, mutName, stateName, commit, state, teamId, reqParams) {
+  logger.debug(`action: ${actName}`);
+  if (state[stateName].team && teamId === state[stateName].team.id &&
+      reqParams.isSeasonEqual(state[stateName].season)) {
+    logger.debug(`action: ${actName} data is in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  let requestPromise = teamsApi[actName](teamId, reqParams);
+  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+}
+
+function getTeamDataById(actName, mutName, stateName, commit, state, teamId) {
+  logger.debug(`action: ${actName}`);
+  if (state[stateName].team && teamId === state[stateName].team.id) {
+    logger.debug(`action: ${actName} data is in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  let requestPromise = teamsApi[actName](teamId);
+  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+}
+
 const actions = {
   getAllTeams({commit, state}, {reqParams}) {
     logger.debug('action: getAllTeams');
     if (state.allTeams.timestamp) {
-      logger.debug('action: getAllTeams all teams are in storage');
+      logger.debug('action: getAllTeams data is in storage');
       return Promise.resolve(state.allTeams);
     }
     return teamsApi.getAllTeams(reqParams)
@@ -41,63 +74,49 @@ const actions = {
   },
 
   getTeamStats({commit, state}, {reqParams}) {
-    logger.debug('action: getTeamStats');
-    if (reqParams.isSeasonEqual(state.teamStats.season)) {
-      logger.debug('action: getTeamStats season is in storage');
-      return Promise.resolve(state.teamStats);
-    }
-    return teamsApi.getTeamStats(reqParams)
-      .then(
-        (result) => {
-          logger.debug('action: getTeamStats result received');
-          commitNew(commit, 'setTeamStats', state.teamStats, result);
-          return state.teamStats;
-        },
-        (error) => {
-          logger.error(`action: getTeamStats error: ${error.message}`);
-        }
-      );
+    return getTeamsDataBySeason('getTeamStats', 'setTeamStats', 'teamStats', commit, state, reqParams);
   },
 
   getTeamSeasonInfo({commit, state}, {teamId, reqParams}) {
-    logger.debug('action: getTeamSeasonInfo');
-    if (state.teamSeasonInfo.team && teamId === state.teamSeasonInfo.team.id &&
-        reqParams.isSeasonEqual(state.teamSeasonInfo.season)) {
-      logger.debug('action: getTeamSeasonInfo team info is in storage');
-      return Promise.resolve(state.teamSeasonInfo);
-    }
-    return teamsApi.getTeamSeasonInfo(teamId, reqParams)
-      .then(
-        (result) => {
-          logger.debug('action: getTeamSeasonInfo result received');
-          commitNew(commit, 'setTeamSeasonInfo', state.teamSeasonInfo, result);
-          return state.teamSeasonInfo;
-        },
-        (error) => {
-          logger.error(`action: getTeamSeasonInfo error: ${error.message}`);
-        }
-      );
+    return getTeamDataByIdAndSeason('getTeamSeasonInfo', 'setTeamSeasonInfo', 'teamSeasonInfo',
+      commit, state, teamId, reqParams);
   },
 
   getTeamSeasons({commit, state}, {teamId}) {
-    logger.debug('action: getTeamSeasons');
-    if (teamId === state.teamSeasons.teamId) {
-      logger.debug('action: getTeamSeasons team seasons in storage');
-      return Promise.resolve(state.teamSeasons);
-    }
-    return teamsApi.getTeamSeasons(teamId)
-      .then(
-        (result) => {
-          logger.debug('action: getTeamSeasons result received');
-          commitNew(commit, 'setTeamSeasons', state.teamSeasons, result);
-          return state.teamSeasons;
-        },
-        (error) => {
-          logger.error(`action: getTeamSeasons error: ${error.message}`);
-        }
-      );
+    return getTeamDataById('getTeamSeasons', 'setTeamSeasons', 'teamSeasons', commit, state, teamId);
+  },
+
+  getTeamAllStats({commit, state}, {teamId}) {
+    return getTeamDataById('getTeamAllStats', 'setTeamAllStats', 'teamAllStats', commit, state, teamId);
+  },
+
+  getTeamPlayersStats({commit, state}, {teamId, reqParams}) {
+    return getTeamDataByIdAndSeason('getTeamPlayersStats', 'setTeamPlayersStats', 'teamPlayersStats',
+      commit, state, teamId, reqParams);
   }
 };
+
+function teamStatsArrayToObject(statsArray) {
+  return {
+    goalsFor: statsArray[0],
+    goalsAgainst: statsArray[1],
+    games: statsArray[2],
+    winRegular: statsArray[3],
+    winOvertime: statsArray[4],
+    winShootout: statsArray[5],
+    loseRegular: statsArray[6],
+    loseOvertime: statsArray[7],
+    loseShootout: statsArray[8],
+    points: statsArray[9],
+    pointPercentage: statsArray[10],
+    ppPercentage: statsArray[11],
+    pkPercentage: statsArray[12],
+    goalsForPerGame: statsArray[13],
+    goalsAgainstPerGame: statsArray[14],
+    shotsPerGame: statsArray[15],
+    faceOffWinsPercentage: statsArray[16]
+  };
+}
 
 const mutations = {
   setAllTeams(state, teams) {
@@ -117,25 +136,10 @@ const mutations = {
     newStat.season = stats.season;
     newStat.teams = [];
     for (let s of stats.results) {
-      let team = {id: s.id, stats: {}};
-      team.stats.goalsFor = s.stats[0];
-      team.stats.goalsAgainst = s.stats[1];
-      team.stats.games = s.stats[2];
-      team.stats.winRegular = s.stats[3];
-      team.stats.winOvertime = s.stats[4];
-      team.stats.winShootout = s.stats[5];
-      team.stats.loseRegular = s.stats[6];
-      team.stats.loseOvertime = s.stats[7];
-      team.stats.loseShootout = s.stats[8];
-      team.stats.points = s.stats[9];
-      team.stats.pointPercentage = s.stats[10];
-      team.stats.ppPercentage = s.stats[11];
-      team.stats.pkPercentage = s.stats[12];
-      team.stats.goalsForPerGame = s.stats[13];
-      team.stats.goalsAgainstPerGame = s.stats[14];
-      team.stats.shotsPerGame = s.stats[15];
-      team.stats.faceOffWinsPercentage = s.stats[16];
-
+      let team = {
+        id: s.id,
+        stats: teamStatsArrayToObject(s.stats)
+      };
       newStat.teams.push(team);
     }
     state.teamStats = newStat;
@@ -206,8 +210,49 @@ const mutations = {
     state.teamSeasons = {
       timestamp: result.timestamp,
       seasons: result.seasons,
-      teamId: result.id
+      team: {id: result.id}
     };
+  },
+
+  setTeamAllStats(state, stats) {
+    logger.debug('mutation: setTeamAllStats');
+    let newStat = {};
+    newStat.timestamp = stats.timestamp;
+    newStat.team = stats.team;
+    newStat.seasons = [];
+    for (let s of stats.results) {
+      let season = {
+        season: s.season,
+        stats: teamStatsArrayToObject(s.stats)
+      };
+      newStat.seasons.push(season);
+    }
+    state.teamAllStats = newStat;
+  },
+
+  setTeamPlayersStats(state, result) {
+    logger.debug('mutation: setTeamPlayersStats');
+    let newStat = {};
+    newStat.timestamp = result.timestamp;
+    newStat.team = result.team;
+    newStat.season = result.season;
+    newStat.skaters = [];
+    newStat.goalies = [];
+    for (let s of result.skaters) {
+      let skater = {
+        player: s.player,
+        stats: skaterStatsArrayToObject(s.stats)
+      };
+      newStat.skaters.push(skater);
+    }
+    for (let g of result.goalies) {
+      let goalie = {
+        player: g.player,
+        stats: goalieStatsArrayToObject(g.stats)
+      };
+      newStat.goalies.push(goalie);
+    }
+    state.teamPlayersStats = newStat;
   },
 
   setConferences(state, teams) {

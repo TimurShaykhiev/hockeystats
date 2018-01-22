@@ -1,7 +1,7 @@
 <template>
   <div class="">
-    <season-picker type="all"></season-picker>
-    <goalies-stats-table></goalies-stats-table>
+    <season-picker type="all"/>
+    <goalies-stats-table type="all"/>
   </div>
 </template>
 

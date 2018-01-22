@@ -1,7 +1,7 @@
 <template>
   <div class="">
-    <season-picker type="all"></season-picker>
-    <skaters-stats-table></skaters-stats-table>
+    <season-picker type="all"/>
+    <skaters-stats-table type="all"/>
   </div>
 </template>
 

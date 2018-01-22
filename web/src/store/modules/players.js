@@ -1,6 +1,6 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
-import {commitNew} from 'Store/utils';
+import {processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject} from 'Store/utils';
 
 const state = {
   skaterStats: {},
@@ -8,97 +8,78 @@ const state = {
   skaterSeasonInfo: {},
   goalieSeasonInfo: {},
   skaterSeasons: {},
-  goalieSeasons: {}
+  goalieSeasons: {},
+  skaterAllStats: {},
+  goalieAllStats: {}
 };
 
 const getters = {
 };
 
-function getPlayersStats(actName, mutName, stateName, commit, state, reqParams) {
+function getPlayersDataBySeason(actName, mutName, stateName, commit, state, reqParams) {
   logger.debug(`action: ${actName}`);
   if (reqParams.isSeasonEqual(state[stateName].season)) {
-    logger.debug(`action: ${actName} season is in storage`);
+    logger.debug(`action: ${actName} data is in storage`);
     return Promise.resolve(state[stateName]);
   }
-  return playersApi[actName](reqParams)
-    .then(
-      (result) => {
-        logger.debug(`action: ${actName} result received`);
-        commitNew(commit, mutName, state[stateName], result);
-        return state[stateName];
-      },
-      (error) => {
-        logger.error(`action: ${actName} error: ${error.message}`);
-      }
-    );
+  let requestPromise = playersApi[actName](reqParams);
+  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
-function getPlayerSeasonInfo(actName, mutName, stateName, commit, state, playerId, reqParams) {
+function getPlayerDataByIdAndSeason(actName, mutName, stateName, commit, state, playerId, reqParams) {
   logger.debug(`action: ${actName}`);
   if (state[stateName].player && playerId === state[stateName].player.id &&
       reqParams.isSeasonEqual(state[stateName].season)) {
-    logger.debug(`action: ${actName} player info is in storage`);
+    logger.debug(`action: ${actName} data is in storage`);
     return Promise.resolve(state[stateName]);
   }
-  return playersApi[actName](playerId, reqParams)
-    .then(
-      (result) => {
-        logger.debug(`action: ${actName} result received`);
-        commitNew(commit, mutName, state[stateName], result);
-        return state[stateName];
-      },
-      (error) => {
-        logger.error(`action: ${actName} error: ${error.message}`);
-      }
-    );
+  let requestPromise = playersApi[actName](playerId, reqParams);
+  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
-function getPlayerSeasons(actName, mutName, stateName, commit, state, playerId) {
+function getPlayerDataById(actName, mutName, stateName, commit, state, playerId) {
   logger.debug(`action: ${actName}`);
-  if (playerId === state[stateName].playerId) {
-    logger.debug(`action: ${actName} player seasons in storage`);
+  if (state[stateName].player && playerId === state[stateName].player.id) {
+    logger.debug(`action: ${actName} data is in storage`);
     return Promise.resolve(state[stateName]);
   }
-  return playersApi[actName](playerId)
-    .then(
-      (result) => {
-        logger.debug(`action: ${actName} result received`);
-        commitNew(commit, mutName, state[stateName], result);
-        return state[stateName];
-      },
-      (error) => {
-        logger.error(`action: ${actName} error: ${error.message}`);
-      }
-    );
+  let requestPromise = playersApi[actName](playerId);
+  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 const actions = {
   getSkaterStats({commit, state}, {reqParams}) {
-    return getPlayersStats('getSkaterStats', 'setSkaterStats', 'skaterStats', commit, state, reqParams);
+    return getPlayersDataBySeason('getSkaterStats', 'setSkaterStats', 'skaterStats', commit, state, reqParams);
   },
 
   getGoalieStats({commit, state}, {reqParams}) {
-    return getPlayersStats('getGoalieStats', 'setGoalieStats', 'goalieStats', commit, state, reqParams);
+    return getPlayersDataBySeason('getGoalieStats', 'setGoalieStats', 'goalieStats', commit, state, reqParams);
   },
 
   getSkaterSeasonInfo({commit, state}, {playerId, reqParams}) {
-    return getPlayerSeasonInfo('getSkaterSeasonInfo', 'setSkaterSeasonInfo', 'skaterSeasonInfo',
+    return getPlayerDataByIdAndSeason('getSkaterSeasonInfo', 'setSkaterSeasonInfo', 'skaterSeasonInfo',
       commit, state, playerId, reqParams);
   },
 
   getGoalieSeasonInfo({commit, state}, {playerId, reqParams}) {
-    return getPlayerSeasonInfo('getGoalieSeasonInfo', 'setGoalieSeasonInfo', 'goalieSeasonInfo',
+    return getPlayerDataByIdAndSeason('getGoalieSeasonInfo', 'setGoalieSeasonInfo', 'goalieSeasonInfo',
       commit, state, playerId, reqParams);
   },
 
   getSkaterSeasons({commit, state}, {playerId}) {
-    return getPlayerSeasons('getSkaterSeasons', 'setSkaterSeasons', 'skaterSeasons',
-      commit, state, playerId);
+    return getPlayerDataById('getSkaterSeasons', 'setSkaterSeasons', 'skaterSeasons', commit, state, playerId);
   },
 
   getGoalieSeasons({commit, state}, {playerId}) {
-    return getPlayerSeasons('getGoalieSeasons', 'setGoalieSeasons', 'goalieSeasons',
-      commit, state, playerId);
+    return getPlayerDataById('getGoalieSeasons', 'setGoalieSeasons', 'goalieSeasons', commit, state, playerId);
+  },
+
+  getSkaterAllStats({commit, state}, {playerId}) {
+    return getPlayerDataById('getSkaterAllStats', 'setSkaterAllStats', 'skaterAllStats', commit, state, playerId);
+  },
+
+  getGoalieAllStats({commit, state}, {playerId}) {
+    return getPlayerDataById('getGoalieAllStats', 'setGoalieAllStats', 'goalieAllStats', commit, state, playerId);
   }
 };
 
@@ -110,23 +91,10 @@ const mutations = {
     newStat.season = stats.season;
     newStat.skaters = [];
     for (let s of stats.results) {
-      let skater = {player: s.player, stats: {}};
-      skater.stats.assists = s.stats[0];
-      skater.stats.goals = s.stats[1];
-      skater.stats.shots = s.stats[2];
-      skater.stats.ppGoals = s.stats[3];
-      skater.stats.penaltyMinutes = s.stats[4];
-      skater.stats.shGoals = s.stats[5];
-      skater.stats.plusMinus = s.stats[6];
-      skater.stats.games = s.stats[7];
-      skater.stats.points = s.stats[8];
-      skater.stats.ppPoints = s.stats[9];
-      skater.stats.shPoints = s.stats[10];
-      skater.stats.pointsPerGame = s.stats[11];
-      skater.stats.toiPerGame = s.stats[12];
-      skater.stats.shootingPercentage = s.stats[13];
-      skater.stats.faceOffWinsPercentage = s.stats[14];
-
+      let skater = {
+        player: s.player,
+        stats: skaterStatsArrayToObject(s.stats)
+      };
       newStat.skaters.push(skater);
     }
     state.skaterStats = newStat;
@@ -139,22 +107,10 @@ const mutations = {
     newStat.season = stats.season;
     newStat.goalies = [];
     for (let s of stats.results) {
-      let goalie = {player: s.player, stats: {}};
-      goalie.stats.toi = s.stats[0];
-      goalie.stats.assists = s.stats[1];
-      goalie.stats.goals = s.stats[2];
-      goalie.stats.penaltyMinutes = s.stats[3];
-      goalie.stats.shots = s.stats[4];
-      goalie.stats.saves = s.stats[5];
-      goalie.stats.games = s.stats[6];
-      goalie.stats.wins = s.stats[7];
-      goalie.stats.shutout = s.stats[8];
-      goalie.stats.points = s.stats[9];
-      goalie.stats.losses = s.stats[10];
-      goalie.stats.goalsAgainst = s.stats[11];
-      goalie.stats.gaa = s.stats[12];
-      goalie.stats.svp = s.stats[13];
-
+      let goalie = {
+        player: s.player,
+        stats: goalieStatsArrayToObject(s.stats)
+      };
       newStat.goalies.push(goalie);
     }
     state.goalieStats = newStat;
@@ -251,7 +207,7 @@ const mutations = {
     state.skaterSeasons = {
       timestamp: result.timestamp,
       seasons: result.seasons,
-      playerId: result.id
+      player: {id: result.id}
     };
   },
 
@@ -260,8 +216,42 @@ const mutations = {
     state.goalieSeasons = {
       timestamp: result.timestamp,
       seasons: result.seasons,
-      playerId: result.id
+      player: {id: result.id}
     };
+  },
+
+  setSkaterAllStats(state, stats) {
+    logger.debug('mutation: setSkaterAllStats');
+    let newStat = {};
+    newStat.timestamp = stats.timestamp;
+    newStat.player = stats.player;
+    newStat.seasons = [];
+    for (let s of stats.results) {
+      let season = {
+        season: s.season,
+        teamId: s.tid,
+        stats: skaterStatsArrayToObject(s.stats)
+      };
+      newStat.seasons.push(season);
+    }
+    state.skaterAllStats = newStat;
+  },
+
+  setGoalieAllStats(state, stats) {
+    logger.debug('mutation: setGoalieAllStats');
+    let newStat = {};
+    newStat.timestamp = stats.timestamp;
+    newStat.player = stats.player;
+    newStat.seasons = [];
+    for (let s of stats.results) {
+      let season = {
+        season: s.season,
+        teamId: s.tid,
+        stats: goalieStatsArrayToObject(s.stats)
+      };
+      newStat.seasons.push(season);
+    }
+    state.goalieAllStats = newStat;
   }
 };
 
