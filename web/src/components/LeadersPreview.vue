@@ -15,10 +15,14 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {floatToStr} from 'Components/utils';
+import {omitInteger} from 'Components/utils';
+import {format} from 'd3-format';
 
 const ITEMS_TO_SHOW = 5;
 const GAMES_MIN_LIMIT = 5;
+
+let f2 = format('.2f');
+let f3 = format('.3f');
 
 const typesMap = {
   skaterGoal: {
@@ -49,14 +53,14 @@ const typesMap = {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
     getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.gaa : 1000,
-    showValue: (value) => floatToStr(value, 2),
+    showValue: (value) => f2(value),
     descSort: false
   },
   goalieSavePercentage: {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
     getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.svp : 0,
-    showValue: (value) => floatToStr(value, 3, true),
+    showValue: (value) => omitInteger(f3(value)),
     descSort: true
   }
 };

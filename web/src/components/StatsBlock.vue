@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {floatToStr, toiToStr} from 'Components/utils';
+import {toiToStr} from 'Components/utils';
 
 export default {
   name: 'stats-block',
@@ -31,7 +31,7 @@ export default {
         if (el.time) {
           valueStr = toiToStr(el.value);
         } else {
-          valueStr = el.precision ? floatToStr(el.value, el.precision) : el.value.toString();
+          valueStr = el.precision ? el.precision(el.value) : el.value.toString();
           if (el.percentage) {
             valueStr += '%';
           }

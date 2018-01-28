@@ -20,6 +20,11 @@ import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
 import SeasonPicker from 'Components/SeasonPicker';
 import StatsBlock from 'Components/StatsBlock';
 import GoaliesStatsTable from 'Components/GoaliesStatsTable';
+import {format} from 'd3-format';
+
+let f1 = format('.1f');
+let f2 = format('.2f');
+let f3 = format('.3f');
 
 export default {
   name: 'goalie-info',
@@ -68,13 +73,13 @@ export default {
         id: 'gaa',
         label: this.$t('statNames.goalsAgainstAverage'),
         value: goalieInfo.gaa,
-        precision: 2,
+        precision: f2,
         rating: goalieInfo.gaaRate
       }, {
         id: 'svp',
         label: this.$t('statNames.savePercentage'),
         value: goalieInfo.svp,
-        precision: 3,
+        precision: f3,
         rating: goalieInfo.svpRate
       }, {
         id: 'wins',
@@ -85,7 +90,7 @@ export default {
         id: 'winPercentage',
         label: this.$t('statNames.winPercentage'),
         value: goalieInfo.winPercentage,
-        precision: 2,
+        precision: f2,
         rating: goalieInfo.winPercentageRate
       }, {
         id: 'shutout',
@@ -105,18 +110,18 @@ export default {
       return [{
         name: this.$t('statNames.savePercentage'),
         value: goalieInfo.svp,
-        precision: 3
+        precision: f3
       }, {
         name: this.$t('statNames.saves'),
         value: goalieInfo.saves
       }, {
         name: this.$t('statNames.savesPerGame'),
         value: goalieInfo.savesPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.shotsAgainstPerGoal'),
         value: goalieInfo.shotsAgainstPerGoal,
-        precision: 2
+        precision: f2
       }];
     },
 
@@ -130,7 +135,7 @@ export default {
       return [{
         name: this.$t('statNames.goalsAgainstAverage'),
         value: goalieInfo.gaa,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.goalsAgainst'),
         value: goalieInfo.goalsAgainst
@@ -140,7 +145,7 @@ export default {
       }, {
         name: this.$t('statNames.evenStrengthGoalsAgainstPercentage'),
         value: goalieInfo.evenStrengthGoalsAgainstPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }, {
         name: this.$t('statNames.ppGoalsAllowed'),

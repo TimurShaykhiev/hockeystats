@@ -14,16 +14,16 @@
 </template>
 
 <script>
-import {floatToStr, numberToOrdinal} from 'Components/utils';
+import {numberToOrdinal} from 'Components/utils';
 
 export default {
   name: 'player-main-stat',
   props: {
     label: {type: String, required: true},
     value: {type: Number, required: true},
-    precision: {type: Number, required: false},
+    precision: {type: Function},
     rating: {type: Number, required: true},
-    teamRating: {type: Number, required: false}
+    teamRating: {type: Number}
   },
   i18n: {
     messages: {
@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       caption: this.label.toUpperCase(),
-      statValue: this.precision ? floatToStr(this.value, this.precision) : this.value.toString(),
+      statValue: this.precision ? this.precision(this.value) : this.value.toString(),
       placeInTotalRate: numberToOrdinal(this.rating, (str) => this.$t(str)),
       placeInTeamRate: this.teamRating ? numberToOrdinal(this.teamRating, (str) => this.$t(str)) : ''
     };

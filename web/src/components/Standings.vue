@@ -29,7 +29,7 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {floatToStr} from 'Components/utils';
+import {format} from 'd3-format';
 
 function compareStandings(a, b) {
   // Compare points (the more the better)
@@ -168,6 +168,7 @@ export default {
       result = result.concat(others);
 
       let i = 0;
+      let f = format('.1f');
       return result.map((t) => {
         return {
           rank: ++i,
@@ -179,7 +180,7 @@ export default {
           losses: t.stats.loseRegular,
           lossesOT: t.stats.loseOvertime + t.stats.loseShootout,
           points: t.stats.points,
-          pointsPercent: floatToStr(t.stats.pointPercentage, 1)
+          pointsPercent: f(t.stats.pointPercentage)
         };
       });
     }

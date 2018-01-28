@@ -36,6 +36,10 @@ import StatsBlock from 'Components/StatsBlock';
 import SkatersStatsTable from 'Components/SkatersStatsTable';
 import BarChart from 'Components/BarChart';
 import {allStatsToChartData, toiToStr} from 'Components/utils';
+import {format} from 'd3-format';
+
+let f1 = format('.1f');
+let f2 = format('.2f');
 
 const CHART_POINT = 1;
 const CHART_TOI = 2;
@@ -145,20 +149,20 @@ export default {
       }, {
         name: this.$t('statNames.pointsPerGame'),
         value: skaterInfo.pointsPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.pointsPer60min'),
         value: skaterInfo.pointsPer60min,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.goalPercentageOfPoints'),
         value: skaterInfo.goalPercentageOfPoints,
-        precision: 1,
+        precision: f1,
         percentage: true
       }, {
         name: this.$t('statNames.assistPercentageOfPoints'),
         value: skaterInfo.assistPercentageOfPoints,
-        precision: 1,
+        precision: f1,
         percentage: true
       }];
     },
@@ -176,20 +180,20 @@ export default {
       }, {
         name: this.$t('statNames.goalsPerGame'),
         value: skaterInfo.goalsPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.goalsPer60min'),
         value: skaterInfo.goalsPer60min,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.evenStrengthGoalsPercentage'),
         value: skaterInfo.evenStrengthGoalsPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }, {
         name: this.$t('statNames.ppGoalPercentage'),
         value: skaterInfo.ppGoalPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }];
     },
@@ -207,20 +211,20 @@ export default {
       }, {
         name: this.$t('statNames.assistsPerGame'),
         value: skaterInfo.assistsPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.assistsPer60min'),
         value: skaterInfo.assistsPer60min,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.evenAssistPercentage'),
         value: skaterInfo.evenAssistPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }, {
         name: this.$t('statNames.ppAssistPercentage'),
         value: skaterInfo.ppAssistPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }];
     },
@@ -235,7 +239,7 @@ export default {
       return [{
         name: this.$t('statNames.shootingPercentage'),
         value: skaterInfo.shootingPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }, {
         name: this.$t('statNames.shots'),
@@ -243,15 +247,15 @@ export default {
       }, {
         name: this.$t('statNames.shotsPerGame'),
         value: skaterInfo.shotsPerGame,
-        precision: 1
+        precision: f1
       }, {
         name: this.$t('statNames.shotsPer60min'),
         value: skaterInfo.shotsPer60min,
-        precision: 1
+        precision: f1
       }, {
         name: this.$t('statNames.shotsPerGoal'),
         value: skaterInfo.shotsPerGoal,
-        precision: 1
+        precision: f1
       }];
     },
 
@@ -274,11 +278,11 @@ export default {
       }, {
         name: this.$t('statNames.turnoverPer60min'),
         value: skaterInfo.turnoverPer60min,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.turnoverRatio'),
         value: skaterInfo.turnoverRatio,
-        precision: 2
+        precision: f2
       }];
     },
 
@@ -298,14 +302,14 @@ export default {
       }, {
         name: this.$t('statNames.blocksPer60min'),
         value: skaterInfo.blocksPer60min,
-        precision: 1
+        precision: f1
       }, {
         name: this.$t('statNames.hits'),
         value: skaterInfo.hits
       }, {
         name: this.$t('statNames.hitsPer60min'),
         value: skaterInfo.hitsPer60min,
-        precision: 1
+        precision: f1
       }, {
         name: this.$t('statNames.toiPerGame'),
         value: skaterInfo.toiPerGame,
@@ -313,7 +317,7 @@ export default {
       }, {
         name: this.$t('statNames.faceOffWinsPercentage'),
         value: skaterInfo.faceOffWinsPercentage,
-        precision: 1,
+        precision: f1,
         percentage: true
       }, {
         name: this.$t('statNames.penaltyMinutes'),
@@ -321,7 +325,7 @@ export default {
       }, {
         name: this.$t('statNames.PIMsPer60min'),
         value: skaterInfo.PIMsPer60min,
-        precision: 2
+        precision: f2
       }];
     },
 

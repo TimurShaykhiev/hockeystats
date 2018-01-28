@@ -31,7 +31,8 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {floatToStr, toiToStr, getSeasonName, getPaginationText, seasonToStr} from 'Components/utils';
+import {omitInteger, toiToStr, getSeasonName, getPaginationText, seasonToStr} from 'Components/utils';
+import {format} from 'd3-format';
 
 const TYPE_ALL = 'all';
 const TYPE_TEAM = 'team';
@@ -237,6 +238,8 @@ export default {
         }
       }
 
+      let f2 = format('.2f');
+      let f3 = format('.3f');
       return goalieStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
         if (this.type !== TYPE_PLAYER) {
@@ -252,8 +255,8 @@ export default {
           rowData.seasonName = seasonToStr(t.season, (str) => this.$t(str));
         }
         rowData.toi = toiToStr(rowData.toi);
-        rowData.gaa = floatToStr(rowData.gaa, 2);
-        rowData.svp = floatToStr(rowData.svp, 3, true);
+        rowData.gaa = f2(rowData.gaa);
+        rowData.svp = omitInteger(f3(rowData.svp));
         return rowData;
       });
     }

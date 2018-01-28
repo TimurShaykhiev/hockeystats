@@ -33,6 +33,11 @@ import StatsBlock from 'Components/StatsBlock';
 import TeamsStatsTable from 'Components/TeamsStatsTable';
 import SkatersStatsTable from 'Components/SkatersStatsTable';
 import GoaliesStatsTable from 'Components/GoaliesStatsTable';
+import {format} from 'd3-format';
+
+let f1 = format('.1f');
+let f2 = format('.2f');
+let f3 = format('.3f');
 
 export default {
   name: 'team-info',
@@ -138,14 +143,14 @@ export default {
       }, {
         name: this.$t('statNames.goalsForPerGame'),
         value: teamInfo.goalsForPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.goalsAgainst'),
         value: teamInfo.goalsAgainst
       }, {
         name: this.$t('statNames.goalsAgainstPerGame'),
         value: teamInfo.goalsAgainstPerGame,
-        precision: 2
+        precision: f2
       }];
     },
 
@@ -159,20 +164,20 @@ export default {
       return [{
         name: this.$t('statNames.shotsPerGame'),
         value: teamInfo.shotsPerGame,
-        precision: 1
+        precision: f1
       }, {
         name: this.$t('statNames.shotsAgainstPerGame'),
         value: teamInfo.shotsAgainstPerGame,
-        precision: 1
+        precision: f1
       }, {
         name: this.$t('statNames.shootingPercentage'),
         value: teamInfo.shootingPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }, {
         name: this.$t('statNames.oppShootingPercentage'),
         value: teamInfo.oppShootingPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }];
     },
@@ -187,23 +192,23 @@ export default {
       return [{
         name: this.$t('statNames.scoringEfficiencyRatio'),
         value: teamInfo.scoringEfficiencyRatio,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.shotEfficiencyRatio'),
         value: teamInfo.shotEfficiencyRatio,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.penaltyEfficiencyRatio'),
         value: teamInfo.penaltyEfficiencyRatio,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.pointsPerGame'),
         value: teamInfo.pointsPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.faceOffWinsPercentage'),
         value: teamInfo.faceOffWinsPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }];
     },
@@ -218,7 +223,7 @@ export default {
       return [{
         name: this.$t('statNames.ppPercentage'),
         value: teamInfo.ppPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }, {
         name: this.$t('statNames.ppGoals'),
@@ -226,11 +231,11 @@ export default {
       }, {
         name: this.$t('statNames.ppGoalsPerGame'),
         value: teamInfo.ppGoalsPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.ppPerGame'),
         value: teamInfo.ppPerGame,
-        precision: 2
+        precision: f2
       }];
     },
 
@@ -244,7 +249,7 @@ export default {
       return [{
         name: this.$t('statNames.pkPercentage'),
         value: teamInfo.pkPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }, {
         name: this.$t('statNames.shGoalsAgainst'),
@@ -252,11 +257,11 @@ export default {
       }, {
         name: this.$t('statNames.shGoalsAgainstPerGame'),
         value: teamInfo.shGoalsAgainstPerGame,
-        precision: 2
+        precision: f2
       }, {
         name: this.$t('statNames.shPerGame'),
         value: teamInfo.shPerGame,
-        precision: 2
+        precision: f2
       }];
     },
 
@@ -270,11 +275,11 @@ export default {
       return [{
         name: this.$t('statNames.savePercentage'),
         value: teamInfo.savePercentage,
-        precision: 3
+        precision: f3
       }, {
         name: this.$t('statNames.oppSavePercentage'),
         value: teamInfo.oppSavePercentage,
-        precision: 3
+        precision: f3
       }, {
         name: this.$t('statNames.shutouts'),
         value: teamInfo.shutouts
@@ -303,12 +308,12 @@ export default {
       }, {
         name: this.$t('statNames.ppPercentage'),
         value: teamInfo.homePPPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }, {
         name: this.$t('statNames.pkPercentage'),
         value: teamInfo.homePKPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }];
     },
@@ -335,12 +340,12 @@ export default {
       }, {
         name: this.$t('statNames.ppPercentage'),
         value: teamInfo.awayPPPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }, {
         name: this.$t('statNames.pkPercentage'),
         value: teamInfo.awayPKPercentage,
-        precision: 2,
+        precision: f2,
         percentage: true
       }];
     }

@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import {floatToStr, numberToOrdinal} from 'Components/utils';
+import {numberToOrdinal} from 'Components/utils';
+import {format} from 'd3-format';
 
 export default {
   name: 'team-main-stat',
@@ -43,11 +44,12 @@ export default {
     }
   },
   data() {
+    let f = format('.2f');
     return {
       caption: this.label.toUpperCase(),
-      statValue: floatToStr(this.value, 2),
+      statValue: f(this.value),
       placeInRate: numberToOrdinal(this.rating, (str) => this.$t(str)),
-      leagueAverage: floatToStr(this.average, 2),
+      leagueAverage: f(this.average),
       statBarHeight: `${Math.round(this.value / Math.max(this.value, this.average) * 100)}px`,
       avgBarHeight: `${Math.round(this.average / Math.max(this.value, this.average) * 100)}px`
     };

@@ -25,7 +25,8 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {floatToStr, getSeasonName, seasonToStr} from 'Components/utils';
+import {getSeasonName, seasonToStr} from 'Components/utils';
+import {format} from 'd3-format';
 
 const TYPE_ALL = 'all';
 const TYPE_TEAM = 'team';
@@ -227,6 +228,8 @@ export default {
         }
       }
 
+      let f1 = format('.1f');
+      let f2 = format('.2f');
       return teamStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
         if (this.type === TYPE_ALL) {
@@ -235,13 +238,13 @@ export default {
         } else {
           rowData.seasonName = seasonToStr(t.season, (str) => this.$t(str));
         }
-        rowData.pointPercentage = floatToStr(rowData.pointPercentage, 1);
-        rowData.goalsForPerGame = floatToStr(rowData.goalsForPerGame, 2);
-        rowData.goalsAgainstPerGame = floatToStr(rowData.goalsAgainstPerGame, 2);
-        rowData.ppPercentage = floatToStr(rowData.ppPercentage, 1);
-        rowData.pkPercentage = floatToStr(rowData.pkPercentage, 1);
-        rowData.shotsPerGame = floatToStr(rowData.shotsPerGame, 1);
-        rowData.faceOffWinsPercentage = floatToStr(rowData.faceOffWinsPercentage, 1);
+        rowData.pointPercentage = f1(rowData.pointPercentage);
+        rowData.goalsForPerGame = f2(rowData.goalsForPerGame);
+        rowData.goalsAgainstPerGame = f2(rowData.goalsAgainstPerGame);
+        rowData.ppPercentage = f1(rowData.ppPercentage);
+        rowData.pkPercentage = f1(rowData.pkPercentage);
+        rowData.shotsPerGame = f1(rowData.shotsPerGame);
+        rowData.faceOffWinsPercentage = f1(rowData.faceOffWinsPercentage);
         return rowData;
       });
     }

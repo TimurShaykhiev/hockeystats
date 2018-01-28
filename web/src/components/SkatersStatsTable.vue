@@ -31,7 +31,8 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {floatToStr, toiToStr, getSeasonName, getPaginationText, seasonToStr} from 'Components/utils';
+import {toiToStr, getSeasonName, getPaginationText, seasonToStr} from 'Components/utils';
+import {format} from 'd3-format';
 
 const TYPE_ALL = 'all';
 const TYPE_TEAM = 'team';
@@ -253,6 +254,7 @@ export default {
         }
       }
 
+      let f2 = format('.2f');
       return skaterStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
         if (this.type !== TYPE_PLAYER) {
@@ -269,9 +271,9 @@ export default {
           rowData.seasonName = seasonToStr(t.season, (str) => this.$t(str));
         }
         rowData.toiPerGame = toiToStr(rowData.toiPerGame);
-        rowData.pointsPerGame = floatToStr(rowData.pointsPerGame, 2);
-        rowData.shootingPercentage = floatToStr(rowData.shootingPercentage, 2);
-        rowData.faceOffWinsPercentage = floatToStr(rowData.faceOffWinsPercentage, 2);
+        rowData.pointsPerGame = f2(rowData.pointsPerGame);
+        rowData.shootingPercentage = f2(rowData.shootingPercentage);
+        rowData.faceOffWinsPercentage = f2(rowData.faceOffWinsPercentage);
         return rowData;
       });
     }
