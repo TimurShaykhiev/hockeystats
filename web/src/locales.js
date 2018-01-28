@@ -153,7 +153,18 @@ let locales = {
         ofText: 'of',
         allText: 'All'
       },
-      ordinalNumbers: ['TH', 'ST', 'ND', 'RD', 'TH', 'TH', 'TH', 'TH', 'TH', 'TH']
+      ordinalNumbers: ['TH', 'ST', 'ND', 'RD', 'TH', 'TH', 'TH', 'TH', 'TH', 'TH'],
+      tabNames: {
+        table: 'Table',
+        charts: 'Charts'
+      },
+      charts: {
+        points: 'Points',
+        pointsCaptionY: 'Points',
+        toi: 'Time On Ice',
+        toiCaptionY: 'Minutes',
+        skaterSkills: 'Skater Skills'
+      }
     },
     ru: {
       statNames: {
@@ -299,7 +310,18 @@ let locales = {
         ofText: 'из',
         allText: 'Все'
       },
-      ordinalNumbers: ['й', 'й', 'й', 'й', 'й', 'й', 'й', 'й', 'й', 'й']
+      ordinalNumbers: ['й', 'й', 'й', 'й', 'й', 'й', 'й', 'й', 'й', 'й'],
+      tabNames: {
+        table: 'Таблица',
+        charts: 'Графики'
+      },
+      charts: {
+        points: 'Очки',
+        pointsCaptionY: 'Очки',
+        toi: 'Время на льду',
+        toiCaptionY: 'Минуты',
+        skaterSkills: 'Основные навыки'
+      }
     }
   }
 };

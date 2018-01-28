@@ -57,3 +57,25 @@ export function numberToOrdinal(num, translateFunc) {
   }
   return `${num}${translateFunc(`ordinalNumbers[${num % 10}]`)}`;
 }
+
+export function allStatsToChartData(allStats, fieldMap) {
+  // Convert all seasons stats to chart data set.
+  // Returns array of objects. The season is always in 'x' field. Play-offs are ignored.
+  let result = [];
+  for (let s of allStats) {
+    if (!s.season.regular) {
+      continue;
+    }
+    let obj = {};
+    obj.x = `${s.season.year}-${s.season.year % 100 + 1}`;
+    for (let m of fieldMap) {
+      if (m.convert) {
+        obj[m.to] = m.convert(s.stats[m.from]);
+      } else {
+        obj[m.to] = s.stats[m.from];
+      }
+    }
+    result.push(obj);
+  }
+  return result;
+}

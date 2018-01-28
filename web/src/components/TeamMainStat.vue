@@ -79,6 +79,7 @@ export default {
   }
   .team-main-stat__value {
     font-size: 3rem;
+    margin: 1rem 0;
   }
   .team-main-stat__caption {
     margin: 0 0.8rem;
@@ -86,6 +87,7 @@ export default {
   }
   .team-main-stat__rating {
     font-size: 2rem;
+    margin: 1rem 0;
   }
   .team-main-stat__average {
     font-family: @header-font;

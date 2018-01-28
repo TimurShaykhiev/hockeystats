@@ -98,8 +98,8 @@ export default {
     cursor: pointer;
   }
   .header__caption {
-    margin-left: 4rem;
-    font-size: 1.5rem;
+    margin: .5rem 4rem;
+    font-size: 1.7rem;
     color: @header-text-color;
     cursor: pointer;
   }
@@ -163,6 +163,7 @@ export default {
       text-align: right;
       li {
         cursor: pointer;
+        margin: .5rem 0;
       }
     }
   }

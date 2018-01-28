@@ -23,6 +23,12 @@ const config = {
   },
   module: {
     rules: [{
+        test: /\.css$/,
+        use: extractLess.extract({
+          use: ['css-loader']
+        }),
+        include: path.resolve(__dirname, 'node_modules')
+      },{
         test: /\.less$/,
         use: extractLess.extract({
           use: ['css-loader', 'postcss-loader', 'less-loader']
@@ -68,6 +74,7 @@ const config = {
       Components: SRC_DIR + '/components',
       Api: SRC_DIR + '/api',
       Store: SRC_DIR + '/store',
+      ThirdParty: SRC_DIR + '/3rdparty',
       Assets: ASSETS_DIR
     }
   },

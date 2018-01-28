@@ -3,6 +3,7 @@
   "rules": {
     "switch-colon-spacing": 0,
     "require-jsdoc": 0,
+    "prefer-rest-params": 0,
 
     "max-len": [2, {"code": 120, "tabWidth": 2, "ignoreUrls": true}],
     "comma-dangle": ["error", "never"],
@@ -11,7 +12,8 @@
     "brace-style": ["warn", "1tbs", { "allowSingleLine": true }],
     "space-before-function-paren": ["warn", { "anonymous": "always", "named": "never", "asyncArrow": "never" }],
     "quotes": ["warn", "single"],
-    "no-unused-vars": ["warn"]
+    "no-unused-vars": ["warn"],
+    "semi": ["warn"]
   },
   "extends": ["google"],
   "plugins": ["html"]

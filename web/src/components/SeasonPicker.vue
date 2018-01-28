@@ -115,5 +115,6 @@ export default {
   }
   .season-picker__select {
     border-radius: 4px;
+    font-size: .9rem;
   }
 </style>

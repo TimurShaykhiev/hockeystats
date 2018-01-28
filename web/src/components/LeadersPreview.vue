@@ -163,7 +163,7 @@ export default {
       font-size: 1.3rem;
     }
     tr {
-      height: 2em;
+      height: 3em;
       &:nth-of-type(odd) {
         background-color: @table-striped-color;
       }

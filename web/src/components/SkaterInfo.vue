@@ -7,7 +7,17 @@
     <div class="container-row">
       <player-main-stat v-for="el in ratings" :key="el.id" v-bind="el"/>
     </div>
-    <skaters-stats-table type="player"/>
+    <tabs>
+      <tab :name="$t('tabNames.table')">
+        <skaters-stats-table type="player"/>
+      </tab>
+      <tab :name="$t('tabNames.charts')">
+        <select class="chart-picker__select" v-model="selectedChart">
+          <option v-for="el in chartList" :value="el.value">{{el.name}}</option>
+        </select>
+        <bar-chart v-if="chartData.barChart" v-bind="chartData.chartData"/>
+      </tab>
+    </tabs>
     <stats-block :caption="$t('skaterInfo.pointStatistics')" :items="pointStats"/>
     <stats-block :caption="$t('skaterInfo.goalStatistics')" :items="goalStats"/>
     <stats-block :caption="$t('skaterInfo.assistStatistics')" :items="assistStats"/>
@@ -24,10 +34,16 @@ import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
 import SeasonPicker from 'Components/SeasonPicker';
 import StatsBlock from 'Components/StatsBlock';
 import SkatersStatsTable from 'Components/SkatersStatsTable';
+import BarChart from 'Components/BarChart';
+import {allStatsToChartData, toiToStr} from 'Components/utils';
+
+const CHART_POINT = 1;
+const CHART_TOI = 2;
+const CHART_SKILLS = 3;
 
 export default {
   name: 'skater-info',
-  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo, SkatersStatsTable},
+  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo, SkatersStatsTable, BarChart},
   props: {
   },
   i18n: {
@@ -55,7 +71,14 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      selectedChart: CHART_POINT,
+      chartList: [
+        {name: this.$t('charts.points'), value: CHART_POINT},
+        {name: this.$t('charts.toi'), value: CHART_TOI},
+        {name: this.$t('charts.skaterSkills'), value: CHART_SKILLS}
+      ]
+    };
   },
   created() {
     this.requestSkaterInfo();
@@ -300,6 +323,37 @@ export default {
         value: skaterInfo.PIMsPer60min,
         precision: 2
       }];
+    },
+
+    chartData() {
+      if (this.selectedChart === CHART_POINT) {
+        let skaterStats = this.getSkaterAllStats();
+        if (skaterStats.length === 0) {
+          return {};
+        }
+        return {
+          barChart: true,
+          chartData: {
+            yCaption: this.$t('charts.pointsCaptionY'),
+            dataSet: allStatsToChartData(skaterStats, [{from: 'points', to: 'y'}])
+          }
+        };
+      }
+      if (this.selectedChart === CHART_TOI) {
+        let skaterStats = this.getSkaterAllStats();
+        if (skaterStats.length === 0) {
+          return {};
+        }
+        return {
+          barChart: true,
+          chartData: {
+            yCaption: this.$t('charts.toiCaptionY'),
+            dataSet: allStatsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
+            tooltipFormat: (t) => toiToStr(t * 60)
+          }
+        };
+      }
+      return {};
     }
   },
   methods: {
@@ -316,6 +370,15 @@ export default {
     needRequest(skaterInfo, selSeason) {
       return !skaterInfo.player || skaterInfo.player.id !== parseInt(this.$route.params.id) ||
              selSeason.id !== skaterInfo.season.id || selSeason.regular !== skaterInfo.season.regular;
+    },
+
+    getSkaterAllStats() {
+      let stats = this.$store.state.players.skaterAllStats;
+      if (!stats.player || stats.player.id !== parseInt(this.$route.params.id)) {
+        this.$store.dispatch('getSkaterAllStats', {playerId: this.$route.params.id});
+        return [];
+      }
+      return stats.seasons;
     }
   }
 };

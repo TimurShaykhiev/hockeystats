@@ -1,7 +1,7 @@
 <template>
   <div class="stats-block container-col">
-    <div class="stats-block__caption">
-      <h2>{{caption}}</h2>
+    <div class="stats-block__caption-block">
+      <h2 class="stats-block__caption">{{caption}}</h2>
     </div>
     <div class="stats-block__block container-row">
       <div v-for="el in stats" class="stats-block__item">
@@ -52,11 +52,14 @@ export default {
     margin: 2rem;
     border: 1px solid @border-color;
   }
-  .stats-block__caption {
+  .stats-block__caption-block {
     color: @header-text-color;
     background: @header-color;
     height: 2.5em;
     padding-left: 1rem;
+    .stats-block__caption {
+      margin: .4rem 0;
+    }
   }
   .stats-block__block {
     justify-content: space-around;
@@ -70,6 +73,7 @@ export default {
   }
   .stats-block__value {
     font-size: 3rem;
+    margin: 1rem 0;
   }
   .stats-block__name {
     color: @header-color;
