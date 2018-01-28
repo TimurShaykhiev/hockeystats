@@ -7,6 +7,14 @@ import {logger, DEBUG} from 'Root/logger';
 import VueGoodTable from 'vue-good-table';
 import Tab from 'Components/Tab';
 import Tabs from 'Components/Tabs';
+import SeasonPicker from 'Components/SeasonPicker';
+import StatsBlock from 'Components/StatsBlock';
+import TeamsStatsTable from 'Components/TeamsStatsTable';
+import SkatersStatsTable from 'Components/SkatersStatsTable';
+import GoaliesStatsTable from 'Components/GoaliesStatsTable';
+import PlayerMainStat from 'Components/PlayerMainStat';
+import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
+import BarChart from 'Components/BarChart';
 
 // 3rd party CSS modules
 require('../node_modules/normalize.css/normalize.css');
@@ -21,6 +29,14 @@ if (window.location.search.slice(1, 6) === 'debug') {
 Vue.use(VueGoodTable);
 Vue.component('tab', Tab);
 Vue.component('tabs', Tabs);
+Vue.component('season-picker', SeasonPicker);
+Vue.component('stats-block', StatsBlock);
+Vue.component('teams-stats-table', TeamsStatsTable);
+Vue.component('skaters-stats-table', SkatersStatsTable);
+Vue.component('goalies-stats-table', GoaliesStatsTable);
+Vue.component('player-main-stat', PlayerMainStat);
+Vue.component('player-personal-info', PlayerPersonalInfo);
+Vue.component('bar-chart', BarChart);
 
 new Vue({
   el: '#app',

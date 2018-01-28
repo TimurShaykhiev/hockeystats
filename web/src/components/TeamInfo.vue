@@ -28,11 +28,6 @@
 <script>
 import {SeasonRequestParams} from 'Store/types';
 import TeamMainStat from 'Components/TeamMainStat';
-import SeasonPicker from 'Components/SeasonPicker';
-import StatsBlock from 'Components/StatsBlock';
-import TeamsStatsTable from 'Components/TeamsStatsTable';
-import SkatersStatsTable from 'Components/SkatersStatsTable';
-import GoaliesStatsTable from 'Components/GoaliesStatsTable';
 import {format} from 'd3-format';
 
 let f1 = format('.1f');
@@ -41,7 +36,7 @@ let f3 = format('.3f');
 
 export default {
   name: 'team-info',
-  components: {TeamMainStat, SeasonPicker, StatsBlock, TeamsStatsTable, SkatersStatsTable, GoaliesStatsTable},
+  components: {TeamMainStat},
   props: {
   },
   i18n: {

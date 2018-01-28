@@ -7,13 +7,11 @@
 </template>
 
 <script>
-import SeasonPicker from 'Components/SeasonPicker';
-import TeamsStatsTable from 'Components/TeamsStatsTable';
 import TeamPicker from 'Components/TeamPicker';
 
 export default {
   name: 'teams',
-  components: {SeasonPicker, TeamsStatsTable, TeamPicker},
+  components: {TeamPicker},
   props: {
   },
   data() {

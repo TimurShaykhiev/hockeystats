@@ -6,12 +6,10 @@
 </template>
 
 <script>
-import SeasonPicker from 'Components/SeasonPicker';
-import SkatersStatsTable from 'Components/SkatersStatsTable';
 
 export default {
   name: 'skaters',
-  components: {SeasonPicker, SkatersStatsTable},
+  components: {},
   props: {
   },
   data() {

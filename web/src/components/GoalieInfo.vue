@@ -15,11 +15,6 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import PlayerMainStat from 'Components/PlayerMainStat';
-import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
-import SeasonPicker from 'Components/SeasonPicker';
-import StatsBlock from 'Components/StatsBlock';
-import GoaliesStatsTable from 'Components/GoaliesStatsTable';
 import {format} from 'd3-format';
 
 let f1 = format('.1f');
@@ -28,7 +23,7 @@ let f3 = format('.3f');
 
 export default {
   name: 'goalie-info',
-  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo, GoaliesStatsTable},
+  components: {},
   props: {
   },
   i18n: {

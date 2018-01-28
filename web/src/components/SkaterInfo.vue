@@ -29,12 +29,6 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import PlayerMainStat from 'Components/PlayerMainStat';
-import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
-import SeasonPicker from 'Components/SeasonPicker';
-import StatsBlock from 'Components/StatsBlock';
-import SkatersStatsTable from 'Components/SkatersStatsTable';
-import BarChart from 'Components/BarChart';
 import {allStatsToChartData, toiToStr} from 'Components/utils';
 import {format} from 'd3-format';
 
@@ -47,7 +41,7 @@ const CHART_SKILLS = 3;
 
 export default {
   name: 'skater-info',
-  components: {PlayerMainStat, SeasonPicker, StatsBlock, PlayerPersonalInfo, SkatersStatsTable, BarChart},
+  components: {},
   props: {
   },
   i18n: {
