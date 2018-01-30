@@ -6,8 +6,8 @@
     "prefer-rest-params": 0,
 
     "max-len": [2, {"code": 120, "tabWidth": 2, "ignoreUrls": true}],
-    "comma-dangle": ["error", "never"],
 
+    "comma-dangle": ["warn", "never"],
     "block-spacing": ["warn", "always"],
     "brace-style": ["warn", "1tbs", { "allowSingleLine": true }],
     "space-before-function-paren": ["warn", { "anonymous": "always", "named": "never", "asyncArrow": "never" }],

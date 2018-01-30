@@ -16,6 +16,7 @@
           <option v-for="el in chartList" :value="el.value">{{el.name}}</option>
         </select>
         <bar-chart v-if="chartData.barChart" v-bind="chartData.chartData"/>
+        <stacked-bar-chart v-else-if="chartData.stackedBarChart" v-bind="chartData.chartData"/>
       </tab>
     </tabs>
     <stats-block :caption="$t('skaterInfo.pointStatistics')" :items="pointStats"/>
@@ -329,11 +330,20 @@ export default {
         if (skaterStats.length === 0) {
           return {};
         }
+        let data = allStatsToChartData(skaterStats, [
+          {from: 'goals', to: 'goals'},
+          {from: 'assists', to: 'assists'}
+        ]);
+        data.names = ['goals', 'assists'];
         return {
-          barChart: true,
+          stackedBarChart: true,
           chartData: {
             yCaption: this.$t('charts.pointsCaptionY'),
-            dataSet: allStatsToChartData(skaterStats, [{from: 'points', to: 'y'}])
+            dataSet: data,
+            legend: [
+              {key: 'goals', name: this.$t('statNames.goals')},
+              {key: 'assists', name: this.$t('statNames.assists')}
+            ]
           }
         };
       }
