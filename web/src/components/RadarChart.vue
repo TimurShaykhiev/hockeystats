@@ -31,12 +31,11 @@ export default {
     return {
       chartRadius: 0,
       nodeRadius: 5,
-      factor: 1,
       factorLegend: .85,
       levels: 5,
       sector: 2 * Math.PI / this.axises.length,
       opacityArea: 0.5,
-      ToRight: 5,
+      levelTextIndentRight: 5,
       colors: scaleOrdinal(schemeCategory10).domain(this.dataSet.map((d) => d.legendKey))
     };
   },
@@ -55,71 +54,20 @@ export default {
       let g = svg.append('g')
         .attr('transform', `translate(${CHART_MARGIN},${CHART_MARGIN})`);
 
+      this.addAxisScales();
+      this.drawAxises(g);
+      this.drawPolygons(g);
+
       if (this.homogeneous) {
-        this.addAxisScales();
         this.drawLevels(g);
-        this.drawSimpleAxis(g);
+        this.drawAxisPoints(g);
       }
-
-      // Draw polygons
-      this.dataSet.forEach((areaData) => {
-        let areaId = areaData.legendKey;
-        let polygonNodes = [];
-        g.selectAll('.radar-chart__node')
-          .data(areaData.data, (d, i) => {
-            let value = this.getAxisValue(d, i);
-            polygonNodes.push([
-              this.getXCoord(this.chartRadius, i, value),
-              this.getYCoord(this.chartRadius, i, value)
-            ]);
-          });
-        polygonNodes.push(polygonNodes[0]);
-
-        g.selectAll('.area')
-          .data([polygonNodes])
-          .enter()
-          .append('polygon')
-            .attr('class', `radar-chart__polygon radar-chart__area${areaId}`)
-            .style('stroke', this.colors(areaId))
-            .attr('points', (d) => d.map((p) => p.join(',')).join(' '))
-            .style('fill', () => this.colors(areaId))
-            .style('fill-opacity', this.opacityArea)
-            .on('mouseover', (d, i, nodes) => {
-              g.selectAll('polygon')
-                .style('fill-opacity', 0.1);
-              select(nodes[i])
-                .style('fill-opacity', .7);
-            })
-            .on('mouseout', () => {
-              g.selectAll('polygon')
-                .style('fill-opacity', this.opacityArea);
-            });
-      });
-
-      // Draw points on axis
-      this.dataSet.forEach((areaData) => {
-        let areaId = areaData.legendKey;
-        g.selectAll('.radar-chart__node')
-          .data(areaData.data).enter()
-          .append('svg:circle')
-            .attr('class', `radar-chart__axis-point radar-chart__area${areaId}`)
-            .attr('r', this.nodeRadius)
-            .attr('alt', (d) => Math.max(d.value, 0))
-            .attr('cx', (d, i) => this.getXCoord(this.chartRadius, i, this.getAxisValue(d, i)))
-            .attr('cy', (d, i) => this.getYCoord(this.chartRadius, i, this.getAxisValue(d, i)))
-            .attr('data-id', (d) => d.key)
-            .style('fill', this.colors(areaId))
-            .append('svg:title')
-              .text((j) => Math.max(j.value, 0));
-      });
     },
 
     drawLevels(g) {
-      let radius = this.factor * Math.min(this.chartRadius, this.chartRadius);
-
       // Circular segments
       for (let j = 0; j < this.levels - 1; j++) {
-        let levelFactor = this.factor * radius * ((j + 1) / this.levels);
+        let levelFactor = this.chartRadius * ((j + 1) / this.levels);
         g.selectAll('.levels')
           .data(this.axises)
           .enter()
@@ -133,23 +81,24 @@ export default {
       }
 
       // Level text
-      let levelScale = this.axises[0].axisScale.range([0, radius]).ticks(this.levels + 1);
+      let levelScale = this.axises[0].axisScale.ticks(this.levels + 1);
       for (let j = 0; j < this.levels; j++) {
-        let levelFactor = this.factor * radius * ((j + 1) / this.levels);
+        let levelFactor = this.chartRadius * ((j + 1) / this.levels);
+        let textTranslateX = this.chartRadius - levelFactor + this.levelTextIndentRight;
+        let textTranslateY = this.chartRadius - levelFactor;
         g.selectAll('.levels')
           .data([1]) // dummy data
           .enter()
           .append('svg:text')
             .attr('x', levelFactor)
-            .attr('y', levelFactor * (1 - this.factor))
+            .attr('y', 0)
             .attr('class', 'radar-chart__scale')
-            .attr('transform',
-              `translate(${(this.chartRadius - levelFactor + this.ToRight)},${(this.chartRadius - levelFactor)})`)
+            .attr('transform', `translate(${textTranslateX},${textTranslateY})`)
             .text(levelScale[j+1]);
         }
     },
 
-    drawSimpleAxis(g) {
+    drawAxises(g) {
       let axis = g.selectAll('.radar-chart__axis')
         .data(this.axises)
         .enter()
@@ -178,30 +127,96 @@ export default {
         });
     },
 
-    getXCoord(radius, i, value=1) {
-      return radius * (1 - value * this.factor * Math.sin(i * this.sector));
+    drawAxisPoints(g) {
+      this.dataSet.forEach((areaData) => {
+        let areaId = areaData.legendKey;
+        g.selectAll('.radar-chart__node')
+          .data(areaData.data).enter()
+          .append('svg:circle')
+            .attr('class', `radar-chart__axis-point radar-chart__area${areaId}`)
+            .attr('r', this.nodeRadius)
+            .attr('alt', (d) => d.value)
+            .attr('cx', (d, i) => this.getAxisValueX(d, i))
+            .attr('cy', (d, i) => this.getAxisValueY(d, i))
+            .attr('data-id', (d) => d.key)
+            .style('fill', this.colors(areaId))
+            .append('svg:title')
+              .text((d) => d.value);
+      });
     },
 
-    getYCoord(radius, i, value=1) {
-      return radius * (1 - value * this.factor * Math.cos(i * this.sector));
+    drawPolygons(g) {
+      this.dataSet.forEach((areaData) => {
+        let areaId = areaData.legendKey;
+        let polygonNodes = [];
+        g.selectAll('.radar-chart__node')
+          .data(areaData.data, (d, i) => {
+            polygonNodes.push([this.getAxisValueX(d, i), this.getAxisValueY(d, i)]);
+          });
+        polygonNodes.push(polygonNodes[0]);
+
+        g.selectAll('.area')
+          .data([polygonNodes])
+          .enter()
+          .append('polygon')
+            .attr('class', `radar-chart__polygon radar-chart__area${areaId}`)
+            .style('stroke', this.colors(areaId))
+            .attr('points', (d) => d.map((p) => p.join(',')).join(' '))
+            .style('fill', () => this.colors(areaId))
+            .style('fill-opacity', this.opacityArea)
+            .on('mouseover', (d, i, nodes) => {
+              g.selectAll('polygon')
+                .style('fill-opacity', 0.1);
+              select(nodes[i])
+                .style('fill-opacity', .7);
+            })
+            .on('mouseout', () => {
+              g.selectAll('polygon')
+                .style('fill-opacity', this.opacityArea);
+            });
+      });
+    },
+
+    getXCoord(radius, i) {
+      return radius * (1 - Math.sin(i * this.sector));
+    },
+
+    getYCoord(radius, i) {
+      return radius * (1 - Math.cos(i * this.sector));
     },
 
     addAxisScales() {
-      // If axises are homogeneous(contain values of the same type), calculate common range for all axises
-      let totalMax = max(this.dataSet, (i) => max(i.data.map((o) => o.value)));
-      let axisScale = this.getAxisScale([0, totalMax]);
-      for (let a of this.axises) {
-        a.axisScale = axisScale;
+      if (this.homogeneous) {
+        // If axises are homogeneous(contain values of the same type), calculate common range for all axises
+        let totalMax = max(this.dataSet, (i) => max(i.data.map((o) => o.value)));
+        let axisScale = this.getAxisScale([0, totalMax]);
+        for (let a of this.axises) {
+          a.axisScale = axisScale;
+        }
+      } else {
+        for (let a of this.axises) {
+          a.axisScale = this.getAxisScale(a.range);
+        }
       }
     },
 
     getAxisScale(range) {
-      return scaleLinear().domain(range).nice(this.levels + 1);
+      return scaleLinear().domain(range).nice(this.levels + 1).range([0, this.chartRadius]);
     },
 
     getAxisValue(data, i) {
-      // We get max domain value from axisScale
-      return Math.max(data.value, 0) / this.axises[i].axisScale.domain()[1];
+      // Value should be in the domain range
+      let [dMin, dMax] = this.axises[i].axisScale.domain();
+      let val = Math.max(dMin, Math.min(dMax, data.value));
+      return this.axises[i].axisScale(val);
+    },
+
+    getAxisValueX(data, i) {
+      return this.chartRadius - this.getAxisValue(data, i) * Math.sin(i * this.sector);
+    },
+
+    getAxisValueY(data, i) {
+      return this.chartRadius - this.getAxisValue(data, i) * Math.cos(i * this.sector);
     }
   }
 };
@@ -221,7 +236,7 @@ export default {
     stroke-width: .3px;
   }
   .radar-chart__scale {
-    font-size: 10px;
+    font-size: .75rem;
     fill: @chart-axis-text-color;
   }
   .radar-chart__axis-line {
@@ -229,7 +244,7 @@ export default {
     stroke-width: 1px;
   }
   .radar-chart__axis-name {
-    font-size: 11px;
+    font-size: .8rem;
     fill: @chart-axis-text-color;
   }
   .radar-chart__polygon {
