@@ -1,7 +1,7 @@
 import {axisBottom, axisLeft} from 'd3-axis';
 
 export const DEFAULT_CHART_HEIGHT = '400px';
-const CHART_MARGIN = 40;
+export const CHART_MARGIN = 40;
 const MAX_BAR_WIDTH = 80;
 
 export function getBarChartSize(svgNode, dataSetLength) {

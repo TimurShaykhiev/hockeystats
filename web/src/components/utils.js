@@ -67,3 +67,11 @@ export function allStatsToChartData(allStats, fieldMap) {
   }
   return result;
 }
+
+export function seasonStatsToChartData(stats, axises, legendKey) {
+  // Convert season stats to chart data set.
+  return {
+    legendKey: legendKey,
+    data: axises.map((m) => ({key: m.key, value: stats[m.key]}))
+  };
+}

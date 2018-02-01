@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-chart__container">
+  <div class="stacked-bar-chart__container">
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" :height="height"></svg>
     <chart-legend :names="legend" :colors="legendColors"/>
   </div>

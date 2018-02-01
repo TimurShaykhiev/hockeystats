@@ -44,7 +44,8 @@ export default {
       let y = scaleLinear().rangeRound([height, 0]);
 
       x.domain(this.dataSet.map((d) => d.x));
-      y.domain([0, max(this.dataSet, (d) => d.y)]).nice();
+      // +1 here is to expand Y axis to have extra space for caption
+      y.domain([0, max(this.dataSet, (d) => d.y) + 1]).nice();
 
       let g = prepareAxis(svg, x, y, 'bar', this.yCaption);
 
