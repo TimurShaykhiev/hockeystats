@@ -6,9 +6,9 @@ import statistics.skater_season as skater_col
 import statistics.goalie_season as goalie_col
 import statistics.team_season as team_col
 
-SKATER_QUERY = 'SELECT * FROM skater_sum_stats'
-GOALIE_QUERY = 'SELECT * FROM goalie_sum_stats'
-TEAM_QUERY = 'SELECT * FROM team_sum_stats'
+SKATER_QUERY = 'SELECT * FROM skater_sum_stats WHERE is_regular=1'
+GOALIE_QUERY = 'SELECT * FROM goalie_sum_stats WHERE is_regular=1'
+TEAM_QUERY = 'SELECT * FROM team_sum_stats WHERE is_regular=1'
 
 TABLE_TEMPLATE = '{:<20}{:>15}{:>15}{:>15}{:>15}{:>15}{:>15}{:>15}{:>15}'
 
