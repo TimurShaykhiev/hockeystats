@@ -11,7 +11,7 @@ import {select} from 'd3-selection';
 import {scaleBand, scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
-import {DEFAULT_CHART_HEIGHT, getBarChartSize, prepareAxis} from 'Components/chartUtils';
+import {DEFAULT_CHART_HEIGHT, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
 
 export default {
   name: 'stacked-bar-chart',
@@ -26,8 +26,10 @@ export default {
   mounted() {
     this.draw();
   },
-  updated() {
-    this.draw();
+  watch: {
+    dataSet() {
+      this.draw();
+    }
   },
   computed: {
     legendColors() {
@@ -69,7 +71,7 @@ export default {
         });
       svg.call(tip);
 
-      let g = prepareAxis(svg, x, y, 'stacked-bar', this.yCaption);
+      let g = prepareArea(svg);
 
       g.append('g')
         .selectAll('g')
@@ -87,6 +89,8 @@ export default {
           .attr('height', (d) => y(d[0]) - y(d[1]))
           .attr('width', x.bandwidth())
           .attr('fill', (d, i) => (i === keys.length) ? '#FFF' : z(keys[i]));
+
+      prepareAxis(g, height, x, y, 'stacked-bar', this.yCaption);
     },
 
     getStackData() {
@@ -118,20 +122,11 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
-  .stacked-bar-chart__container {
-  }
-  .stacked-bar-chart__bar {
-  }
   .stacked-bar-chart__inner-bar {
     pointer-events: none;
     &:last-of-type {
       pointer-events: all;
       opacity: 0;
-    }
-  }
-  .stacked-bar-chart__axis-x {
-    path {
-      display: none;
     }
   }
   .stacked-bar-chart__axis-y {

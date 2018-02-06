@@ -7,9 +7,9 @@
 <script>
 import {select} from 'd3-selection';
 import {scaleBand, scaleLinear} from 'd3-scale';
-import {max} from 'd3-array';
+import {min, max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
-import {DEFAULT_CHART_HEIGHT, getBarChartSize, prepareAxis} from 'Components/chartUtils';
+import {DEFAULT_CHART_HEIGHT, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
 
 export default {
   name: 'bar-chart',
@@ -17,13 +17,16 @@ export default {
     dataSet: {required: true},
     yCaption: {type: String},
     height: {type: String, default: DEFAULT_CHART_HEIGHT},
-    tooltipFormat: {type: Function}
+    tooltipFormat: {type: Function},
+    preciseYDomain: {type: Boolean, default: false}
   },
   mounted() {
     this.draw();
   },
-  updated() {
-    this.draw();
+  watch: {
+    dataSet() {
+      this.draw();
+    }
   },
   methods: {
     format(value) {
@@ -44,21 +47,32 @@ export default {
       let y = scaleLinear().rangeRound([height, 0]);
 
       x.domain(this.dataSet.map((d) => d.x));
-      // +1 here is to expand Y axis to have extra space for caption
-      y.domain([0, max(this.dataSet, (d) => d.y) + 1]).nice();
 
-      let g = prepareAxis(svg, x, y, 'bar', this.yCaption);
+      let yMin = min(this.dataSet, (d) => d.y);
+      if (yMin > 0) {
+        yMin = yMin / (this.preciseYDomain ? 1.05 : 2);
+      }
+      let yMax = max(this.dataSet, (d) => d.y);
+      if (this.yCaption) {
+        // +1 here is to expand Y axis to have extra space for caption
+        ++yMax;
+      }
+      y.domain([yMin, yMax]).nice();
+
+      let g = prepareArea(svg);
 
       g.selectAll('.bar-chart__bar')
         .data(this.dataSet)
         .enter().append('rect')
           .attr('class', 'bar-chart__bar')
           .attr('x', (d) => x(d.x))
-          .attr('y', (d) => y(d.y))
+          .attr('y', (d) => d.y > 0 ? y(d.y) : y(0))
           .attr('width', x.bandwidth())
-          .attr('height', (d) => height - y(d.y))
+          .attr('height', (d) => yMin > 0 ? height - y(d.y) : Math.abs(y(0) - y(d.y)))
           .on('mouseover', tip.show)
           .on('mouseout', tip.hide);
+
+      prepareAxis(g, height, x, y, 'bar', this.yCaption);
     }
   }
 };
@@ -68,15 +82,8 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
-  .bar-chart__container {
-  }
   .bar-chart__bar {
     fill: #4682B4;
-  }
-  .bar-chart__axis-x {
-    path {
-      display: none;
-    }
   }
   .bar-chart__axis-y {
     text {

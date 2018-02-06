@@ -42,8 +42,10 @@ export default {
   mounted() {
     this.draw();
   },
-  updated() {
-    this.draw();
+  watch: {
+    dataSet() {
+      this.draw();
+    }
   },
   methods: {
     draw() {

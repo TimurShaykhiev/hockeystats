@@ -12,28 +12,34 @@ export function getBarChartSize(svgNode, dataSetLength) {
   return {width: width, height: height};
 }
 
-export function prepareAxis(svgNode, x, y, chartName, yCaption) {
-  let height = svgNode.node().getBoundingClientRect().height - 2*CHART_MARGIN;
-
+export function prepareArea(svgNode) {
   svgNode.select('g').remove();
-  let g = svgNode.append('g')
+  return svgNode.append('g')
     .attr('transform', `translate(${CHART_MARGIN},${CHART_MARGIN})`);
+}
 
+export function prepareAxis(g, height, x, y, chartName, yCaption) {
+  let axisPosition = height;
+  if (y.domain()[0] < 0) {
+    // X axis is in the middle of the chart. Y axis contains negative values.
+    axisPosition = y(0);
+  }
   g.append('g')
     .attr('class', `${chartName}-chart__axis ${chartName}-chart__axis-x`)
-    .attr('transform', `translate(0,${height})`)
+    .attr('transform', `translate(0,${axisPosition})`)
     .call(axisBottom(x));
 
-  g.append('g')
+  let axisY = g.append('g')
     .attr('class', `${chartName}-chart__axis ${chartName}-chart__axis-y`)
-    .call(axisLeft(y))
-    .append('text')
+    .call(axisLeft(y));
+
+  if (yCaption) {
+    axisY.append('text')
       .attr('class', `${chartName}-chart__axis-y-caption`)
       .attr('x', 6)
       .attr('y', y(y.ticks().pop()) + 0.5)
       .attr('dy', '0.32em')
       .attr('text-anchor', 'start')
       .text(yCaption);
-
-  return g;
+  }
 }
