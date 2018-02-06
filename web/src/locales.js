@@ -73,10 +73,15 @@ let locales = {
         ppGoalsShort: 'PPG',
         ppPoints: 'Power Play Points',
         ppPointsShort: 'PPP',
+        ppAssists: 'Power Play Assists',
         shGoals: 'Shorthanded Goals',
         shGoalsShort: 'SHG',
         shPoints: 'Shorthanded Points',
         shPointsShort: 'SHP',
+        shAssists: 'Shorthanded Assists',
+        evenGoals: 'Even Strength Goals',
+        evenPoints: 'Even Strength Points',
+        evenAssists: 'Even Strength Assists',
         shootingPercentage: 'Shooting Percentage',
         shootingPercentageShort: 'S%',
         toiPerGame: 'Time On Ice Per Game',
@@ -160,10 +165,18 @@ let locales = {
       },
       charts: {
         points: 'Points',
-        pointsCaptionY: 'Points',
+        goalsAssists: 'Goals & Assists',
+        goals: 'Goals',
+        assists: 'Assists',
         toi: 'Time On Ice',
         toiCaptionY: 'Minutes',
-        skaterSkills: 'Skater Skills'
+        skaterSkills: 'Skater Skills',
+        plusMinus: 'Plus-Minus',
+        pointsPerGame: 'Points Per Game',
+        savePercentage: 'Save Percentage',
+        goalsAgainstAverage: 'Goals Against Average',
+        wins: 'Wins',
+        shutouts: 'Shutouts'
       }
     },
     ru: {
@@ -230,10 +243,15 @@ let locales = {
         ppGoalsShort: 'Г БОЛ',
         ppPoints: 'Очки в большинстве',
         ppPointsShort: 'О БОЛ',
+        ppAssists: 'Пасы в большинстве',
         shGoals: 'Голы в меньшинстве',
         shGoalsShort: 'Г МЕН',
         shPoints: 'Очки в меньшинстве',
         shPointsShort: 'О МЕН',
+        shAssists: 'Пасы в меньшинстве',
+        evenGoals: 'Голы в равных составах',
+        evenPoints: 'Очки в равных составах',
+        evenAssists: 'Пасы в равных составах',
         shootingPercentage: 'Процент реализации бросков',
         shootingPercentageShort: '%Бр',
         toiPerGame: 'Время на льду за матч',
@@ -317,10 +335,18 @@ let locales = {
       },
       charts: {
         points: 'Очки',
-        pointsCaptionY: 'Очки',
+        goalsAssists: 'Голы и пасы',
+        goals: 'Голы',
+        assists: 'Пасы',
         toi: 'Время на льду',
         toiCaptionY: 'Минуты',
-        skaterSkills: 'Основные навыки'
+        skaterSkills: 'Основные навыки',
+        plusMinus: 'Плюс-минус',
+        pointsPerGame: 'В среднем очков за матч',
+        savePercentage: 'Процент отраженных бросков',
+        goalsAgainstAverage: 'Коэффициент надёжности',
+        wins: 'Победы',
+        shutouts: 'Матчи на ноль'
       }
     }
   }

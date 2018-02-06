@@ -2,6 +2,20 @@ import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
 import {commitNew, processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject} from 'Store/utils';
 
+const teamStatRanges = {
+  goalsFor: [136, 258],
+  goalsAgainst: [136, 259],
+  winRegular: [15, 41],
+  winOvertime: [1, 9],
+  winShootout: [1, 9],
+  loseRegular: [16, 44],
+  loseOvertime: [2, 9],
+  loseShootout: [1, 8],
+  ppPercentage: [10, 27], // min-max, since range is small
+  pkPercentage: [72, 87], // min-max, since range is small
+  faceOffWinsPercentage: [44, 55] // min-max, since range is small
+};
+
 const state = {
   allTeams: {},
   teamStats: {},
@@ -10,10 +24,14 @@ const state = {
   teamPlayersStats: {},
   teamAllStats: {},
   conferences: [],
-  divisions: []
+  divisions: [],
+  teamStatRanges: teamStatRanges
 };
 
 const getters = {
+  getTeamStatRange(state) {
+    return (statName) => state.teamStatRanges[statName];
+  }
 };
 
 function getTeamsDataBySeason(actName, mutName, stateName, commit, state, reqParams) {

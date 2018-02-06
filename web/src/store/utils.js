@@ -39,6 +39,16 @@ export function skaterStatsArrayToObject(statsArray) {
   };
 }
 
+export function skaterStatsArrayToObjectExt(statsArray) {
+  let obj = skaterStatsArrayToObject(statsArray);
+  obj.evenGoals = obj.goals - obj.ppGoals - obj.shGoals;
+  obj.evenPoints = obj.points - obj.ppPoints - obj.shPoints;
+  obj.ppAssists = obj.ppPoints - obj.ppGoals;
+  obj.shAssists = obj.shPoints - obj.shGoals;
+  obj.evenAssists = obj.assists - obj.ppAssists - obj.shAssists;
+  return obj;
+}
+
 export function goalieStatsArrayToObject(statsArray) {
   return {
     toi: statsArray[0],

@@ -1,6 +1,21 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
-import {processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject} from 'Store/utils';
+import {processRequest, skaterStatsArrayToObject, skaterStatsArrayToObjectExt,
+  goalieStatsArrayToObject} from 'Store/utils';
+
+// Ranges calculated from all results. 5p - 95p.
+const skaterStatRanges = {
+  assists: [0, 36],
+  goals: [0, 24],
+  shots: [1, 206],
+  ppGoals: [0, 7],
+  penaltyMinutes: [0, 73],
+  shGoals: [0, 1],
+  plusMinus: [-15, 16],
+  games: [2, 82],
+  faceOffWinsPercentage: [0, 55], // 10p - 90p
+  turnover: [-30, 17]
+};
 
 const state = {
   skaterStats: {},
@@ -10,10 +25,14 @@ const state = {
   skaterSeasons: {},
   goalieSeasons: {},
   skaterAllStats: {},
-  goalieAllStats: {}
+  goalieAllStats: {},
+  skaterStatRanges: skaterStatRanges
 };
 
 const getters = {
+  getSkaterStatRange(state) {
+    return (statName) => state.skaterStatRanges[statName];
+  }
 };
 
 function getPlayersDataBySeason(actName, mutName, stateName, commit, state, reqParams) {
@@ -230,7 +249,7 @@ const mutations = {
       let season = {
         season: s.season,
         teamId: s.tid,
-        stats: skaterStatsArrayToObject(s.stats)
+        stats: skaterStatsArrayToObjectExt(s.stats)
       };
       newStat.seasons.push(season);
     }

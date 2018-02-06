@@ -22,7 +22,6 @@ const ITEMS_TO_SHOW = 5;
 const GAMES_MIN_LIMIT = 5;
 
 let f2 = format('.2f');
-let f3 = format('.3f');
 
 const typesMap = {
   skaterGoal: {
@@ -60,7 +59,7 @@ const typesMap = {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
     getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.svp : 0,
-    showValue: (value) => omitInteger(f3(value)),
+    showValue: (value) => omitInteger(value, 3),
     descSort: true
   }
 };

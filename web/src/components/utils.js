@@ -1,6 +1,13 @@
-export function omitInteger(numStr) {
-  let i = numStr.indexOf('.');
-  return i !== -1 ? numStr.slice(i) : numStr;
+import {format} from 'd3-format';
+
+export function omitInteger(num, precision) {
+  let f = format(`.${precision}`);
+  let numStr = f(num);
+  if (num > 0 && num < 1) {
+    // Omit integer part if it is 0
+    return numStr.slice(1);
+  }
+  return numStr;
 }
 
 export function toiToStr(timeOnIce) {
@@ -74,4 +81,11 @@ export function seasonStatsToChartData(stats, axises, legendKey) {
     legendKey: legendKey,
     data: axises.map((m) => ({key: m.key, value: stats[m.key]}))
   };
+}
+
+export function getAxis(statName, caption, getRangeFunc) {
+  if (getRangeFunc) {
+    return {key: statName, name: caption, range: getRangeFunc(statName)};
+  }
+  return {key: statName, name: caption};
 }

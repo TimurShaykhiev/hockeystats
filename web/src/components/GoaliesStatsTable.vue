@@ -239,7 +239,6 @@ export default {
       }
 
       let f2 = format('.2f');
-      let f3 = format('.3f');
       return goalieStats.map((t) => {
         let rowData = Object.assign({}, t.stats);
         if (this.type !== TYPE_PLAYER) {
@@ -256,7 +255,7 @@ export default {
         }
         rowData.toi = toiToStr(rowData.toi);
         rowData.gaa = f2(rowData.gaa);
-        rowData.svp = omitInteger(f3(rowData.svp));
+        rowData.svp = omitInteger(rowData.svp, 3);
         return rowData;
       });
     }

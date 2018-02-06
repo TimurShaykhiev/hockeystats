@@ -8,15 +8,16 @@
       <player-main-stat v-for="el in ratings" :key="el.id" v-bind="el"/>
     </div>
     <tabs>
-      <tab :name="$t('tabNames.table')">
-        <skaters-stats-table type="player"/>
-      </tab>
       <tab :name="$t('tabNames.charts')">
         <select class="chart-picker__select" v-model="selectedChart">
           <option v-for="el in chartList" :value="el.value">{{el.name}}</option>
         </select>
         <bar-chart v-if="chartData.barChart" v-bind="chartData.chartData"/>
         <stacked-bar-chart v-else-if="chartData.stackedBarChart" v-bind="chartData.chartData"/>
+        <radar-chart v-else-if="chartData.radarChart" v-bind="chartData.chartData"/>
+      </tab>
+      <tab :name="$t('tabNames.table')">
+        <skaters-stats-table type="player"/>
       </tab>
     </tabs>
     <stats-block :caption="$t('skaterInfo.pointStatistics')" :items="pointStats"/>
@@ -30,15 +31,20 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {allStatsToChartData, toiToStr} from 'Components/utils';
+import {allStatsToChartData, toiToStr, seasonStatsToChartData, getAxis} from 'Components/utils';
 import {format} from 'd3-format';
 
 let f1 = format('.1f');
 let f2 = format('.2f');
 
 const CHART_POINT = 1;
-const CHART_TOI = 2;
-const CHART_SKILLS = 3;
+const CHART_GOALS_ASSISTS = 2;
+const CHART_GOALS = 3;
+const CHART_ASSISTS = 4;
+const CHART_TOI = 5;
+const CHART_SKILLS = 6;
+const CHART_PLUS_MINUS = 7;
+const CHART_POINTS_PER_GAME = 8;
 
 export default {
   name: 'skater-info',
@@ -74,8 +80,13 @@ export default {
       selectedChart: CHART_POINT,
       chartList: [
         {name: this.$t('charts.points'), value: CHART_POINT},
+        {name: this.$t('charts.goalsAssists'), value: CHART_GOALS_ASSISTS},
+        {name: this.$t('charts.goals'), value: CHART_GOALS},
+        {name: this.$t('charts.assists'), value: CHART_ASSISTS},
         {name: this.$t('charts.toi'), value: CHART_TOI},
-        {name: this.$t('charts.skaterSkills'), value: CHART_SKILLS}
+        {name: this.$t('charts.skaterSkills'), value: CHART_SKILLS},
+        {name: this.$t('charts.plusMinus'), value: CHART_PLUS_MINUS},
+        {name: this.$t('charts.pointsPerGame'), value: CHART_POINTS_PER_GAME}
       ]
     };
   },
@@ -325,41 +336,135 @@ export default {
     },
 
     chartData() {
-      if (this.selectedChart === CHART_POINT) {
+      if (this.selectedChart === CHART_SKILLS) {
+        let selSeason = this.$store.state.season.selectedSeason;
+        let skaterInfo = this.$store.state.players.skaterSeasonInfo;
+        if (this.needRequest(skaterInfo, selSeason)) {
+          this.requestSkaterInfo();
+          return {};
+        }
+        let getRange = this.$store.getters.getSkaterStatRange;
+        let axises = [
+          getAxis('goals', this.$t('statNames.goals'), getRange),
+          getAxis('assists', this.$t('statNames.assists'), getRange),
+          getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange),
+          getAxis('turnover', this.$t('statNames.turnover'), getRange),
+          getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange)
+        ];
+        return {
+          radarChart: true,
+          chartData: {
+            homogeneous: false,
+            axises: axises,
+            dataSet: [seasonStatsToChartData(skaterInfo, axises, skaterInfo.player.id)]
+          }
+        };
+      } else {
         let skaterStats = this.getSkaterAllStats();
         if (skaterStats.length === 0) {
           return {};
         }
-        let data = allStatsToChartData(skaterStats, [
-          {from: 'goals', to: 'goals'},
-          {from: 'assists', to: 'assists'}
-        ]);
-        data.names = ['goals', 'assists'];
-        return {
-          stackedBarChart: true,
-          chartData: {
-            yCaption: this.$t('charts.pointsCaptionY'),
-            dataSet: data,
-            legend: [
-              {key: 'goals', name: this.$t('statNames.goals')},
-              {key: 'assists', name: this.$t('statNames.assists')}
-            ]
-          }
-        };
-      }
-      if (this.selectedChart === CHART_TOI) {
-        let skaterStats = this.getSkaterAllStats();
-        if (skaterStats.length === 0) {
-          return {};
+        if (this.selectedChart === CHART_GOALS_ASSISTS) {
+          let data = allStatsToChartData(skaterStats, [
+            {from: 'goals', to: 'goals'},
+            {from: 'assists', to: 'assists'}
+          ]);
+          data.names = ['goals', 'assists'];
+          return {
+            stackedBarChart: true,
+            chartData: {
+              dataSet: data,
+              legend: [
+                {key: 'goals', name: this.$t('statNames.goals')},
+                {key: 'assists', name: this.$t('statNames.assists')}
+              ]
+            }
+          };
         }
-        return {
-          barChart: true,
-          chartData: {
-            yCaption: this.$t('charts.toiCaptionY'),
-            dataSet: allStatsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
-            tooltipFormat: (t) => toiToStr(t * 60)
-          }
-        };
+        if (this.selectedChart === CHART_POINT) {
+          let data = allStatsToChartData(skaterStats, [
+            {from: 'evenPoints', to: 'evenPoints'},
+            {from: 'ppPoints', to: 'ppPoints'},
+            {from: 'shPoints', to: 'shPoints'}
+          ]);
+          data.names = ['evenPoints', 'ppPoints', 'shPoints'];
+          return {
+            stackedBarChart: true,
+            chartData: {
+              dataSet: data,
+              legend: [
+                {key: 'evenPoints', name: this.$t('statNames.evenPoints')},
+                {key: 'ppPoints', name: this.$t('statNames.ppPoints')},
+                {key: 'shPoints', name: this.$t('statNames.shPoints')}
+              ]
+            }
+          };
+        }
+        if (this.selectedChart === CHART_GOALS) {
+          let data = allStatsToChartData(skaterStats, [
+            {from: 'evenGoals', to: 'evenGoals'},
+            {from: 'ppGoals', to: 'ppGoals'},
+            {from: 'shGoals', to: 'shGoals'}
+          ]);
+          data.names = ['evenGoals', 'ppGoals', 'shGoals'];
+          return {
+            stackedBarChart: true,
+            chartData: {
+              dataSet: data,
+              legend: [
+                {key: 'evenGoals', name: this.$t('statNames.evenGoals')},
+                {key: 'ppGoals', name: this.$t('statNames.ppGoals')},
+                {key: 'shGoals', name: this.$t('statNames.shGoals')}
+              ]
+            }
+          };
+        }
+        if (this.selectedChart === CHART_ASSISTS) {
+          let data = allStatsToChartData(skaterStats, [
+            {from: 'evenAssists', to: 'evenAssists'},
+            {from: 'ppAssists', to: 'ppAssists'},
+            {from: 'shAssists', to: 'shAssists'}
+          ]);
+          data.names = ['evenAssists', 'ppAssists', 'shAssists'];
+          return {
+            stackedBarChart: true,
+            chartData: {
+              dataSet: data,
+              legend: [
+                {key: 'evenAssists', name: this.$t('statNames.evenAssists')},
+                {key: 'ppAssists', name: this.$t('statNames.ppAssists')},
+                {key: 'shAssists', name: this.$t('statNames.shAssists')}
+              ]
+            }
+          };
+        }
+        if (this.selectedChart === CHART_TOI) {
+          return {
+            barChart: true,
+            chartData: {
+              yCaption: this.$t('charts.toiCaptionY'),
+              dataSet: allStatsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
+              tooltipFormat: (t) => toiToStr(t * 60)
+            }
+          };
+        }
+        if (this.selectedChart === CHART_PLUS_MINUS) {
+          return {
+            barChart: true,
+            chartData: {
+              dataSet: allStatsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
+            }
+          };
+        }
+        if (this.selectedChart === CHART_POINTS_PER_GAME) {
+          return {
+            barChart: true,
+            chartData: {
+              dataSet: allStatsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
+              tooltipFormat: (t) => f2(t)
+            }
+          };
+        }
       }
       return {};
     }
