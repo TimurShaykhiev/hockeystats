@@ -1,6 +1,6 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew, processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject} from 'Store/utils';
+import {commitNew, processRequest, skaterStatsArrayToObjectExt, goalieStatsArrayToObject} from 'Store/utils';
 
 const teamStatRanges = {
   goalsFor: [136, 258],
@@ -259,7 +259,7 @@ const mutations = {
     for (let s of result.skaters) {
       let skater = {
         player: s.player,
-        stats: skaterStatsArrayToObject(s.stats)
+        stats: skaterStatsArrayToObjectExt(s.stats)
       };
       newStat.skaters.push(skater);
     }

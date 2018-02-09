@@ -75,6 +75,25 @@ export function allStatsToChartData(allStats, fieldMap) {
   return result;
 }
 
+export function playersStatsToChartData(playersStats, fieldMap) {
+  // Convert players stats to chart data set.
+  // Returns array of objects. The player name is always in 'x' field.
+  let result = [];
+  for (let s of playersStats) {
+    let obj = {};
+    obj.x = s.player.name;
+    for (let m of fieldMap) {
+      if (m.convert) {
+        obj[m.to] = m.convert(s.stats[m.from]);
+      } else {
+        obj[m.to] = s.stats[m.from];
+      }
+    }
+    result.push(obj);
+  }
+  return result;
+}
+
 export function seasonStatsToChartData(stats, axises, legendKey) {
   // Convert season stats to chart data set.
   return {

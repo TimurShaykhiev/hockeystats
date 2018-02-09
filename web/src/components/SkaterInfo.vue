@@ -49,8 +49,6 @@ const CHART_POINTS_PER_GAME = 8;
 export default {
   name: 'skater-info',
   components: {},
-  props: {
-  },
   i18n: {
     messages: {
       en: {

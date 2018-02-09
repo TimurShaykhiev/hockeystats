@@ -176,7 +176,13 @@ let locales = {
         savePercentage: 'Save Percentage',
         goalsAgainstAverage: 'Goals Against Average',
         wins: 'Wins',
-        shutouts: 'Shutouts'
+        shutouts: 'Shutouts',
+        losses: 'Losses',
+        teamSkills: 'Team Skills',
+        ppPercentage: 'Power Play Percentage',
+        pkPercentage: 'Penalty Kill Percentage',
+        penaltyMinutes: 'Penalty Minutes',
+        games: 'Games'
       }
     },
     ru: {
@@ -346,7 +352,13 @@ let locales = {
         savePercentage: 'Процент отраженных бросков',
         goalsAgainstAverage: 'Коэффициент надёжности',
         wins: 'Победы',
-        shutouts: 'Матчи на ноль'
+        shutouts: 'Матчи на ноль',
+        losses: 'Поражения',
+        teamSkills: 'Основные показатели',
+        ppPercentage: 'Процент реализации большинства',
+        pkPercentage: 'Процент нейтрализации меньшинства',
+        penaltyMinutes: 'Минуты штрафа',
+        games: 'Игры'
       }
     }
   }
