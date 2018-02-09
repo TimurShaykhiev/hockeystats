@@ -9,7 +9,8 @@ import {select} from 'd3-selection';
 import {scaleBand, scaleLinear} from 'd3-scale';
 import {min, max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
-import {DEFAULT_CHART_HEIGHT, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
+import {DEFAULT_CHART_HEIGHT, getChartMargin, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
+import Utils from 'Root/utils';
 
 export default {
   name: 'bar-chart',
@@ -18,7 +19,9 @@ export default {
     yCaption: {type: String},
     height: {type: String, default: DEFAULT_CHART_HEIGHT},
     tooltipFormat: {type: Function},
-    preciseYDomain: {type: Boolean, default: false}
+    preciseYDomain: {type: Boolean, default: false},
+    sorting: {type: String},
+    rotateXLabels: {type: Boolean, default: false}
   },
   mounted() {
     this.draw();
@@ -35,7 +38,8 @@ export default {
 
     draw() {
       let svg = select(this.$el).select('svg');
-      let {height, width} = getBarChartSize(svg, this.dataSet.length);
+      let margin = getChartMargin(this.rotateXLabels);
+      let {height, width} = getBarChartSize(svg, this.dataSet.length, margin);
 
       let tip = d3Tip()
         .attr('class', 'chart-tooltip')
@@ -45,6 +49,10 @@ export default {
 
       let x = scaleBand().rangeRound([0, width]).padding(0.1);
       let y = scaleLinear().rangeRound([height, 0]);
+
+      if (this.sorting) {
+        this.dataSet = Utils.sortBy(this.dataSet, (e) => e.y, this.sorting === 'desc');
+      }
 
       x.domain(this.dataSet.map((d) => d.x));
 
@@ -59,7 +67,7 @@ export default {
       }
       y.domain([yMin, yMax]).nice();
 
-      let g = prepareArea(svg);
+      let g = prepareArea(svg, margin);
 
       g.selectAll('.bar-chart__bar')
         .data(this.dataSet)
@@ -72,7 +80,7 @@ export default {
           .on('mouseover', tip.show)
           .on('mouseout', tip.hide);
 
-      prepareAxis(g, height, x, y, 'bar', this.yCaption);
+      prepareAxis(g, height, x, y, 'bar', this.rotateXLabels, this.yCaption);
     }
   }
 };

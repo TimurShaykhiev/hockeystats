@@ -11,7 +11,8 @@ import {select} from 'd3-selection';
 import {scaleBand, scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
-import {DEFAULT_CHART_HEIGHT, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
+import {DEFAULT_CHART_HEIGHT, getChartMargin, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
+import Utils from 'Root/utils';
 
 export default {
   name: 'stacked-bar-chart',
@@ -21,7 +22,9 @@ export default {
     yCaption: {type: String},
     height: {type: String, default: DEFAULT_CHART_HEIGHT},
     legend: {type: Array, required: true},
-    tooltipFormat: {type: Function}
+    tooltipFormat: {type: Function},
+    sorting: {type: String},
+    rotateXLabels: {type: Boolean, default: false}
   },
   mounted() {
     this.draw();
@@ -43,7 +46,8 @@ export default {
 
     draw() {
       let svg = select(this.$el).select('svg');
-      let {height, width} = getBarChartSize(svg, this.dataSet.length);
+      let margin = getChartMargin(this.rotateXLabels);
+      let {height, width} = getBarChartSize(svg, this.dataSet.length, margin);
       let keys = this.dataSet.names;
 
       let x = scaleBand().rangeRound([0, width]).padding(0.1);
@@ -52,7 +56,7 @@ export default {
 
       let stacks = this.getStackData();
 
-      x.domain(this.dataSet.map((d) => d.x));
+      x.domain(stacks.map((d) => d.data.x));
       // +1 here is to expand Y axis to have extra space for caption
       y.domain([0, max(stacks, (d) => d.data.total) + 1]).nice();
 
@@ -71,7 +75,7 @@ export default {
         });
       svg.call(tip);
 
-      let g = prepareArea(svg);
+      let g = prepareArea(svg, margin);
 
       g.append('g')
         .selectAll('g')
@@ -90,7 +94,7 @@ export default {
           .attr('width', x.bandwidth())
           .attr('fill', (d, i) => (i === keys.length) ? '#FFF' : z(keys[i]));
 
-      prepareAxis(g, height, x, y, 'stacked-bar', this.yCaption);
+      prepareAxis(g, height, x, y, 'stacked-bar', this.rotateXLabels, this.yCaption);
     },
 
     getStackData() {
@@ -111,6 +115,9 @@ export default {
         s.data = d;
         s.data.total = sum;
         stacks.push(s);
+      }
+      if (this.sorting) {
+        stacks = Utils.sortBy(stacks, (e) => e.data.total, this.sorting === 'desc');
       }
       return stacks;
     }

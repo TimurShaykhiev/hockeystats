@@ -13,7 +13,7 @@ import ChartLegend from 'Components/ChartLegend';
 import {select} from 'd3-selection';
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {max} from 'd3-array';
-import {CHART_MARGIN} from 'Components/chartUtils';
+import {getChartMargin} from 'Components/chartUtils';
 
 const DEFAULT_RADAR_CHART_HEIGHT = '600px';
 
@@ -50,11 +50,12 @@ export default {
   methods: {
     draw() {
       let svg = select(this.$el).select('svg');
-      this.chartRadius = (svg.node().getBoundingClientRect().height - 2*CHART_MARGIN) / 2;
+      let margin = getChartMargin();
+      this.chartRadius = (svg.node().getBoundingClientRect().height - margin.top - margin.bottom) / 2;
 
       svg.select('g').remove();
       let g = svg.append('g')
-        .attr('transform', `translate(${CHART_MARGIN},${CHART_MARGIN})`);
+        .attr('transform', `translate(${margin.left},${margin.top})`);
 
       this.addAxisScales();
       this.drawAxises(g);
