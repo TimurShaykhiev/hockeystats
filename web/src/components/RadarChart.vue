@@ -33,10 +33,9 @@ export default {
       nodeRadius: 5,
       factorLegend: .85,
       levels: 5,
-      sector: 2 * Math.PI / this.axises.length,
+      sector: 0,
       opacityArea: 0.5,
-      levelTextIndentRight: 5,
-      colors: scaleOrdinal(schemeCategory10).domain(this.dataSet.map((d) => d.legendKey))
+      levelTextIndentRight: 5
     };
   },
   mounted() {
@@ -47,11 +46,17 @@ export default {
       this.draw();
     }
   },
+  computed: {
+    colors() {
+      return scaleOrdinal(schemeCategory10).domain(this.dataSet.map((d) => d.legendKey));
+    }
+  },
   methods: {
     draw() {
       let svg = select(this.$el).select('svg');
       let margin = getChartMargin();
       this.chartRadius = (svg.node().getBoundingClientRect().height - margin.top - margin.bottom) / 2;
+      this.sector = 2 * Math.PI / this.axises.length;
 
       svg.select('g').remove();
       let g = svg.append('g')

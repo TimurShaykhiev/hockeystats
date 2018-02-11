@@ -94,17 +94,29 @@ export function playersStatsToChartData(playersStats, fieldMap) {
   return result;
 }
 
-export function seasonStatsToChartData(stats, axises, legendKey) {
+export function seasonStatsToChartData(stats, axises, legendKey, fieldMap) {
   // Convert season stats to chart data set.
+  let data;
+  if (fieldMap) {
+    data = axises.map((m) => ({key: m.key, value: stats[fieldMap[m.key]]}));
+  } else {
+    data = axises.map((m) => ({key: m.key, value: stats[m.key]}));
+  }
   return {
     legendKey: legendKey,
-    data: axises.map((m) => ({key: m.key, value: stats[m.key]}))
+    data: data
   };
 }
 
-export function getAxis(statName, caption, getRangeFunc) {
+export function getAxis(statName, caption, getRangeFunc, currentSeason) {
   if (getRangeFunc) {
-    return {key: statName, name: caption, range: getRangeFunc(statName)};
+    let range = getRangeFunc(statName);
+    if (currentSeason && range[0] > 0) {
+      // Ranges are calculated for completed season. While season is not finished the current stat value can be
+      // less than min range. So set min range to 0 in order to have correct chart.
+      range[0] = 0;
+    }
+    return {key: statName, name: caption, range: range};
   }
   return {key: statName, name: caption};
 }

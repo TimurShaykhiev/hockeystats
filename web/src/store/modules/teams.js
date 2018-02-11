@@ -5,6 +5,12 @@ import {commitNew, processRequest, skaterStatsArrayToObjectExt, goalieStatsArray
 const teamStatRanges = {
   goalsFor: [136, 258],
   goalsAgainst: [136, 259],
+  shots: [1542, 2703],
+  shotsAgainst: [1542, 2703],
+  haGoalsFor: [68, 129],
+  haGoalsAgainst: [68, 129],
+  haShots: [771, 1351],
+  haShotsAgainst: [771, 1351],
   winRegular: [15, 41],
   winOvertime: [1, 9],
   winShootout: [1, 9],
@@ -13,6 +19,8 @@ const teamStatRanges = {
   loseShootout: [1, 8],
   ppPercentage: [10, 27], // min-max, since range is small
   pkPercentage: [72, 87], // min-max, since range is small
+  haPpPercentage: [10, 27], // min-max, since range is small
+  haPkPercentage: [72, 87], // min-max, since range is small
   faceOffWinsPercentage: [44, 55] // min-max, since range is small
 };
 

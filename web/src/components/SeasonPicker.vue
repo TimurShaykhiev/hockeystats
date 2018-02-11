@@ -85,8 +85,14 @@ export default {
         return this.$store.state.players.goalieSeasons.seasons;
       }
     },
+    findSelectedSeason() {
+      let seasons = this.getSeasons();
+      let id = Math.abs(this.selectedSeason);
+      let regular = this.selectedSeason > 0;
+      return seasons.find((s) => s.id === id && s.regular === regular);
+    },
     seasonChanged() {
-      this.$store.commit('setSelectedSeason', {id: Math.abs(this.selectedSeason), regular: this.selectedSeason > 0});
+      this.$store.commit('setSelectedSeason', this.findSelectedSeason());
     },
     setSelectedSeason(seasons) {
       let selectedSeason = this.$store.state.season.selectedSeason;

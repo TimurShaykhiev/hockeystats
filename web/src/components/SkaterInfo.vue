@@ -343,11 +343,11 @@ export default {
         }
         let getRange = this.$store.getters.getSkaterStatRange;
         let axises = [
-          getAxis('goals', this.$t('statNames.goals'), getRange),
-          getAxis('assists', this.$t('statNames.assists'), getRange),
-          getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange),
-          getAxis('turnover', this.$t('statNames.turnover'), getRange),
-          getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange)
+          getAxis('goals', this.$t('statNames.goals'), getRange, selSeason.current),
+          getAxis('assists', this.$t('statNames.assists'), getRange, selSeason.current),
+          getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
+          getAxis('turnover', this.$t('statNames.turnover'), getRange, selSeason.current),
+          getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
         ];
         return {
           radarChart: true,

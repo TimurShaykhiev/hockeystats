@@ -182,7 +182,10 @@ let locales = {
         ppPercentage: 'Power Play Percentage',
         pkPercentage: 'Penalty Kill Percentage',
         penaltyMinutes: 'Penalty Minutes',
-        games: 'Games'
+        games: 'Games',
+        homeAway: 'Home/Away Team Skills',
+        homeGames: 'Home Games',
+        awayGames: 'Away Games'
       }
     },
     ru: {
@@ -358,7 +361,10 @@ let locales = {
         ppPercentage: 'Процент реализации большинства',
         pkPercentage: 'Процент нейтрализации меньшинства',
         penaltyMinutes: 'Минуты штрафа',
-        games: 'Игры'
+        games: 'Игры',
+        homeAway: 'Домашние/Гостевые показатели',
+        homeGames: 'Домашние игры',
+        awayGames: 'Гостевые игры'
       }
     }
   }

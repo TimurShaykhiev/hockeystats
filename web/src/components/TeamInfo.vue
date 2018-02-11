@@ -49,20 +49,21 @@ let f2 = format('.2f');
 let f3 = format('.3f');
 
 // Team charts
-const CHART_POINT = 1;
-const CHART_WINS = 2;
-const CHART_LOSSES = 3;
-const CHART_PPP = 4;
-const CHART_PKP = 5;
-const CHART_SKILLS = 6;
+const CHART_SKILLS = 1;
+const CHART_HOME_AWAY = 2;
+const CHART_POINTS = 3;
+const CHART_WINS = 4;
+const CHART_LOSSES = 5;
+const CHART_PPP = 6;
+const CHART_PKP = 7;
 // Team player charts
-const CHART_GOALS_ASSISTS = 7;
-const CHART_PLAYER_POINTS = 8;
-const CHART_TOI = 9;
-const CHART_PLUS_MINUS = 10;
-const CHART_PIM = 11;
-const CHART_GAMES = 12;
-const CHART_POINTS_PER_GAME = 13;
+const CHART_GOALS_ASSISTS = 8;
+const CHART_PLAYER_POINTS = 9;
+const CHART_TOI = 10;
+const CHART_PLUS_MINUS = 11;
+const CHART_PIM = 12;
+const CHART_GAMES = 13;
+const CHART_POINTS_PER_GAME = 14;
 
 export default {
   name: 'team-info',
@@ -102,15 +103,16 @@ export default {
   data() {
     return {
       logoUrl: `images/team${this.$route.params.id}.svg`,
-      selectedChart: CHART_POINT,
+      selectedChart: CHART_POINTS,
       chartList: [
         {name: this.$t('teamInfo.chartPickerTeam'), value: 0, disabled: true},
-        {name: this.$t('charts.points'), value: CHART_POINT, disabled: false},
+        {name: this.$t('charts.points'), value: CHART_POINTS, disabled: false},
         {name: this.$t('charts.wins'), value: CHART_WINS, disabled: false},
         {name: this.$t('charts.losses'), value: CHART_LOSSES, disabled: false},
         {name: this.$t('charts.ppPercentage'), value: CHART_PPP, disabled: false},
         {name: this.$t('charts.pkPercentage'), value: CHART_PKP, disabled: false},
         {name: this.$t('charts.teamSkills'), value: CHART_SKILLS, disabled: false},
+        {name: this.$t('charts.homeAway'), value: CHART_HOME_AWAY, disabled: false},
         {name: this.$t('teamInfo.chartPickerPlayers'), value: 0, disabled: true},
         {name: this.$t('charts.goalsAssists'), value: CHART_GOALS_ASSISTS, disabled: false},
         {name: this.$t('charts.points'), value: CHART_PLAYER_POINTS, disabled: false},
@@ -396,35 +398,77 @@ export default {
     },
 
     chartData() {
-      if (this.selectedChart === CHART_SKILLS) {
+      if (this.selectedChart < CHART_POINTS) {
         let selSeason = this.$store.state.season.selectedSeason;
         let teamInfo = this.$store.state.teams.teamSeasonInfo;
         if (this.needRequest(teamInfo, selSeason)) {
           this.requestTeamInfo();
           return {};
         }
-        let getRange = this.$store.getters.getTeamStatRange;
-        let axises = [
-          getAxis('goalsFor', this.$t('statNames.goalsFor'), getRange),
-          getAxis('goalsAgainst', this.$t('statNames.goalsAgainst'), getRange),
-          getAxis('ppPercentage', this.$t('statNames.ppPercentage'), getRange),
-          getAxis('pkPercentage', this.$t('statNames.pkPercentage'), getRange),
-          getAxis('faceOffWinsPercentage', this.$t('statNames.faceOffWinsPercentage'), getRange)
-        ];
-        return {
-          radarChart: true,
-          chartData: {
-            homogeneous: false,
-            axises: axises,
-            dataSet: [seasonStatsToChartData(teamInfo, axises, teamInfo.team.id)]
-          }
-        };
+        if (this.selectedChart === CHART_SKILLS) {
+          let getRange = this.$store.getters.getTeamStatRange;
+          let axises = [
+            getAxis('goalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
+            getAxis('goalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
+            getAxis('ppPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
+            getAxis('pkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current),
+            getAxis('faceOffWinsPercentage', this.$t('statNames.faceOffWinsPercentage'), getRange, selSeason.current)
+          ];
+          return {
+            radarChart: true,
+            chartData: {
+              homogeneous: false,
+              axises: axises,
+              dataSet: [seasonStatsToChartData(teamInfo, axises, teamInfo.team.id)]
+            }
+          };
+        }
+        if (this.selectedChart === CHART_HOME_AWAY) {
+          let getRange = this.$store.getters.getTeamStatRange;
+          let axises = [
+            getAxis('haGoalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
+            getAxis('haGoalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
+            getAxis('haShots', this.$t('statNames.shots'), getRange, selSeason.current),
+            getAxis('haShotsAgainst', this.$t('statNames.shotsAgainst'), getRange, selSeason.current),
+            getAxis('haPpPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
+            getAxis('haPkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current)
+          ];
+          return {
+            radarChart: true,
+            chartData: {
+              homogeneous: false,
+              axises: axises,
+              legend: [
+                {key: 'home', name: this.$t('charts.homeGames')},
+                {key: 'away', name: this.$t('charts.awayGames')}
+              ],
+              dataSet: [
+                seasonStatsToChartData(teamInfo, axises, 'home', {
+                  'haGoalsFor': 'homeGoals',
+                  'haGoalsAgainst': 'homeGoalsAgainst',
+                  'haShots': 'homeShots',
+                  'haShotsAgainst': 'homeShotsAgainst',
+                  'haPpPercentage': 'homePPPercentage',
+                  'haPkPercentage': 'homePKPercentage'
+                }),
+                seasonStatsToChartData(teamInfo, axises, 'away', {
+                  'haGoalsFor': 'awayGoals',
+                  'haGoalsAgainst': 'awayGoalsAgainst',
+                  'haShots': 'awayShots',
+                  'haShotsAgainst': 'awayShotsAgainst',
+                  'haPpPercentage': 'awayPPPercentage',
+                  'haPkPercentage': 'awayPKPercentage'
+                })
+              ]
+            }
+          };
+        }
       } else if (this.selectedChart < CHART_GOALS_ASSISTS) {
         let teamStats = this.getTeamAllStats();
         if (teamStats.length === 0) {
           return {};
         }
-        if (this.selectedChart === CHART_POINT) {
+        if (this.selectedChart === CHART_POINTS) {
           return {
             barChart: true,
             chartData: {
