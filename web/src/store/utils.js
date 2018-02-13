@@ -67,3 +67,7 @@ export function goalieStatsArrayToObject(statsArray) {
     svp: statsArray[13]
   };
 }
+
+export function isCorrectSeason(season, stats) {
+  return stats.season && season.id && season.id === stats.season.id && season.regular === stats.season.regular;
+}

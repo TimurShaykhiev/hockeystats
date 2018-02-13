@@ -137,10 +137,8 @@ export default {
     },
 
     ratings() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -178,10 +176,8 @@ export default {
     },
 
     goalStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -202,10 +198,8 @@ export default {
     },
 
     shootingStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -230,10 +224,8 @@ export default {
     },
 
     advancedStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -261,10 +253,8 @@ export default {
     },
 
     ppStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -287,10 +277,8 @@ export default {
     },
 
     pkStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -313,10 +301,8 @@ export default {
     },
 
     goaltenderStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -334,10 +320,8 @@ export default {
     },
 
     homeStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -366,10 +350,8 @@ export default {
     },
 
     awayStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (this.needRequest(teamInfo, selSeason)) {
-        this.requestTeamInfo();
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return [];
       }
       return [{
@@ -399,12 +381,11 @@ export default {
 
     chartData() {
       if (this.selectedChart < CHART_POINTS) {
-        let selSeason = this.$store.state.season.selectedSeason;
-        let teamInfo = this.$store.state.teams.teamSeasonInfo;
-        if (this.needRequest(teamInfo, selSeason)) {
-          this.requestTeamInfo();
+        let teamInfo = this.getTeamInfo();
+        if (teamInfo === null) {
           return {};
         }
+        let selSeason = this.$store.state.season.selectedSeason;
         if (this.selectedChart === CHART_SKILLS) {
           let getRange = this.$store.getters.getTeamStatRange;
           let axises = [
@@ -533,13 +514,11 @@ export default {
           };
         }
       } else {
-        let selSeason = this.$store.state.season.selectedSeason;
-        let stats = this.$store.state.teams.teamPlayersStats;
-        let skaterStats = stats.skaters;
-        if (!skaterStats || this.needRequest(stats, selSeason)) {
-          this.getTeamPlayersStats();
+        let stats = this.getTeamPlayersStats();
+        if (stats === null) {
           return {};
         }
+        let skaterStats = stats.skaters;
         if (this.selectedChart === CHART_GOALS_ASSISTS) {
           let data = playersStatsToChartData(skaterStats, [
             {from: 'goals', to: 'goals'},
@@ -648,14 +627,18 @@ export default {
       }
     },
 
-    needRequest(teamInfo, selSeason) {
-      return !teamInfo.team || teamInfo.team.id !== parseInt(this.$route.params.id) ||
-             selSeason.id !== teamInfo.season.id || selSeason.regular !== teamInfo.season.regular;
+    getTeamInfo() {
+      let season = this.$store.state.season.selectedSeason;
+      let teamInfo = this.$store.getters.getTeamSeasonInfo(season, parseInt(this.$route.params.id));
+      if (teamInfo === null) {
+        this.requestTeamInfo();
+      }
+      return teamInfo;
     },
 
     getTeamAllStats() {
-      let stats = this.$store.state.teams.teamAllStats;
-      if (!stats.team || stats.team.id !== parseInt(this.$route.params.id)) {
+      let stats = this.$store.getters.getTeamAllStats(parseInt(this.$route.params.id));
+      if (stats === null) {
         this.$store.dispatch('getTeamAllStats', {teamId: this.$route.params.id});
         return [];
       }
@@ -664,12 +647,15 @@ export default {
 
     getTeamPlayersStats() {
       let season = this.$store.state.season.selectedSeason;
-      if (season.id !== undefined) {
+      let stats = this.$store.getters.getTeamPlayersStats(season, parseInt(this.$route.params.id));
+      if (stats === null) {
         this.$store.dispatch('getTeamPlayersStats', {
           teamId: this.$route.params.id,
           reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
         });
+        return null;
       }
+      return stats;
     }
   }
 };

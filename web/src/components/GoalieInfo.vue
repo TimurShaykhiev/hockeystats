@@ -85,10 +85,8 @@ export default {
     },
 
     ratings() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let goalieInfo = this.$store.state.players.goalieSeasonInfo;
-      if (this.needRequest(goalieInfo, selSeason)) {
-        this.requestGoalieInfo();
+      let goalieInfo = this.getGoalieInfo();
+      if (goalieInfo === null) {
         return [];
       }
       return [{
@@ -123,10 +121,8 @@ export default {
     },
 
     saveStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let goalieInfo = this.$store.state.players.goalieSeasonInfo;
-      if (this.needRequest(goalieInfo, selSeason)) {
-        this.requestGoalieInfo();
+      let goalieInfo = this.getGoalieInfo();
+      if (goalieInfo === null) {
         return [];
       }
       return [{
@@ -148,10 +144,8 @@ export default {
     },
 
     goalStats() {
-      let selSeason = this.$store.state.season.selectedSeason;
-      let goalieInfo = this.$store.state.players.goalieSeasonInfo;
-      if (this.needRequest(goalieInfo, selSeason)) {
-        this.requestGoalieInfo();
+      let goalieInfo = this.getGoalieInfo();
+      if (goalieInfo === null) {
         return [];
       }
       return [{
@@ -252,14 +246,18 @@ export default {
       }
     },
 
-    needRequest(goalieInfo, selSeason) {
-      return !goalieInfo.player || goalieInfo.player.id !== parseInt(this.$route.params.id) ||
-             selSeason.id !== goalieInfo.season.id || selSeason.regular !== goalieInfo.season.regular;
+    getGoalieInfo() {
+      let season = this.$store.state.season.selectedSeason;
+      let goalieInfo = this.$store.getters.getGoalieSeasonInfo(season, parseInt(this.$route.params.id));
+      if (goalieInfo === null) {
+        this.requestGoalieInfo();
+      }
+      return goalieInfo;
     },
 
     getGoalieAllStats() {
-      let stats = this.$store.state.players.goalieAllStats;
-      if (!stats.player || stats.player.id !== parseInt(this.$route.params.id)) {
+      let stats = this.$store.getters.getGoalieAllStats(parseInt(this.$route.params.id));
+      if (stats === null) {
         this.$store.dispatch('getGoalieAllStats', {playerId: this.$route.params.id});
         return [];
       }

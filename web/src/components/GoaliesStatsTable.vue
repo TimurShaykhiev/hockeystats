@@ -216,19 +216,18 @@ export default {
 
       let goalieStats;
       if (this.type === TYPE_PLAYER) {
-        let stats = this.$store.state.players.goalieAllStats;
-        goalieStats = stats.seasons;
-        if (!stats.player || stats.player.id !== parseInt(this.$route.params.id)) {
+        let stats = this.$store.getters.getGoalieAllStats(parseInt(this.$route.params.id));
+        if (stats === null) {
           this.requestGoalieAllStats();
           return [];
         }
+        goalieStats = stats.seasons;
       } else {
         let selSeason = this.$store.state.season.selectedSeason;
         let stats = this.type === TYPE_ALL ?
-          this.$store.state.players.goalieStats :
-          this.$store.state.teams.teamPlayersStats;
-        goalieStats = stats.goalies;
-        if (!goalieStats || selSeason.id !== stats.season.id || selSeason.regular !== stats.season.regular) {
+          this.$store.getters.getGoalieStats(selSeason) :
+          this.$store.getters.getTeamPlayersStats(selSeason, parseInt(this.$route.params.id));
+        if (stats === null) {
           if (this.type === TYPE_ALL) {
             this.requestGoalieStats();
           } else {
@@ -236,6 +235,7 @@ export default {
           }
           return [];
         }
+        goalieStats = stats.goalies;
       }
 
       let f2 = format('.2f');

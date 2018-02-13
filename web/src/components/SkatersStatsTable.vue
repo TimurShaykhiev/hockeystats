@@ -232,19 +232,18 @@ export default {
 
       let skaterStats;
       if (this.type === TYPE_PLAYER) {
-        let stats = this.$store.state.players.skaterAllStats;
-        skaterStats = stats.seasons;
-        if (!stats.player || stats.player.id !== parseInt(this.$route.params.id)) {
+        let stats = this.$store.getters.getSkaterAllStats(parseInt(this.$route.params.id));
+        if (stats === null) {
           this.requestSkaterAllStats();
           return [];
         }
+        skaterStats = stats.seasons;
       } else {
         let selSeason = this.$store.state.season.selectedSeason;
         let stats = this.type === TYPE_ALL ?
-          this.$store.state.players.skaterStats :
-          this.$store.state.teams.teamPlayersStats;
-        skaterStats = stats.skaters;
-        if (!skaterStats || selSeason.id !== stats.season.id || selSeason.regular !== stats.season.regular) {
+          this.$store.getters.getSkaterStats(selSeason) :
+          this.$store.getters.getTeamPlayersStats(selSeason, parseInt(this.$route.params.id));
+        if (stats === null) {
           if (this.type === TYPE_ALL) {
             this.requestSkaterStats();
           } else {
@@ -252,6 +251,7 @@ export default {
           }
           return [];
         }
+        skaterStats = stats.skaters;
       }
 
       let f2 = format('.2f');

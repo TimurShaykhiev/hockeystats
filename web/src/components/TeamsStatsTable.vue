@@ -213,19 +213,19 @@ export default {
           return [];
         }
         let selSeason = this.$store.state.season.selectedSeason;
-        let stats = this.$store.state.teams.teamStats;
-        teamStats = stats.teams;
-        if (!teamStats || selSeason.id !== stats.season.id || selSeason.regular !== stats.season.regular) {
+        let stats = this.$store.getters.getTeamStats(selSeason);
+        if (stats === null) {
           this.requestTeamStats();
           return [];
         }
+        teamStats = stats.teams;
       } else {
-        let stats = this.$store.state.teams.teamAllStats;
-        teamStats = stats.seasons;
-        if (!stats.team || stats.team.id !== parseInt(this.$route.params.id)) {
+        let stats = this.$store.getters.getTeamAllStats(parseInt(this.$route.params.id));
+        if (stats === null) {
           this.requestTeamAllStats();
           return [];
         }
+        teamStats = stats.seasons;
       }
 
       let f1 = format('.1f');

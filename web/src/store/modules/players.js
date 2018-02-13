@@ -1,7 +1,7 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
 import {processRequest, skaterStatsArrayToObject, skaterStatsArrayToObjectExt,
-  goalieStatsArrayToObject} from 'Store/utils';
+  goalieStatsArrayToObject, isCorrectSeason} from 'Store/utils';
 
 // Ranges calculated from all results. 5p - 95p.
 const skaterStatRanges = {
@@ -29,9 +29,67 @@ const state = {
   skaterStatRanges: skaterStatRanges
 };
 
+function isCorrectPlayer(playerId, stats) {
+  return stats.player && stats.player.id === playerId;
+}
+
+function getPlayerStats(state, attrName) {
+  return (season) => {
+    let stats = state[attrName];
+    if (isCorrectSeason(season, stats)) {
+      return stats;
+    }
+    return null;
+  };
+}
+
+function getPlayerSeasonInfo(state, attrName) {
+  return (season, playerId) => {
+    let stats = state[attrName];
+    if (isCorrectSeason(season, stats) && isCorrectPlayer(playerId, stats)) {
+      return stats;
+    }
+    return null;
+  };
+}
+
+function getPlayerAllStats(state, attrName) {
+  return (playerId) => {
+    let stats = state[attrName];
+    if (isCorrectPlayer(playerId, stats)) {
+      return stats;
+    }
+    return null;
+  };
+}
+
 const getters = {
   getSkaterStatRange(state) {
     return (statName) => state.skaterStatRanges[statName];
+  },
+
+  getSkaterStats(state) {
+    return getPlayerStats(state, 'skaterStats');
+  },
+
+  getGoalieStats(state) {
+    return getPlayerStats(state, 'goalieStats');
+  },
+
+  getSkaterSeasonInfo(state) {
+    return getPlayerSeasonInfo(state, 'skaterSeasonInfo');
+  },
+
+  getGoalieSeasonInfo(state) {
+    return getPlayerSeasonInfo(state, 'goalieSeasonInfo');
+  },
+
+  getSkaterAllStats(state) {
+    return getPlayerAllStats(state, 'skaterAllStats');
+  },
+
+  getGoalieAllStats(state) {
+    return getPlayerAllStats(state, 'goalieAllStats');
   }
 };
 

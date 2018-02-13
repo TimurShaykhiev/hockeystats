@@ -1,6 +1,7 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew, processRequest, skaterStatsArrayToObjectExt, goalieStatsArrayToObject} from 'Store/utils';
+import {commitNew, processRequest, skaterStatsArrayToObjectExt, goalieStatsArrayToObject, isCorrectSeason}
+  from 'Store/utils';
 
 const teamStatRanges = {
   goalsFor: [136, 258],
@@ -36,9 +37,53 @@ const state = {
   teamStatRanges: teamStatRanges
 };
 
+function isCorrectTeam(teamId, stats) {
+  return stats.team && stats.team.id === teamId;
+}
+
 const getters = {
   getTeamStatRange(state) {
     return (statName) => state.teamStatRanges[statName];
+  },
+
+  getTeamStats(state) {
+    return (season) => {
+      let stats = state.teamStats;
+      if (isCorrectSeason(season, stats)) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
+  getTeamSeasonInfo(state) {
+    return (season, teamId) => {
+      let stats = state.teamSeasonInfo;
+      if (isCorrectSeason(season, stats) && isCorrectTeam(teamId, stats)) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
+  getTeamPlayersStats(state) {
+    return (season, teamId) => {
+      let stats = state.teamPlayersStats;
+      if (isCorrectSeason(season, stats) && isCorrectTeam(teamId, stats)) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
+  getTeamAllStats(state) {
+    return (teamId) => {
+      let stats = state.teamAllStats;
+      if (isCorrectTeam(teamId, stats)) {
+        return stats;
+      }
+      return null;
+    };
   }
 };
 
