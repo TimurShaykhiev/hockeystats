@@ -24,7 +24,8 @@ export default {
     legend: {type: Array, required: true},
     tooltipFormat: {type: Function},
     sorting: {type: String},
-    rotateXLabels: {type: Boolean, default: false}
+    rotateXLabels: {type: Boolean, default: false},
+    limit: {type: Number}
   },
   mounted() {
     this.draw();
@@ -47,7 +48,7 @@ export default {
     draw() {
       let svg = select(this.$el).select('svg');
       let margin = getChartMargin(this.rotateXLabels);
-      let {height, width} = getBarChartSize(svg, this.dataSet.length, margin);
+      let {height, width} = getBarChartSize(svg, this.limit ? this.limit : this.dataSet.length, margin);
       let keys = this.dataSet.names;
 
       let x = scaleBand().rangeRound([0, width]).padding(0.1);
@@ -64,7 +65,9 @@ export default {
         .attr('class', 'stacked-bar-chart__tooltip chart-tooltip')
         .offset([-10, 0])
         .html((d) => {
-          let htmlStr = `<p>${d.data.total}</p><ul>`;
+          let htmlStr = this.rotateXLabels ?
+            `<p>${d.data.x}: ${d.data.total}</p><ul>` :
+            `<p>${d.data.total}</p><ul>`;
           // Iterate in reverse order to have the same order as bars in stack
           for (let i = keys.length -1; i >= 0; --i) {
             let k = keys[i];
@@ -118,6 +121,9 @@ export default {
       }
       if (this.sorting) {
         stacks = Utils.sortBy(stacks, (e) => e.data.total, this.sorting === 'desc');
+        if (this.limit) {
+          stacks = stacks.slice(0, this.limit);
+        }
       }
       return stacks;
     }
@@ -134,6 +140,9 @@ export default {
     &:last-of-type {
       pointer-events: all;
       opacity: 0;
+      &:hover {
+        opacity: .3;
+      }
     }
   }
   .stacked-bar-chart__axis-y {

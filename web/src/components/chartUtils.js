@@ -4,7 +4,7 @@ import {select} from 'd3-selection';
 export const DEFAULT_CHART_HEIGHT = '500px';
 
 const CHART_MARGIN = {top: 40, bottom: 40, left: 40, right: 40};
-const X_LABEL_MARGIN = 50;
+const X_LABEL_MARGIN = 120;
 const MAX_BAR_WIDTH = 80;
 
 export function getChartMargin(rotateXLabels=false) {

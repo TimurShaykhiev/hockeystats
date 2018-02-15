@@ -21,7 +21,13 @@ export default {
     tooltipFormat: {type: Function},
     preciseYDomain: {type: Boolean, default: false},
     sorting: {type: String},
-    rotateXLabels: {type: Boolean, default: false}
+    rotateXLabels: {type: Boolean, default: false},
+    limit: {type: Number}
+  },
+  data() {
+    return {
+      chartData: this.dataSet
+    };
   },
   mounted() {
     this.draw();
@@ -37,30 +43,36 @@ export default {
     },
 
     draw() {
+      this.chartData = this.dataSet;
       let svg = select(this.$el).select('svg');
       let margin = getChartMargin(this.rotateXLabels);
-      let {height, width} = getBarChartSize(svg, this.dataSet.length, margin);
+      let {height, width} = getBarChartSize(svg, this.limit ? this.limit : this.chartData.length, margin);
 
       let tip = d3Tip()
         .attr('class', 'chart-tooltip')
         .offset([-10, 0])
-        .html((d) => `<span>${this.format(d.y)}</span>`);
+        .html((d) => this.rotateXLabels ?
+            `<span>${d.x}: ${this.format(d.y)}</span>` :
+            `<span>${this.format(d.y)}</span>`);
       svg.call(tip);
 
       let x = scaleBand().rangeRound([0, width]).padding(0.1);
       let y = scaleLinear().rangeRound([height, 0]);
 
       if (this.sorting) {
-        this.dataSet = Utils.sortBy(this.dataSet, (e) => e.y, this.sorting === 'desc');
+        this.chartData = Utils.sortBy(this.dataSet, (e) => e.y, this.sorting === 'desc');
+        if (this.limit) {
+          this.chartData = this.chartData.slice(0, this.limit);
+        }
       }
 
-      x.domain(this.dataSet.map((d) => d.x));
+      x.domain(this.chartData.map((d) => d.x));
 
-      let yMin = min(this.dataSet, (d) => d.y);
+      let yMin = min(this.chartData, (d) => d.y);
       if (yMin > 0) {
         yMin = yMin / (this.preciseYDomain ? 1.05 : 2);
       }
-      let yMax = max(this.dataSet, (d) => d.y);
+      let yMax = max(this.chartData, (d) => d.y);
       if (this.yCaption) {
         // +1 here is to expand Y axis to have extra space for caption
         ++yMax;
@@ -70,7 +82,7 @@ export default {
       let g = prepareArea(svg, margin);
 
       g.selectAll('.bar-chart__bar')
-        .data(this.dataSet)
+        .data(this.chartData)
         .enter().append('rect')
           .attr('class', 'bar-chart__bar')
           .attr('x', (d) => x(d.x))
@@ -92,6 +104,9 @@ export default {
 
   .bar-chart__bar {
     fill: #4682B4;
+    &:hover {
+      fill: #3ba7b4;
+    }
   }
   .bar-chart__axis-y {
     text {
