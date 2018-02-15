@@ -1,6 +1,6 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew, processRequest, skaterStatsArrayToObjectExt, goalieStatsArrayToObject, isCorrectSeason}
+import {commitNew, processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject, isCorrectSeason}
   from 'Store/utils';
 
 const teamStatRanges = {
@@ -185,7 +185,8 @@ function teamStatsArrayToObject(statsArray) {
     goalsForPerGame: statsArray[13],
     goalsAgainstPerGame: statsArray[14],
     shotsPerGame: statsArray[15],
-    faceOffWinsPercentage: statsArray[16]
+    faceOffWinsPercentage: statsArray[16],
+    goalsDiff: statsArray[0] - statsArray[1]
   };
 }
 
@@ -312,7 +313,7 @@ const mutations = {
     for (let s of result.skaters) {
       let skater = {
         player: s.player,
-        stats: skaterStatsArrayToObjectExt(s.stats)
+        stats: skaterStatsArrayToObject(s.stats)
       };
       newStat.skaters.push(skater);
     }

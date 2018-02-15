@@ -5,6 +5,7 @@
       <h1 class="team-info__name">{{teamName}}</h1>
     </div>
     <hr class="team-info__divider"/>
+    <team-picker/>
     <div class="team-info__season-picker container-row">
       <season-picker type="team"/>
     </div>
@@ -40,8 +41,9 @@
 <script>
 import {SeasonRequestParams} from 'Store/types';
 import TeamMainStat from 'Components/TeamMainStat';
+import TeamPicker from 'Components/TeamPicker';
 import {format} from 'd3-format';
-import {allStatsToChartData, playersStatsToChartData, seasonStatsToChartData, getAxis,
+import {allStatsToChartData, statsToChartData, seasonStatsToChartData, getAxis,
         toiToStr} from 'Components/utils';
 
 let f1 = format('.1f');
@@ -67,7 +69,7 @@ const CHART_POINTS_PER_GAME = 14;
 
 export default {
   name: 'team-info',
-  components: {TeamMainStat},
+  components: {TeamMainStat, TeamPicker},
   i18n: {
     messages: {
       en: {
@@ -520,7 +522,7 @@ export default {
         }
         let skaterStats = stats.skaters;
         if (this.selectedChart === CHART_GOALS_ASSISTS) {
-          let data = playersStatsToChartData(skaterStats, [
+          let data = statsToChartData(skaterStats, [
             {from: 'goals', to: 'goals'},
             {from: 'assists', to: 'assists'}
           ]);
@@ -539,7 +541,7 @@ export default {
           };
         }
         if (this.selectedChart === CHART_PLAYER_POINTS) {
-          let data = playersStatsToChartData(skaterStats, [
+          let data = statsToChartData(skaterStats, [
             {from: 'evenPoints', to: 'evenPoints'},
             {from: 'ppPoints', to: 'ppPoints'},
             {from: 'shPoints', to: 'shPoints'}
@@ -566,7 +568,7 @@ export default {
               rotateXLabels: true,
               sorting: 'desc',
               yCaption: this.$t('charts.toiCaptionY'),
-              dataSet: playersStatsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
+              dataSet: statsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
               tooltipFormat: (t) => toiToStr(t * 60)
             }
           };
@@ -577,7 +579,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: playersStatsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
+              dataSet: statsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
             }
           };
         }
@@ -587,7 +589,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: playersStatsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
+              dataSet: statsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
             }
           };
         }
@@ -597,7 +599,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: playersStatsToChartData(skaterStats, [{from: 'games', to: 'y'}])
+              dataSet: statsToChartData(skaterStats, [{from: 'games', to: 'y'}])
             }
           };
         }
@@ -607,7 +609,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: playersStatsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
+              dataSet: statsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
               tooltipFormat: (t) => f2(t)
             }
           };

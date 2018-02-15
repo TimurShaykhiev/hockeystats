@@ -185,7 +185,10 @@ let locales = {
         games: 'Games',
         homeAway: 'Home/Away Team Skills',
         homeGames: 'Home Games',
-        awayGames: 'Away Games'
+        awayGames: 'Away Games',
+        goalsFor: 'Goals For',
+        goalsAgainst: 'Goals Against',
+        goalsDiff: 'Goals Difference'
       }
     },
     ru: {
@@ -364,7 +367,10 @@ let locales = {
         games: 'Игры',
         homeAway: 'Домашние/Гостевые показатели',
         homeGames: 'Домашние игры',
-        awayGames: 'Гостевые игры'
+        awayGames: 'Гостевые игры',
+        goalsFor: 'Заброшенные шайбы',
+        goalsAgainst: 'Пропущенные шайбы',
+        goalsDiff: 'Разница шайб'
       }
     }
   }

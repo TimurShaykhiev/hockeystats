@@ -75,13 +75,17 @@ export function allStatsToChartData(allStats, fieldMap) {
   return result;
 }
 
-export function playersStatsToChartData(playersStats, fieldMap) {
-  // Convert players stats to chart data set.
-  // Returns array of objects. The player name is always in 'x' field.
+function getPlayerName(s) {
+  return s.player.name;
+}
+
+export function statsToChartData(stats, fieldMap, getNameFunc=getPlayerName) {
+  // Convert stats to chart data set.
+  // Returns array of objects. The name is always in 'x' field.
   let result = [];
-  for (let s of playersStats) {
+  for (let s of stats) {
     let obj = {};
-    obj.x = s.player.name;
+    obj.x = getNameFunc(s);
     for (let m of fieldMap) {
       if (m.convert) {
         obj[m.to] = m.convert(s.stats[m.from]);
@@ -119,4 +123,8 @@ export function getAxis(statName, caption, getRangeFunc, currentSeason) {
     return {key: statName, name: caption, range: range};
   }
   return {key: statName, name: caption};
+}
+
+export function filterName(str, filterStr) {
+  return str.toLowerCase().indexOf(filterStr) !== -1;
 }

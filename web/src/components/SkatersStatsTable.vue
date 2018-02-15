@@ -31,7 +31,7 @@
 
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
-import {toiToStr, getSeasonName, getPaginationText, seasonToStr} from 'Components/utils';
+import {toiToStr, getSeasonName, getPaginationText, seasonToStr, filterName} from 'Components/utils';
 import {format} from 'd3-format';
 
 const TYPE_ALL = 'all';
@@ -107,6 +107,7 @@ export default {
         field: 'name',
         sortable: this.canSortRows(),
         filterable: this.type === TYPE_ALL,
+        filter: filterName,
         placeholder: '',
         hidden: this.type === TYPE_PLAYER
       }, {

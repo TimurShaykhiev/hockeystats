@@ -1,7 +1,6 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
-import {processRequest, skaterStatsArrayToObject, skaterStatsArrayToObjectExt,
-  goalieStatsArrayToObject, isCorrectSeason} from 'Store/utils';
+import {processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject, isCorrectSeason} from 'Store/utils';
 
 // Ranges calculated from all results. 5p - 95p.
 const skaterStatRanges = {
@@ -307,7 +306,7 @@ const mutations = {
       let season = {
         season: s.season,
         teamId: s.tid,
-        stats: skaterStatsArrayToObjectExt(s.stats)
+        stats: skaterStatsArrayToObject(s.stats)
       };
       newStat.seasons.push(season);
     }

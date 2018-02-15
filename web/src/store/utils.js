@@ -20,7 +20,7 @@ export function processRequest(actName, mutName, stateName, commit, state, reque
 }
 
 export function skaterStatsArrayToObject(statsArray) {
-  return {
+  let obj = {
     assists: statsArray[0],
     goals: statsArray[1],
     shots: statsArray[2],
@@ -37,10 +37,6 @@ export function skaterStatsArrayToObject(statsArray) {
     shootingPercentage: statsArray[13],
     faceOffWinsPercentage: statsArray[14]
   };
-}
-
-export function skaterStatsArrayToObjectExt(statsArray) {
-  let obj = skaterStatsArrayToObject(statsArray);
   obj.evenGoals = obj.goals - obj.ppGoals - obj.shGoals;
   obj.evenPoints = obj.points - obj.ppPoints - obj.shPoints;
   obj.ppAssists = obj.ppPoints - obj.ppGoals;
