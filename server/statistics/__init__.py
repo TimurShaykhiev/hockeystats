@@ -3,6 +3,8 @@ import numpy as np
 INT_ARRAY_DATA_TYPE = np.int32
 FP_ARRAY_DATA_TYPE = np.float32
 
+THRESHOLD_PERCENTILE = 40
+
 
 def fraction(a, b):
     res = np.divide(a, b, out=np.zeros_like(a, dtype=FP_ARRAY_DATA_TYPE), where=b != 0)
@@ -31,6 +33,20 @@ def find_rate(obj_row_idx, values_col, desc_order=True):
         indices = np.argsort(values_col)[::-1]
     else:
         indices = np.argsort(values_col)
+    return find_index(indices, obj_row_idx) + 1
+
+
+def find_rate2(obj_row_idx, values_col, threshold_col, desc_order=True):
+    # This function is for relative values(like save percentage). The direct sort might be not correct.
+    # We need to put much-playing players to the top of the rating.
+    threshold = np.percentile(threshold_col, THRESHOLD_PERCENTILE)
+    shift = 1000
+    if desc_order:
+        col = np.where(threshold_col > threshold, values_col + shift, values_col)
+        indices = np.argsort(col)[::-1]
+    else:
+        col = np.where(threshold_col < threshold, values_col + shift, values_col)
+        indices = np.argsort(col)
     return find_index(indices, obj_row_idx) + 1
 
 

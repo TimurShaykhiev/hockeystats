@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, find_rate
+from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, find_rate, find_rate2
 
 '''
 Numpy arrays contain stats for all goalies only. These are the stats calculated in _calc_goalies_stats and the ones
@@ -100,9 +100,9 @@ def _calc_goalie_ext_stats(arr_int, arr_fp, goalie_row_idx):
     ]
 
     ratings = [
-        find_rate(goalie_row_idx, arr_fp[:, COL_GOALS_AGAINST_AVERAGE], False),
-        find_rate(goalie_row_idx, arr_fp[:, COL_SAVE_PERCENTAGE]),
-        find_rate(goalie_row_idx, arr_fp[:, COL_WIN_PERCENTAGE]),
+        find_rate2(goalie_row_idx, arr_fp[:, COL_GOALS_AGAINST_AVERAGE], arr_int[:, COL_GAMES], False),
+        find_rate2(goalie_row_idx, arr_fp[:, COL_SAVE_PERCENTAGE], arr_int[:, COL_GAMES]),
+        find_rate2(goalie_row_idx, arr_fp[:, COL_WIN_PERCENTAGE], arr_int[:, COL_GAMES]),
         find_rate(goalie_row_idx, arr_int[:, COL_WINS]),
         find_rate(goalie_row_idx, arr_int[:, COL_SHUTOUT])
     ]
