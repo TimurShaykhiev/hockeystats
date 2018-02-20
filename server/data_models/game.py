@@ -132,8 +132,14 @@ class Game(Model):
     @classmethod
     def get_team_games(cls, db_conn, team_id, from_date, to_date, regular):
         q = cls._create_query().select()
-        q.where('date >= %s AND date <= %s AND is_regular = %s AND (home_team_id = %s OR away_team_id = %s)')
+        q.where('date >= %s AND date < %s AND is_regular = %s AND (home_team_id = %s OR away_team_id = %s)')
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
+
+    @classmethod
+    def get_season_games(cls, db_conn, from_date, to_date, regular):
+        q = cls._create_query().select()
+        q.where('date >= %s AND date < %s AND is_regular = %s')
+        return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular))
 
     def to_tuple(self):
         return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,

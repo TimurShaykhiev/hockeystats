@@ -3,35 +3,37 @@ from collections import namedtuple
 import numpy as np
 
 from data_models.game import Game
-from . import INT_ARRAY_DATA_TYPE
+from . import INT_ARRAY_DATA_TYPE, date_to_int
 
-COL_IS_REGULAR = 0
-COL_WIN_TYPE = 1
-COL_HOME_TEAM_ID = 2
-COL_AWAY_TEAM_ID = 3
-COL_HOME_GOALS = 4
-COL_HOME_GOALS_PERIOD1 = 5
-COL_HOME_GOALS_PERIOD2 = 6
-COL_HOME_GOALS_PERIOD3 = 7
-COL_HOME_SHOTS = 8
-COL_HOME_PP_GOALS = 9
-COL_HOME_PP_OPPORTUNITIES = 10
-COL_HOME_FACE_OFF_WINS = 11
-COL_HOME_BLOCKED = 12
-COL_HOME_HITS = 13
-COL_HOME_PENALTY_MINUTES = 14
-COL_AWAY_GOALS = 15
-COL_AWAY_GOALS_PERIOD1 = 16
-COL_AWAY_GOALS_PERIOD2 = 17
-COL_AWAY_GOALS_PERIOD3 = 18
-COL_AWAY_SHOTS = 19
-COL_AWAY_PP_GOALS = 20
-COL_AWAY_PP_OPPORTUNITIES = 21
-COL_AWAY_FACE_OFF_WINS = 22
-COL_AWAY_BLOCKED = 23
-COL_AWAY_HITS = 24
-COL_AWAY_PENALTY_MINUTES = 25
-COL_FACE_OFF_TAKEN = 26
+COL_GAME_ID = 0
+COL_GAME_DATE = 1
+COL_IS_REGULAR = 2
+COL_WIN_TYPE = 3
+COL_HOME_TEAM_ID = 4
+COL_AWAY_TEAM_ID = 5
+COL_HOME_GOALS = 6
+COL_HOME_GOALS_PERIOD1 = 7
+COL_HOME_GOALS_PERIOD2 = 8
+COL_HOME_GOALS_PERIOD3 = 9
+COL_HOME_SHOTS = 10
+COL_HOME_PP_GOALS = 11
+COL_HOME_PP_OPPORTUNITIES = 12
+COL_HOME_FACE_OFF_WINS = 13
+COL_HOME_BLOCKED = 14
+COL_HOME_HITS = 15
+COL_HOME_PENALTY_MINUTES = 16
+COL_AWAY_GOALS = 17
+COL_AWAY_GOALS_PERIOD1 = 18
+COL_AWAY_GOALS_PERIOD2 = 19
+COL_AWAY_GOALS_PERIOD3 = 20
+COL_AWAY_SHOTS = 21
+COL_AWAY_PP_GOALS = 22
+COL_AWAY_PP_OPPORTUNITIES = 23
+COL_AWAY_FACE_OFF_WINS = 24
+COL_AWAY_BLOCKED = 25
+COL_AWAY_HITS = 26
+COL_AWAY_PENALTY_MINUTES = 27
+COL_FACE_OFF_TAKEN = 28
 
 GAME_WIN_TYPE_REGULAR = 0
 GAME_WIN_TYPE_OVERTIME = 1
@@ -46,6 +48,8 @@ TeamHomeAwayStats = namedtuple('TeamHomeAwayStats',
                                 'home_sh_goals', 'away_sh_goals', 'home_sh_opp', 'away_sh_opp',
                                 'home_shutouts', 'away_shutouts',
                                 'home_pim', 'home_opp_pim', 'away_pim', 'away_opp_pim'])
+
+GameTeams = namedtuple('GameTeams', ['home_tid', 'away_tid'])
 
 
 def get_team_home_away_stats(team_id, games):
@@ -71,13 +75,17 @@ def get_team_home_away_stats(team_id, games):
                              team_home_stats.pim, opp_home_stats.pim, team_away_stats.pim, opp_away_stats.pim)
 
 
+def get_home_away_dict(games):
+    return dict((g[COL_GAME_ID], GameTeams(g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID])) for g in games)
+
+
 def _games_to_array(games):
     win_type_map = {
         Game.WIN_TYPE_REGULAR: GAME_WIN_TYPE_REGULAR,
         Game.WIN_TYPE_OVERTIME: GAME_WIN_TYPE_OVERTIME,
         Game.WIN_TYPE_SHOOTOUT: GAME_WIN_TYPE_SHOOTOUT
     }
-    games_arr = [(x[2], win_type_map[x[3]]) + x[4:] for x in games]
+    games_arr = [(x[0], date_to_int(x[1]), x[2], win_type_map[x[3]]) + x[4:] for x in games]
     return np.array(games_arr, dtype=INT_ARRAY_DATA_TYPE)
 
 

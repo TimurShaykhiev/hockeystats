@@ -1,5 +1,6 @@
 import numpy as np
 
+from .goalie_stats import get_goalie_home_away_stats
 from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, find_rate, find_rate2
 
 '''
@@ -62,13 +63,14 @@ def get_goalies_stats(goalie_stats):
     return results
 
 
-def get_goalie_ext_stats(player_id, goalie_stats):
-    stat_arr_int = stats_to_array(goalie_stats, GOALIE_STATS_INT_ARRAY_LEN)
-    stat_arr_fp = np.zeros([len(goalie_stats), GOALIE_STATS_EXT_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
+def get_goalie_ext_stats(player_id, goalie_sum_stats, goalie_stats, games):
+    stat_arr_int = stats_to_array(goalie_sum_stats, GOALIE_STATS_INT_ARRAY_LEN)
+    stat_arr_fp = np.zeros([len(goalie_sum_stats), GOALIE_STATS_EXT_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
     goalie_row_idx = find_index(stat_arr_int[:, COL_PLAYER_ID], player_id)
 
     _calc_goalies_stats(stat_arr_int, stat_arr_fp)
-    ext_stats, ratings = _calc_goalie_ext_stats(stat_arr_int, stat_arr_fp, goalie_row_idx)
+    ha_stats = get_goalie_home_away_stats(goalie_stats, games)
+    ext_stats, ratings = _calc_goalie_ext_stats(stat_arr_int, stat_arr_fp, goalie_row_idx, ha_stats)
 
     results = stat_arr_int[goalie_row_idx, EXT_INT_ARRAY_RESULT_COLUMNS].tolist() +\
         stat_arr_fp[goalie_row_idx, :].tolist() +\
@@ -85,7 +87,7 @@ def _calc_goalies_stats(arr_int, arr_fp):
     arr_fp[:, COL_SAVE_PERCENTAGE] = fraction(arr_int[:, COL_SAVES], arr_int[:, COL_SHOTS])
 
 
-def _calc_goalie_ext_stats(arr_int, arr_fp, goalie_row_idx):
+def _calc_goalie_ext_stats(arr_int, arr_fp, goalie_row_idx, ha_stats):
     arr_fp[:, COL_WIN_PERCENTAGE] = percentage(arr_int[:, COL_WINS], arr_int[:, COL_GAMES])
 
     row = arr_int[goalie_row_idx, :]
@@ -96,7 +98,15 @@ def _calc_goalie_ext_stats(arr_int, arr_fp, goalie_row_idx):
         row[COL_SH_SHOTS_AGAINST] - row[COL_SH_SAVES],  # SH goals against
         fraction(row[COL_SAVES], row[COL_GAMES]),  # saves per game
         fraction(row[COL_SHOTS], row[COL_GOALS_AGAINST]),  # shots against per goal
-        percentage(even_ga, row[COL_GOALS_AGAINST])  # even strength goals against percentage
+        percentage(even_ga, row[COL_GOALS_AGAINST]),  # even strength goals against percentage
+        ha_stats.home_gaa,
+        ha_stats.away_gaa,
+        ha_stats.home_svp,
+        ha_stats.away_svp,
+        ha_stats.home_win_percentage,
+        ha_stats.away_win_percentage,
+        ha_stats.home_wins,
+        ha_stats.away_wins
     ]
 
     ratings = [

@@ -23,6 +23,7 @@ class Season:
         self.current = False
         self.regular = True
         self.start = None
+        self.po_start = None
         self.end = None
 
     @classmethod
@@ -61,6 +62,7 @@ class Season:
         self.current = dm.current
         self.year = dm.end.year - 1
         self.start = dm.start
+        self.po_start = dm.po_start
         self.end = dm.end
 
 

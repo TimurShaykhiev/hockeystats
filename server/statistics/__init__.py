@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 INT_ARRAY_DATA_TYPE = np.int32
@@ -53,3 +55,7 @@ def find_rate2(obj_row_idx, values_col, threshold_col, desc_order=True):
 def get_rate_and_avg(arr, column, obj_row_idx, desc_order=True):
     col = arr[:, column]
     return find_rate(obj_row_idx, col, desc_order), col.mean()
+
+
+def date_to_int(date):
+    return int(time.mktime(date.timetuple()))

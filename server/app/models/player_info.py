@@ -1,6 +1,9 @@
 from marshmallow import fields
 
 from app.database import get_db
+from data_models.game import Game
+from data_models.skater_stat import SkaterStat
+from data_models.goalie_stat import GoalieStat
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from statistics.skater_season import get_skaters_stats, get_skater_ext_stats
@@ -17,6 +20,11 @@ class _PlayerInfo:
         self.player = PlayerFullInfo.create(player_id, season)
         self.stats = []
 
+    def _get_dates(self):
+        start = self.season.start if self.season.regular else self.season.po_start
+        end = self.season.po_start if self.season.regular else self.season.end
+        return start, end
+
 
 class _PlayerInfoSchema(ModelSchema):
     season = fields.Nested(SeasonSchema)
@@ -27,9 +35,12 @@ class _PlayerInfoSchema(ModelSchema):
 class SkaterInfo(_PlayerInfo):
     def get_info(self):
         db = get_db()
+        start, end = self._get_dates()
         team_players = get_team_players(db, self.player.team_id, self.season)
-        stats = SkaterSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
-        self.stats = get_skater_ext_stats(self.player.id, stats, team_players)
+        sum_stats = SkaterSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
+        stats = SkaterStat.get_player_stats_by_date(db, self.player.id, start, end)
+        games = Game.get_season_games(db, start, end, self.season.regular)
+        self.stats = get_skater_ext_stats(self.player.id, sum_stats, team_players, stats, games)
         schema = _PlayerInfoSchema()
         return schema.dumps(self)
 
@@ -37,8 +48,11 @@ class SkaterInfo(_PlayerInfo):
 class GoalieInfo(_PlayerInfo):
     def get_info(self):
         db = get_db()
-        stats = GoalieSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
-        self.stats = get_goalie_ext_stats(self.player.id, stats)
+        start, end = self._get_dates()
+        sum_stats = GoalieSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
+        stats = GoalieStat.get_player_stats_by_date(db, self.player.id, start, end)
+        games = Game.get_season_games(db, start, end, self.season.regular)
+        self.stats = get_goalie_ext_stats(self.player.id, sum_stats, stats, games)
         schema = _PlayerInfoSchema()
         return schema.dumps(self)
 
