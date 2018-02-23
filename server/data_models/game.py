@@ -133,6 +133,7 @@ class Game(Model):
     def get_team_games(cls, db_conn, team_id, from_date, to_date, regular):
         q = cls._create_query().select()
         q.where('date >= %s AND date < %s AND is_regular = %s AND (home_team_id = %s OR away_team_id = %s)')
+        q.order_by(['date'])
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
 
     @classmethod

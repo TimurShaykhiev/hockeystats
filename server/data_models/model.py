@@ -1,14 +1,17 @@
+from abc import ABC, abstractmethod
+
 from db_utils import get_one_from_query_result
 from data_models.query import Query
 
 
-class Model:
+class Model(ABC):
     _table_name = ''
     _primary_keys = ['id']
 
     @classmethod
+    @abstractmethod
     def from_tuple(cls, fields):
-        raise NotImplementedError()
+        pass
 
     @classmethod
     def from_db(cls, db_conn, *query_params):
@@ -16,8 +19,9 @@ class Model:
         q.select().filter_by(cls._primary_keys)
         return cls._get_one_from_db(db_conn, q.query, query_params)
 
+    @abstractmethod
     def to_tuple(self):
-        raise NotImplementedError()
+        pass
 
     @classmethod
     def get_filtered(cls, db_conn, filter_columns, query_params, columns=None, named_tuple_cls=None, order_by=None):

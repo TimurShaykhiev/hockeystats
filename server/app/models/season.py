@@ -65,12 +65,19 @@ class Season:
         self.po_start = dm.po_start
         self.end = dm.end
 
+    def get_dates(self):
+        start = self.start if self.regular else self.po_start
+        end = self.po_start if self.regular else self.end
+        return start, end
+
 
 class SeasonSchema(ModelSchema):
     id = fields.Integer()
     year = fields.Integer()
     current = fields.Boolean()
     regular = fields.Boolean()
+    start = fields.Date()
+    end = fields.Date()
 
 
 class SeasonCollection:

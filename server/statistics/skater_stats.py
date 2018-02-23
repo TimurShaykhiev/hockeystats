@@ -51,6 +51,20 @@ def get_skater_home_away_stats(stats, games):
                                home_stats.pim, away_stats.pim)
 
 
+def get_points_progress(stats, start_date, interval):
+    # interval is timedelta
+    res = [0]
+    acc = 0
+    end_date = start_date + interval
+    for s in stats:
+        while s[COL_DATE] > end_date:
+            res.append(acc)
+            end_date += interval
+
+        acc += s[COL_GOALS] + s[COL_ASSISTS]
+    return res
+
+
 class _SkaterStats:
     def __init__(self):
         self.goals = 0

@@ -20,11 +20,6 @@ class _PlayerInfo:
         self.player = PlayerFullInfo.create(player_id, season)
         self.stats = []
 
-    def _get_dates(self):
-        start = self.season.start if self.season.regular else self.season.po_start
-        end = self.season.po_start if self.season.regular else self.season.end
-        return start, end
-
 
 class _PlayerInfoSchema(ModelSchema):
     season = fields.Nested(SeasonSchema)
@@ -35,7 +30,7 @@ class _PlayerInfoSchema(ModelSchema):
 class SkaterInfo(_PlayerInfo):
     def get_info(self):
         db = get_db()
-        start, end = self._get_dates()
+        start, end = self.season.get_dates()
         team_players = get_team_players(db, self.player.team_id, self.season)
         sum_stats = SkaterSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
         stats = SkaterStat.get_player_stats_by_date(db, self.player.id, start, end)
@@ -48,7 +43,7 @@ class SkaterInfo(_PlayerInfo):
 class GoalieInfo(_PlayerInfo):
     def get_info(self):
         db = get_db()
-        start, end = self._get_dates()
+        start, end = self.season.get_dates()
         sum_stats = GoalieSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
         stats = GoalieStat.get_player_stats_by_date(db, self.player.id, start, end)
         games = Game.get_season_games(db, start, end, self.season.regular)

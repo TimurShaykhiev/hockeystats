@@ -79,6 +79,25 @@ def get_home_away_dict(games):
     return dict((g[COL_GAME_ID], GameTeams(g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID])) for g in games)
 
 
+def get_points_progress(team_id, games, start_date, interval):
+    # interval is timedelta
+    res = [0]
+    acc = 0
+    end_date = start_date + interval
+    for g in games:
+        while g[COL_GAME_DATE] > end_date:
+            res.append(acc)
+            end_date += interval
+
+        winner_team_id = g[COL_HOME_TEAM_ID] if g[COL_HOME_GOALS] > g[COL_AWAY_GOALS] else g[COL_AWAY_TEAM_ID]
+        if g[COL_WIN_TYPE] == Game.WIN_TYPE_REGULAR:
+            if winner_team_id == team_id:
+                acc += 2
+        else:
+            acc += 2 if winner_team_id == team_id else 1
+    return res
+
+
 def _games_to_array(games):
     win_type_map = {
         Game.WIN_TYPE_REGULAR: GAME_WIN_TYPE_REGULAR,
