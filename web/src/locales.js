@@ -183,7 +183,7 @@ let locales = {
         pkPercentage: 'Penalty Kill Percentage',
         penaltyMinutes: 'Penalty Minutes',
         games: 'Games',
-        homeAway: 'Home/Away Team Skills',
+        homeAway: 'Home/Away Skills',
         homeGames: 'Home Games',
         awayGames: 'Away Games',
         goalsFor: 'Goals For',

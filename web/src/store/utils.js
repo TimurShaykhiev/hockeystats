@@ -32,10 +32,11 @@ export function skaterStatsArrayToObject(statsArray) {
     points: statsArray[8],
     ppPoints: statsArray[9],
     shPoints: statsArray[10],
-    pointsPerGame: statsArray[11],
-    toiPerGame: statsArray[12],
-    shootingPercentage: statsArray[13],
-    faceOffWinsPercentage: statsArray[14]
+    faceOffTaken: statsArray[11],
+    pointsPerGame: statsArray[12],
+    toiPerGame: statsArray[13],
+    shootingPercentage: statsArray[14],
+    faceOffWinsPercentage: statsArray[15]
   };
   obj.evenGoals = obj.goals - obj.ppGoals - obj.shGoals;
   obj.evenPoints = obj.points - obj.ppPoints - obj.shPoints;

@@ -6,14 +6,20 @@ import {processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject, isCo
 const skaterStatRanges = {
   assists: [0, 36],
   goals: [0, 24],
+  haAssists: [0, 36],
+  haGoals: [0, 24],
   shots: [1, 206],
   ppGoals: [0, 7],
   penaltyMinutes: [0, 73],
+  haPenaltyMinutes: [0, 73],
   shGoals: [0, 1],
   plusMinus: [-15, 16],
+  haPlusMinus: [-15, 16],
   games: [2, 82],
   faceOffWinsPercentage: [0, 55], // 10p - 90p
-  turnover: [-30, 17]
+  turnover: [-30, 17],
+  haTurnover: [-30, 17],
+  haPointsPerGame: [0, 1]
 };
 
 const state = {
@@ -235,16 +241,28 @@ const mutations = {
     skaterInfo.blocksPer60min = info.stats[33];
     skaterInfo.hitsPer60min = info.stats[34];
     skaterInfo.PIMsPer60min = info.stats[35];
-    skaterInfo.goalsRateTotal = info.stats[36];
-    skaterInfo.assistsRateTotal = info.stats[37];
-    skaterInfo.pointsRateTotal = info.stats[38];
-    skaterInfo.plusMinusRateTotal = info.stats[39];
-    skaterInfo.turnoverRateTotal = info.stats[40];
-    skaterInfo.goalsRateTeam = info.stats[41];
-    skaterInfo.assistsRateTeam = info.stats[42];
-    skaterInfo.pointsRateTeam = info.stats[43];
-    skaterInfo.plusMinusRateTeam = info.stats[44];
-    skaterInfo.turnoverRateTeam = info.stats[45];
+    skaterInfo.homeGoals = info.stats[36];
+    skaterInfo.awayGoals = info.stats[37];
+    skaterInfo.homeAssists = info.stats[38];
+    skaterInfo.awayAssists = info.stats[39];
+    skaterInfo.homePlusMinus = info.stats[40];
+    skaterInfo.awayPlusMinus = info.stats[41];
+    skaterInfo.homeTurnover = info.stats[42];
+    skaterInfo.awayTurnover = info.stats[43];
+    skaterInfo.homePointsPerGame = info.stats[44];
+    skaterInfo.awayPointsPerGame = info.stats[45];
+    skaterInfo.homePim = info.stats[46];
+    skaterInfo.awayPim = info.stats[47];
+    skaterInfo.goalsRateTotal = info.stats[48];
+    skaterInfo.assistsRateTotal = info.stats[49];
+    skaterInfo.pointsRateTotal = info.stats[50];
+    skaterInfo.plusMinusRateTotal = info.stats[51];
+    skaterInfo.turnoverRateTotal = info.stats[52];
+    skaterInfo.goalsRateTeam = info.stats[53];
+    skaterInfo.assistsRateTeam = info.stats[54];
+    skaterInfo.pointsRateTeam = info.stats[55];
+    skaterInfo.plusMinusRateTeam = info.stats[56];
+    skaterInfo.turnoverRateTeam = info.stats[57];
 
     state.skaterSeasonInfo = skaterInfo;
   },
@@ -269,11 +287,19 @@ const mutations = {
     goalieInfo.savesPerGame = info.stats[10];
     goalieInfo.shotsAgainstPerGoal = info.stats[11];
     goalieInfo.evenStrengthGoalsAgainstPercentage = info.stats[12];
-    goalieInfo.gaaRate = info.stats[13];
-    goalieInfo.svpRate = info.stats[14];
-    goalieInfo.winPercentageRate = info.stats[15];
-    goalieInfo.winsRate = info.stats[16];
-    goalieInfo.shutoutRate = info.stats[17];
+    goalieInfo.homeGaa = info.stats[13];
+    goalieInfo.awayGaa = info.stats[14];
+    goalieInfo.homeSvp = info.stats[15];
+    goalieInfo.awaySvp = info.stats[16];
+    goalieInfo.homeWinPercentage = info.stats[17];
+    goalieInfo.awayWinPercentage = info.stats[18];
+    goalieInfo.homeWins = info.stats[19];
+    goalieInfo.awayWins = info.stats[20];
+    goalieInfo.gaaRate = info.stats[21];
+    goalieInfo.svpRate = info.stats[22];
+    goalieInfo.winPercentageRate = info.stats[23];
+    goalieInfo.winsRate = info.stats[24];
+    goalieInfo.shutoutRate = info.stats[25];
 
     state.goalieSeasonInfo = goalieInfo;
   },

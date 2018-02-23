@@ -26,6 +26,8 @@
     <stats-block :caption="$t('skaterInfo.shootingStatistics')" :items="shootingStats"/>
     <stats-block :caption="$t('skaterInfo.takeawayStatistics')" :items="takeawayStats"/>
     <stats-block :caption="$t('skaterInfo.advancedStatistics')" :items="advancedStats"/>
+    <stats-block :caption="$t('skaterInfo.homeStatistics')" :items="homeStats"/>
+    <stats-block :caption="$t('skaterInfo.awayStatistics')" :items="awayStats"/>
   </div>
 </template>
 
@@ -45,6 +47,7 @@ const CHART_TOI = 5;
 const CHART_SKILLS = 6;
 const CHART_PLUS_MINUS = 7;
 const CHART_POINTS_PER_GAME = 8;
+const CHART_HOME_AWAY = 9;
 
 export default {
   name: 'skater-info',
@@ -58,7 +61,9 @@ export default {
           assistStatistics: 'ASSISTS',
           shootingStatistics: 'SHOOTING',
           takeawayStatistics: 'TAKEAWAYS',
-          advancedStatistics: 'ADVANCED'
+          advancedStatistics: 'ADVANCED',
+          homeStatistics: 'HOME STATISTICS',
+          awayStatistics: 'AWAY STATISTICS'
         }
       },
       ru: {
@@ -68,7 +73,9 @@ export default {
           assistStatistics: 'ПАСЫ',
           shootingStatistics: 'БРОСКИ',
           takeawayStatistics: 'ОТБОРЫ',
-          advancedStatistics: 'ДОПОЛНИТЕЛЬНАЯ СТАТИСТИКА'
+          advancedStatistics: 'ДОПОЛНИТЕЛЬНАЯ СТАТИСТИКА',
+          homeStatistics: 'СТАТИСТИКА В ДОМАШНИХ ИГРАХ',
+          awayStatistics: 'СТАТИСТИКА В ГОСТЕВЫХ ИГРАХ'
         }
       }
     }
@@ -83,6 +90,7 @@ export default {
         {name: this.$t('charts.assists'), value: CHART_ASSISTS},
         {name: this.$t('charts.toi'), value: CHART_TOI},
         {name: this.$t('charts.skaterSkills'), value: CHART_SKILLS},
+        {name: this.$t('charts.homeAway'), value: CHART_HOME_AWAY},
         {name: this.$t('charts.plusMinus'), value: CHART_PLUS_MINUS},
         {name: this.$t('charts.pointsPerGame'), value: CHART_POINTS_PER_GAME}
       ]
@@ -319,29 +327,125 @@ export default {
       }];
     },
 
+    homeStats() {
+      let skaterInfo = this.getSkaterInfo();
+      if (skaterInfo === null) {
+        return [];
+      }
+      return [{
+        name: this.$t('statNames.goalsFor'),
+        value: skaterInfo.homeGoals
+      }, {
+        name: this.$t('statNames.assists'),
+        value: skaterInfo.homeAssists
+      }, {
+        name: this.$t('statNames.plusMinus'),
+        value: skaterInfo.homePlusMinus
+      }, {
+        name: this.$t('statNames.turnover'),
+        value: skaterInfo.homeTurnover
+      }, {
+        name: this.$t('statNames.pointsPerGame'),
+        value: skaterInfo.homePointsPerGame,
+        precision: f2
+      }, {
+        name: this.$t('statNames.penaltyMinutes'),
+        value: skaterInfo.homePim
+      }];
+    },
+
+    awayStats() {
+      let skaterInfo = this.getSkaterInfo();
+      if (skaterInfo === null) {
+        return [];
+      }
+      return [{
+        name: this.$t('statNames.goalsFor'),
+        value: skaterInfo.awayGoals
+      }, {
+        name: this.$t('statNames.assists'),
+        value: skaterInfo.awayAssists
+      }, {
+        name: this.$t('statNames.plusMinus'),
+        value: skaterInfo.awayPlusMinus
+      }, {
+        name: this.$t('statNames.turnover'),
+        value: skaterInfo.awayTurnover
+      }, {
+        name: this.$t('statNames.pointsPerGame'),
+        value: skaterInfo.awayPointsPerGame,
+        precision: f2
+      }, {
+        name: this.$t('statNames.penaltyMinutes'),
+        value: skaterInfo.awayPim
+      }];
+    },
+
     chartData() {
-      if (this.selectedChart === CHART_SKILLS) {
+      if (this.selectedChart === CHART_SKILLS || this.selectedChart === CHART_HOME_AWAY) {
         let skaterInfo = this.getSkaterInfo();
         if (skaterInfo === null) {
           return {};
         }
         let selSeason = this.$store.state.season.selectedSeason;
-        let getRange = this.$store.getters.getSkaterStatRange;
-        let axises = [
-          getAxis('goals', this.$t('statNames.goals'), getRange, selSeason.current),
-          getAxis('assists', this.$t('statNames.assists'), getRange, selSeason.current),
-          getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
-          getAxis('turnover', this.$t('statNames.turnover'), getRange, selSeason.current),
-          getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
-        ];
-        return {
-          radarChart: true,
-          chartData: {
-            homogeneous: false,
-            axises: axises,
-            dataSet: [seasonStatsToChartData(skaterInfo, axises, skaterInfo.player.id)]
-          }
-        };
+        if (this.selectedChart === CHART_SKILLS) {
+          let getRange = this.$store.getters.getSkaterStatRange;
+          let axises = [
+            getAxis('goals', this.$t('statNames.goals'), getRange, selSeason.current),
+            getAxis('assists', this.$t('statNames.assists'), getRange, selSeason.current),
+            getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
+            getAxis('turnover', this.$t('statNames.turnover'), getRange, selSeason.current),
+            getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
+          ];
+          return {
+            radarChart: true,
+            chartData: {
+              homogeneous: false,
+              axises: axises,
+              dataSet: [seasonStatsToChartData(skaterInfo, axises, skaterInfo.player.id)]
+            }
+          };
+        }
+        if (this.selectedChart === CHART_HOME_AWAY) {
+          let getRange = this.$store.getters.getSkaterStatRange;
+          let axises = [
+            getAxis('haGoals', this.$t('statNames.goals'), getRange, selSeason.current),
+            getAxis('haAssists', this.$t('statNames.assists'), getRange, selSeason.current),
+            getAxis('haPlusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
+            getAxis('haTurnover', this.$t('statNames.turnover'), getRange, selSeason.current),
+            getAxis('haPointsPerGame', this.$t('statNames.pointsPerGame'), getRange, selSeason.current),
+            getAxis('haPenaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
+          ];
+          return {
+            radarChart: true,
+            chartData: {
+              homogeneous: false,
+              axises: axises,
+              legend: [
+                {key: 'home', name: this.$t('charts.homeGames')},
+                {key: 'away', name: this.$t('charts.awayGames')}
+              ],
+              dataSet: [
+                seasonStatsToChartData(skaterInfo, axises, 'home', {
+                  'haGoals': 'homeGoals',
+                  'haAssists': 'homeAssists',
+                  'haPlusMinus': 'homePlusMinus',
+                  'haTurnover': 'homeTurnover',
+                  'haPointsPerGame': 'homePointsPerGame',
+                  'haPenaltyMinutes': 'homePim'
+                }),
+                seasonStatsToChartData(skaterInfo, axises, 'away', {
+                  'haGoals': 'awayGoals',
+                  'haAssists': 'awayAssists',
+                  'haPlusMinus': 'awayPlusMinus',
+                  'haTurnover': 'awayTurnover',
+                  'haPointsPerGame': 'awayPointsPerGame',
+                  'haPenaltyMinutes': 'awayPim'
+                })
+              ]
+            }
+          };
+        }
       } else {
         let skaterStats = this.getSkaterAllStats();
         if (skaterStats.length === 0) {

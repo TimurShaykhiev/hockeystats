@@ -21,6 +21,8 @@
     </tabs>
     <stats-block :caption="$t('goalieInfo.saveStatistics')" :items="saveStats"/>
     <stats-block :caption="$t('goalieInfo.goalStatistics')" :items="goalStats"/>
+    <stats-block :caption="$t('goalieInfo.homeStatistics')" :items="homeStats"/>
+    <stats-block :caption="$t('goalieInfo.awayStatistics')" :items="awayStats"/>
   </div>
 </template>
 
@@ -49,13 +51,17 @@ export default {
       en: {
         goalieInfo: {
           saveStatistics: 'SAVES',
-          goalStatistics: 'GOALS'
+          goalStatistics: 'GOALS',
+          homeStatistics: 'HOME STATISTICS',
+          awayStatistics: 'AWAY STATISTICS'
         }
       },
       ru: {
         goalieInfo: {
           saveStatistics: 'СПАСЕНИЯ',
-          goalStatistics: 'ГОЛЫ'
+          goalStatistics: 'ГОЛЫ',
+          homeStatistics: 'СТАТИСТИКА В ДОМАШНИХ ИГРАХ',
+          awayStatistics: 'СТАТИСТИКА В ГОСТЕВЫХ ИГРАХ'
         }
       }
     }
@@ -169,6 +175,54 @@ export default {
       }, {
         name: this.$t('statNames.shGoalsAllowed'),
         value: goalieInfo.shGoalsAgainst
+      }];
+    },
+
+    homeStats() {
+      let goalieInfo = this.getGoalieInfo();
+      if (goalieInfo === null) {
+        return [];
+      }
+      return [{
+        name: this.$t('statNames.goalsAgainstAverage'),
+        value: goalieInfo.homeGaa,
+        precision: f2
+      }, {
+        name: this.$t('statNames.savePercentage'),
+        value: goalieInfo.homeSvp,
+        precision: f3
+      }, {
+        name: this.$t('statNames.winPercentage'),
+        value: goalieInfo.homeWinPercentage,
+        precision: f2,
+        percentage: true
+      }, {
+        name: this.$t('statNames.wins'),
+        value: goalieInfo.homeWins
+      }];
+    },
+
+    awayStats() {
+      let goalieInfo = this.getGoalieInfo();
+      if (goalieInfo === null) {
+        return [];
+      }
+      return [{
+        name: this.$t('statNames.goalsAgainstAverage'),
+        value: goalieInfo.awayGaa,
+        precision: f2
+      }, {
+        name: this.$t('statNames.savePercentage'),
+        value: goalieInfo.awaySvp,
+        precision: f3
+      }, {
+        name: this.$t('statNames.winPercentage'),
+        value: goalieInfo.awayWinPercentage,
+        precision: f2,
+        percentage: true
+      }, {
+        name: this.$t('statNames.wins'),
+        value: goalieInfo.awayWins
       }];
     },
 
