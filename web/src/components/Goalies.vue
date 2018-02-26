@@ -52,6 +52,8 @@ export default {
         this.requestGoalieStats();
         return {};
       }
+      this.$store.dispatch('getGoalieStatsLimits', {season: selSeason});
+      const gameLimit = this.$store.state.players.goalieStatsLimits.limits.games;
       let goalieStats = stats.goalies;
       if (this.selectedChart === CHART_GAA) {
         return {
@@ -60,7 +62,12 @@ export default {
             rotateXLabels: true,
             sorting: 'asc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(goalieStats, [{from: 'gaa', to: 'y'}]),
+            dataSet: statsToChartData(goalieStats, [{
+              from: 'gaa',
+              to: 'y',
+              filterFn: (d) => d > gameLimit,
+              filterField: 'games'
+            }]),
             preciseYDomain: true,
             tooltipFormat: (t) => f3(t)
           }
@@ -73,7 +80,12 @@ export default {
             rotateXLabels: true,
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(goalieStats, [{from: 'svp', to: 'y'}]),
+            dataSet: statsToChartData(goalieStats, [{
+              from: 'svp',
+              to: 'y',
+              filterFn: (d) => d > gameLimit,
+              filterField: 'games'
+            }]),
             preciseYDomain: true,
             tooltipFormat: (t) => f3(t)
           }

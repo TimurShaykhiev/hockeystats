@@ -1,7 +1,6 @@
 import teamsApi from 'Api/teams';
 import {logger} from 'Root/logger';
-import {commitNew, processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject, isCorrectSeason}
-  from 'Store/utils';
+import StoreUtils from 'Store/utils';
 
 const teamStatRanges = {
   goalsFor: [136, 258],
@@ -49,7 +48,7 @@ const getters = {
   getTeamStats(state) {
     return (season) => {
       let stats = state.teamStats;
-      if (isCorrectSeason(season, stats)) {
+      if (StoreUtils.isCorrectSeason(season, stats)) {
         return stats;
       }
       return null;
@@ -59,7 +58,7 @@ const getters = {
   getTeamSeasonInfo(state) {
     return (season, teamId) => {
       let stats = state.teamSeasonInfo;
-      if (isCorrectSeason(season, stats) && isCorrectTeam(teamId, stats)) {
+      if (StoreUtils.isCorrectSeason(season, stats) && isCorrectTeam(teamId, stats)) {
         return stats;
       }
       return null;
@@ -69,7 +68,7 @@ const getters = {
   getTeamPlayersStats(state) {
     return (season, teamId) => {
       let stats = state.teamPlayersStats;
-      if (isCorrectSeason(season, stats) && isCorrectTeam(teamId, stats)) {
+      if (StoreUtils.isCorrectSeason(season, stats) && isCorrectTeam(teamId, stats)) {
         return stats;
       }
       return null;
@@ -94,7 +93,7 @@ function getTeamsDataBySeason(actName, mutName, stateName, commit, state, reqPar
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = teamsApi[actName](reqParams);
-  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 function getTeamDataByIdAndSeason(actName, mutName, stateName, commit, state, teamId, reqParams) {
@@ -105,7 +104,7 @@ function getTeamDataByIdAndSeason(actName, mutName, stateName, commit, state, te
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = teamsApi[actName](teamId, reqParams);
-  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 function getTeamDataById(actName, mutName, stateName, commit, state, teamId) {
@@ -115,7 +114,7 @@ function getTeamDataById(actName, mutName, stateName, commit, state, teamId) {
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = teamsApi[actName](teamId);
-  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 const actions = {
@@ -129,7 +128,7 @@ const actions = {
       .then(
         (result) => {
           logger.debug('action: getAllTeams result received');
-          commitNew(commit, 'setAllTeams', state.allTeams, result);
+          StoreUtils.commitNew(commit, 'setAllTeams', state.allTeams, result);
           if (state.conferences.length === 0) {
             commit('setConferences', result);
           }
@@ -313,14 +312,14 @@ const mutations = {
     for (let s of result.skaters) {
       let skater = {
         player: s.player,
-        stats: skaterStatsArrayToObject(s.stats)
+        stats: StoreUtils.skaterStatsArrayToObject(s.stats)
       };
       newStat.skaters.push(skater);
     }
     for (let g of result.goalies) {
       let goalie = {
         player: g.player,
-        stats: goalieStatsArrayToObject(g.stats)
+        stats: StoreUtils.goalieStatsArrayToObject(g.stats)
       };
       newStat.goalies.push(goalie);
     }

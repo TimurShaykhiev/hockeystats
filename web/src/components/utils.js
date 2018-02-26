@@ -85,15 +85,22 @@ export function statsToChartData(stats, fieldMap, getNameFunc=getPlayerName) {
   let result = [];
   for (let s of stats) {
     let obj = {};
+    let ignore = false;
     obj.x = getNameFunc(s);
     for (let m of fieldMap) {
+      if (m.filterFn && !m.filterFn(s.stats[m.filterField])) {
+        ignore = true;
+        break;
+      }
       if (m.convert) {
         obj[m.to] = m.convert(s.stats[m.from]);
       } else {
         obj[m.to] = s.stats[m.from];
       }
     }
-    result.push(obj);
+    if (!ignore) {
+      result.push(obj);
+    }
   }
   return result;
 }

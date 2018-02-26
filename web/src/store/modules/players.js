@@ -1,6 +1,6 @@
 import playersApi from 'Api/players';
 import {logger} from 'Root/logger';
-import {processRequest, skaterStatsArrayToObject, goalieStatsArrayToObject, isCorrectSeason} from 'Store/utils';
+import StoreUtils from 'Store/utils';
 
 // Ranges calculated from all results. 5p - 95p.
 const skaterStatRanges = {
@@ -31,7 +31,8 @@ const state = {
   goalieSeasons: {},
   skaterAllStats: {},
   goalieAllStats: {},
-  skaterStatRanges: skaterStatRanges
+  skaterStatRanges: skaterStatRanges,
+  goalieStatsLimits: {}
 };
 
 function isCorrectPlayer(playerId, stats) {
@@ -41,7 +42,7 @@ function isCorrectPlayer(playerId, stats) {
 function getPlayerStats(state, attrName) {
   return (season) => {
     let stats = state[attrName];
-    if (isCorrectSeason(season, stats)) {
+    if (StoreUtils.isCorrectSeason(season, stats)) {
       return stats;
     }
     return null;
@@ -51,7 +52,7 @@ function getPlayerStats(state, attrName) {
 function getPlayerSeasonInfo(state, attrName) {
   return (season, playerId) => {
     let stats = state[attrName];
-    if (isCorrectSeason(season, stats) && isCorrectPlayer(playerId, stats)) {
+    if (StoreUtils.isCorrectSeason(season, stats) && isCorrectPlayer(playerId, stats)) {
       return stats;
     }
     return null;
@@ -105,7 +106,7 @@ function getPlayersDataBySeason(actName, mutName, stateName, commit, state, reqP
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = playersApi[actName](reqParams);
-  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 function getPlayerDataByIdAndSeason(actName, mutName, stateName, commit, state, playerId, reqParams) {
@@ -116,7 +117,7 @@ function getPlayerDataByIdAndSeason(actName, mutName, stateName, commit, state, 
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = playersApi[actName](playerId, reqParams);
-  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 function getPlayerDataById(actName, mutName, stateName, commit, state, playerId) {
@@ -126,7 +127,7 @@ function getPlayerDataById(actName, mutName, stateName, commit, state, playerId)
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = playersApi[actName](playerId);
-  return processRequest(actName, mutName, stateName, commit, state, requestPromise);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
 const actions = {
@@ -162,6 +163,22 @@ const actions = {
 
   getGoalieAllStats({commit, state}, {playerId}) {
     return getPlayerDataById('getGoalieAllStats', 'setGoalieAllStats', 'goalieAllStats', commit, state, playerId);
+  },
+
+  getGoalieStatsLimits({commit, state}, {season}) {
+    logger.debug('action: getGoalieStatsLimits');
+    if (StoreUtils.isCorrectSeason(season, state.goalieStatsLimits)) {
+      logger.debug('action: getGoalieStatsLimits is in storage');
+      return Promise.resolve();
+    }
+    let newState = {
+      season: season,
+      limits: {
+        games: StoreUtils.getStatLimit(state.goalieStats.goalies, 'games')
+      }
+    };
+    commit('setGoalieStatsLimits', newState);
+    return Promise.resolve();
   }
 };
 
@@ -175,7 +192,7 @@ const mutations = {
     for (let s of stats.results) {
       let skater = {
         player: s.player,
-        stats: skaterStatsArrayToObject(s.stats)
+        stats: StoreUtils.skaterStatsArrayToObject(s.stats)
       };
       newStat.skaters.push(skater);
     }
@@ -191,7 +208,7 @@ const mutations = {
     for (let s of stats.results) {
       let goalie = {
         player: s.player,
-        stats: goalieStatsArrayToObject(s.stats)
+        stats: StoreUtils.goalieStatsArrayToObject(s.stats)
       };
       newStat.goalies.push(goalie);
     }
@@ -332,7 +349,7 @@ const mutations = {
       let season = {
         season: s.season,
         teamId: s.tid,
-        stats: skaterStatsArrayToObject(s.stats)
+        stats: StoreUtils.skaterStatsArrayToObject(s.stats)
       };
       newStat.seasons.push(season);
     }
@@ -349,11 +366,16 @@ const mutations = {
       let season = {
         season: s.season,
         teamId: s.tid,
-        stats: goalieStatsArrayToObject(s.stats)
+        stats: StoreUtils.goalieStatsArrayToObject(s.stats)
       };
       newStat.seasons.push(season);
     }
     state.goalieAllStats = newStat;
+  },
+
+  setGoalieStatsLimits(state, stats) {
+    logger.debug('mutation: setGoalieStatsLimits');
+    state.goalieStatsLimits = stats;
   }
 };
 

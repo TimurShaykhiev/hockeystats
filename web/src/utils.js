@@ -11,5 +11,16 @@ export default {
       }
       return 0;
     });
+  },
+
+  percentile(array, p) {
+    array.sort((a, b) => a - b);
+    let len = array.length - 1;
+    let index = p / 100. * len;
+    let i = Math.floor(index);
+    if (i >= len) {
+      return array[len];
+    }
+    return array[i] + (array[i + 1] - array[i]) * (index - i);
   }
 };

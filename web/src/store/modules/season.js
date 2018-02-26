@@ -1,6 +1,6 @@
 import seasonApi from 'Api/season';
 import {logger} from 'Root/logger';
-import {commitNew} from 'Store/utils';
+import StoreUtils from 'Store/utils';
 
 const state = {
   currentSeason: {},
@@ -22,7 +22,7 @@ const actions = {
       .then(
         (result) => {
           logger.debug('action: getCurrentSeason result received');
-          commitNew(commit, 'setCurrentSeason', state.currentSeason, result);
+          StoreUtils.commitNew(commit, 'setCurrentSeason', state.currentSeason, result);
           return state.currentSeason;
         },
         (error) => {
@@ -40,7 +40,7 @@ const actions = {
       .then(
         (result) => {
           logger.debug('action: getAllSeasons result received');
-          commitNew(commit, 'setAllSeasons', state.allSeasons, result);
+          StoreUtils.commitNew(commit, 'setAllSeasons', state.allSeasons, result);
           return state.allSeasons;
         },
         (error) => {

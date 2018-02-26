@@ -19,7 +19,7 @@ import {omitInteger} from 'Components/utils';
 import {format} from 'd3-format';
 
 const ITEMS_TO_SHOW = 5;
-const GAMES_MIN_LIMIT = 5;
+let GAMES_LIMIT = 5;
 
 let f2 = format('.2f');
 
@@ -27,38 +27,44 @@ const typesMap = {
   skaterGoal: {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
+    setLimits: 'setSkaterStatsLimits',
     getValue: (plStats) => plStats.stats.goals,
     descSort: true
   },
   skaterAssist: {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
+    setLimits: 'setSkaterStatsLimits',
     getValue: (plStats) => plStats.stats.assists,
     descSort: true
   },
   skaterPoint: {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
+    setLimits: 'setSkaterStatsLimits',
     getValue: (plStats) => plStats.stats.goals + plStats.stats.assists,
     descSort: true
   },
   skaterPlusMinus: {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
+    setLimits: 'setSkaterStatsLimits',
     getValue: (plStats) => plStats.stats.plusMinus,
     descSort: true
   },
   goalieGaa: {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
-    getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.gaa : 1000,
+    setLimits: 'setGoalieStatsLimits',
+    getValue: (plStats) => plStats.stats.games >= GAMES_LIMIT ? plStats.stats.gaa : 1000,
     showValue: (value) => f2(value),
     descSort: false
   },
   goalieSavePercentage: {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
-    getValue: (plStats) => plStats.stats.games >= GAMES_MIN_LIMIT ? plStats.stats.svp : 0,
+    setLimits: 'setGoalieStatsLimits',
+    getValue: (plStats) => plStats.stats.games >= GAMES_LIMIT ? plStats.stats.svp : 0,
     showValue: (value) => omitInteger(value, 3),
     descSort: true
   }
@@ -107,6 +113,7 @@ export default {
       if (!allTeams || !allStats) {
         return [];
       }
+      this[typesMap[this.type].setLimits]();
       allStats = allStats.slice();
       let getValueFunc = typesMap[this.type].getValue;
       let showValueFunc = typesMap[this.type].showValue;
@@ -141,6 +148,12 @@ export default {
     },
     goalieStats() {
       return this.$store.state.players.goalieStats.goalies;
+    },
+    setSkaterStatsLimits() {
+    },
+    setGoalieStatsLimits() {
+      this.$store.dispatch('getGoalieStatsLimits', {season: this.$store.state.season.currentSeason});
+      GAMES_LIMIT = this.$store.state.players.goalieStatsLimits.limits.games;
     }
   }
 };
