@@ -2,7 +2,10 @@ import {timeParse} from 'd3-time-format';
 import {logger} from 'Root/logger';
 import Utils from 'Root/utils';
 
-const STAT_LIMIT_PERCENTILE = 40;
+const STAT_LIMIT_PERCENTILE = {
+  faceOffTaken: 70,
+  games: 40
+};
 
 function addDays(date, days) {
   let result = new Date(date);
@@ -82,7 +85,7 @@ export default {
 
   getStatLimit(stats, statName) {
     let arr = stats.map((s) => s.stats[statName]);
-    return Utils.percentile(arr, STAT_LIMIT_PERCENTILE);
+    return Utils.percentile(arr, STAT_LIMIT_PERCENTILE[statName]);
   },
 
   convertSeason(season) {

@@ -27,6 +27,7 @@ const CHART_TOI = 5;
 const CHART_PLUS_MINUS = 6;
 const CHART_POINTS_PER_GAME = 7;
 const CHART_PIM = 8;
+const CHART_FACE_OFF = 9;
 
 const CHART_PLAYER_LIMIT = 50;
 
@@ -43,7 +44,8 @@ export default {
         {name: this.$t('charts.toi'), value: CHART_TOI},
         {name: this.$t('charts.plusMinus'), value: CHART_PLUS_MINUS},
         {name: this.$t('charts.pointsPerGame'), value: CHART_POINTS_PER_GAME},
-        {name: this.$t('charts.penaltyMinutes'), value: CHART_PIM}
+        {name: this.$t('charts.penaltyMinutes'), value: CHART_PIM},
+        {name: this.$t('charts.faceoffWin'), value: CHART_FACE_OFF}
       ]
     };
   },
@@ -190,6 +192,26 @@ export default {
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
             dataSet: statsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
+          }
+        };
+      }
+      if (this.selectedChart === CHART_FACE_OFF) {
+        this.$store.dispatch('getSkaterStatsLimits', {season: selSeason});
+        const faceOffTakenLimit = this.$store.state.players.skaterStatsLimits.limits.faceOffTaken;
+        return {
+          barChart: true,
+          chartData: {
+            rotateXLabels: true,
+            sorting: 'desc',
+            limit: CHART_PLAYER_LIMIT,
+            dataSet: statsToChartData(skaterStats, [{
+              from: 'faceOffWinsPercentage',
+              to: 'y',
+              filterFn: (d) => d > faceOffTakenLimit,
+              filterField: 'faceOffTaken'
+            }]),
+            preciseYDomain: true,
+            tooltipFormat: (t) => f2(t)
           }
         };
       }

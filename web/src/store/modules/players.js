@@ -32,6 +32,7 @@ const state = {
   skaterAllStats: {},
   goalieAllStats: {},
   skaterStatRanges: skaterStatRanges,
+  skaterStatsLimits: {},
   goalieStatsLimits: {},
   skaterPointsProgress: {}
 };
@@ -174,6 +175,22 @@ const actions = {
 
   getGoalieAllStats({commit, state}, {playerId}) {
     return getPlayerDataById('getGoalieAllStats', 'setGoalieAllStats', 'goalieAllStats', commit, state, playerId);
+  },
+
+  getSkaterStatsLimits({commit, state}, {season}) {
+    logger.debug('action: getSkaterStatsLimits');
+    if (StoreUtils.isCorrectSeason(season, state.skaterStatsLimits)) {
+      logger.debug('action: getSkaterStatsLimits is in storage');
+      return Promise.resolve();
+    }
+    let newState = {
+      season: season,
+      limits: {
+        faceOffTaken: StoreUtils.getStatLimit(state.skaterStats.skaters, 'faceOffTaken')
+      }
+    };
+    commit('setSkaterStatsLimits', newState);
+    return Promise.resolve();
   },
 
   getGoalieStatsLimits({commit, state}, {season}) {
@@ -387,6 +404,11 @@ const mutations = {
       newStat.seasons.push(season);
     }
     state.goalieAllStats = newStat;
+  },
+
+  setSkaterStatsLimits(state, stats) {
+    logger.debug('mutation: setSkaterStatsLimits');
+    state.skaterStatsLimits = stats;
   },
 
   setGoalieStatsLimits(state, stats) {
