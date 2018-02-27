@@ -386,16 +386,15 @@ export default {
 
     chartData() {
       if (this.selectedChart === CHART_POINTS_PROGRESS) {
-        let data = this.getChartData('skaterPointsProgress', 'getSkaterPointsProgress');
-        if (data.length === 0) {
+        let chartData = this.getChartData('skaterPointsProgress', 'getSkaterPointsProgress');
+        if (chartData === null) {
           return {};
         }
         return {
           lineChart: true,
           chartData: {
             yCaption: this.$t('charts.points'),
-            dataSet: data,
-            timeXAxis: true
+            dataSet: {names: [chartData.pid], data: [chartData.data]}
           }
         };
       } else if (this.selectedChart === CHART_SKILLS || this.selectedChart === CHART_HOME_AWAY) {
@@ -611,9 +610,9 @@ export default {
             reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
           });
         }
-        return [];
+        return null;
       }
-      return chartData.data;
+      return chartData;
     }
   }
 };
