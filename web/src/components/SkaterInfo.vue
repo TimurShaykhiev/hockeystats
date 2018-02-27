@@ -15,6 +15,7 @@
         <bar-chart v-if="chartData.barChart" v-bind="chartData.chartData"/>
         <stacked-bar-chart v-else-if="chartData.stackedBarChart" v-bind="chartData.chartData"/>
         <radar-chart v-else-if="chartData.radarChart" v-bind="chartData.chartData"/>
+        <line-chart v-else-if="chartData.lineChart" v-bind="chartData.chartData"/>
       </tab>
       <tab :name="$t('tabNames.table')">
         <skaters-stats-table type="player"/>
@@ -48,6 +49,7 @@ const CHART_SKILLS = 6;
 const CHART_PLUS_MINUS = 7;
 const CHART_POINTS_PER_GAME = 8;
 const CHART_HOME_AWAY = 9;
+const CHART_POINTS_PROGRESS = 10;
 
 export default {
   name: 'skater-info',
@@ -92,7 +94,8 @@ export default {
         {name: this.$t('charts.skaterSkills'), value: CHART_SKILLS},
         {name: this.$t('charts.homeAway'), value: CHART_HOME_AWAY},
         {name: this.$t('charts.plusMinus'), value: CHART_PLUS_MINUS},
-        {name: this.$t('charts.pointsPerGame'), value: CHART_POINTS_PER_GAME}
+        {name: this.$t('charts.pointsPerGame'), value: CHART_POINTS_PER_GAME},
+        {name: this.$t('charts.pointsProgress'), value: CHART_POINTS_PROGRESS}
       ]
     };
   },
@@ -382,7 +385,20 @@ export default {
     },
 
     chartData() {
-      if (this.selectedChart === CHART_SKILLS || this.selectedChart === CHART_HOME_AWAY) {
+      if (this.selectedChart === CHART_POINTS_PROGRESS) {
+        let data = this.getChartData('skaterPointsProgress', 'getSkaterPointsProgress');
+        if (data.length === 0) {
+          return {};
+        }
+        return {
+          lineChart: true,
+          chartData: {
+            yCaption: this.$t('charts.points'),
+            dataSet: data,
+            timeXAxis: true
+          }
+        };
+      } else if (this.selectedChart === CHART_SKILLS || this.selectedChart === CHART_HOME_AWAY) {
         let skaterInfo = this.getSkaterInfo();
         if (skaterInfo === null) {
           return {};
@@ -583,6 +599,21 @@ export default {
         return [];
       }
       return stats.seasons;
+    },
+
+    getChartData(chartName, action) {
+      let season = this.$store.state.season.selectedSeason;
+      let chartData = this.$store.getters.getPlayerSeasonChartData(chartName, season, parseInt(this.$route.params.id));
+      if (chartData === null) {
+        if (season.id !== undefined) {
+          this.$store.dispatch(action, {
+            playerId: this.$route.params.id,
+            reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+          });
+        }
+        return [];
+      }
+      return chartData.data;
     }
   }
 };

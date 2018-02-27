@@ -188,7 +188,8 @@ let locales = {
         awayGames: 'Away Games',
         goalsFor: 'Goals For',
         goalsAgainst: 'Goals Against',
-        goalsDiff: 'Goals Difference'
+        goalsDiff: 'Goals Difference',
+        pointsProgress: 'Points Progress'
       }
     },
     ru: {
@@ -370,7 +371,8 @@ let locales = {
         awayGames: 'Гостевые игры',
         goalsFor: 'Заброшенные шайбы',
         goalsAgainst: 'Пропущенные шайбы',
-        goalsDiff: 'Разница шайб'
+        goalsDiff: 'Разница шайб',
+        pointsProgress: 'Набор очков'
       }
     }
   }

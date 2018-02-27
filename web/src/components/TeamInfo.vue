@@ -20,6 +20,7 @@
         <bar-chart v-if="chartData.barChart" v-bind="chartData.chartData"/>
         <stacked-bar-chart v-else-if="chartData.stackedBarChart" v-bind="chartData.chartData"/>
         <radar-chart v-else-if="chartData.radarChart" v-bind="chartData.chartData"/>
+        <line-chart v-else-if="chartData.lineChart" v-bind="chartData.chartData"/>
       </tab>
       <tab :name="$t('tabNames.table')">
         <teams-stats-table type="team"/>
@@ -58,14 +59,15 @@ const CHART_WINS = 4;
 const CHART_LOSSES = 5;
 const CHART_PPP = 6;
 const CHART_PKP = 7;
+const CHART_POINTS_PROGRESS = 8;
 // Team player charts
-const CHART_GOALS_ASSISTS = 8;
-const CHART_PLAYER_POINTS = 9;
-const CHART_TOI = 10;
-const CHART_PLUS_MINUS = 11;
-const CHART_PIM = 12;
-const CHART_GAMES = 13;
-const CHART_POINTS_PER_GAME = 14;
+const CHART_GOALS_ASSISTS = 100;
+const CHART_PLAYER_POINTS = 101;
+const CHART_TOI = 102;
+const CHART_PLUS_MINUS = 103;
+const CHART_PIM = 104;
+const CHART_GAMES = 105;
+const CHART_POINTS_PER_GAME = 106;
 
 export default {
   name: 'team-info',
@@ -115,6 +117,7 @@ export default {
         {name: this.$t('charts.pkPercentage'), value: CHART_PKP, disabled: false},
         {name: this.$t('charts.teamSkills'), value: CHART_SKILLS, disabled: false},
         {name: this.$t('charts.homeAway'), value: CHART_HOME_AWAY, disabled: false},
+        {name: this.$t('charts.pointsProgress'), value: CHART_POINTS_PROGRESS, disabled: false},
         {name: this.$t('teamInfo.chartPickerPlayers'), value: 0, disabled: true},
         {name: this.$t('charts.goalsAssists'), value: CHART_GOALS_ASSISTS, disabled: false},
         {name: this.$t('charts.points'), value: CHART_PLAYER_POINTS, disabled: false},
@@ -382,7 +385,20 @@ export default {
     },
 
     chartData() {
-      if (this.selectedChart < CHART_POINTS) {
+      if (this.selectedChart === CHART_POINTS_PROGRESS) {
+        let data = this.getChartData('teamPointsProgress', 'getTeamPointsProgress');
+        if (data.length === 0) {
+          return {};
+        }
+        return {
+          lineChart: true,
+          chartData: {
+            yCaption: this.$t('charts.points'),
+            dataSet: data,
+            timeXAxis: true
+          }
+        };
+      } else if (this.selectedChart < CHART_POINTS) {
         let teamInfo = this.getTeamInfo();
         if (teamInfo === null) {
           return {};
@@ -658,6 +674,21 @@ export default {
         return null;
       }
       return stats;
+    },
+
+    getChartData(chartName, action) {
+      let season = this.$store.state.season.selectedSeason;
+      let chartData = this.$store.getters.getTeamSeasonChartData(chartName, season, parseInt(this.$route.params.id));
+      if (chartData === null) {
+        if (season.id !== undefined) {
+          this.$store.dispatch(action, {
+            teamId: this.$route.params.id,
+            reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+          });
+        }
+        return [];
+      }
+      return chartData.data;
     }
   }
 };

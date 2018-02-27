@@ -53,11 +53,12 @@ const actions = {
 const mutations = {
   setCurrentSeason(state, season) {
     logger.debug('mutation: setCurrentSeason');
-    state.currentSeason = season;
+    state.currentSeason = StoreUtils.convertSeason(season);
   },
   setAllSeasons(state, seasons) {
     logger.debug('mutation: setAllSeasons');
     state.allSeasons = seasons;
+    state.allSeasons.seasons = state.allSeasons.seasons.map((s) => StoreUtils.convertSeason(s));
   },
   setSelectedSeason(state, season) {
     logger.debug('mutation: setSelectedSeason');

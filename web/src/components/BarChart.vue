@@ -9,7 +9,7 @@ import {select} from 'd3-selection';
 import {scaleBand, scaleLinear} from 'd3-scale';
 import {min, max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
-import {DEFAULT_CHART_HEIGHT, getChartMargin, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
+import ChartUtils from 'Components/chartUtils';
 import Utils from 'Root/utils';
 
 export default {
@@ -17,7 +17,7 @@ export default {
   props: {
     dataSet: {required: true},
     yCaption: {type: String},
-    height: {type: String, default: DEFAULT_CHART_HEIGHT},
+    height: {type: String, default: ChartUtils.DEFAULT_CHART_HEIGHT},
     tooltipFormat: {type: Function},
     preciseYDomain: {type: Boolean, default: false},
     sorting: {type: String},
@@ -45,8 +45,8 @@ export default {
     draw() {
       this.chartData = this.dataSet;
       let svg = select(this.$el).select('svg');
-      let margin = getChartMargin(this.rotateXLabels);
-      let {height, width} = getBarChartSize(svg, this.limit ? this.limit : this.chartData.length, margin);
+      let margin = ChartUtils.getChartMargin(this.rotateXLabels);
+      let {height, width} = ChartUtils.getBarChartSize(svg, this.limit ? this.limit : this.chartData.length, margin);
 
       let tip = d3Tip()
         .attr('class', 'chart-tooltip')
@@ -79,7 +79,7 @@ export default {
       }
       y.domain([yMin, yMax]).nice();
 
-      let g = prepareArea(svg, margin);
+      let g = ChartUtils.prepareArea(svg, margin);
 
       g.selectAll('.bar-chart__bar')
         .data(this.chartData)
@@ -92,7 +92,10 @@ export default {
           .on('mouseover', tip.show)
           .on('mouseout', tip.hide);
 
-      prepareAxis(g, height, x, y, 'bar', this.rotateXLabels, this.yCaption);
+      ChartUtils.prepareAxis(g, height, x, y, 'bar', {
+        rotateXLabels: this.rotateXLabels,
+        yCaption: this.yCaption
+      });
     }
   }
 };

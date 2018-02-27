@@ -1,7 +1,14 @@
+import {timeParse} from 'd3-time-format';
 import {logger} from 'Root/logger';
 import Utils from 'Root/utils';
 
 const STAT_LIMIT_PERCENTILE = 40;
+
+function addDays(date, days) {
+  let result = new Date(date);
+  result.setDate(date.getDate() + days);
+  return result;
+}
 
 export default {
   commitNew(commit, mutName, state, newState) {
@@ -76,5 +83,23 @@ export default {
   getStatLimit(stats, statName) {
     let arr = stats.map((s) => s.stats[statName]);
     return Utils.percentile(arr, STAT_LIMIT_PERCENTILE);
+  },
+
+  convertSeason(season) {
+    let s = season;
+    let parseDate = timeParse('%Y-%m-%d');
+    s.start = parseDate(s.start);
+    s.end = parseDate(s.end);
+    return s;
+  },
+
+  prepareLineChartData(data, start, interval) {
+    let result = [];
+    let date = start;
+    for (let d of data) {
+      result.push({x: date, y: d});
+      date = addDays(date, interval);
+    }
+    return result;
   }
 };

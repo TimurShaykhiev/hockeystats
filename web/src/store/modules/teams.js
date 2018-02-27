@@ -33,7 +33,8 @@ const state = {
   teamAllStats: {},
   conferences: [],
   divisions: [],
-  teamStatRanges: teamStatRanges
+  teamStatRanges: teamStatRanges,
+  teamPointsProgress: {}
 };
 
 function isCorrectTeam(teamId, stats) {
@@ -79,6 +80,16 @@ const getters = {
     return (teamId) => {
       let stats = state.teamAllStats;
       if (isCorrectTeam(teamId, stats)) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
+  getTeamSeasonChartData(state) {
+    return (chartName, season, teamId) => {
+      let stats = state[chartName];
+      if (StoreUtils.isCorrectSeason(season, stats) && stats.tid === teamId) {
         return stats;
       }
       return null;
@@ -163,6 +174,11 @@ const actions = {
   getTeamPlayersStats({commit, state}, {teamId, reqParams}) {
     return getTeamDataByIdAndSeason('getTeamPlayersStats', 'setTeamPlayersStats', 'teamPlayersStats',
       commit, state, teamId, reqParams);
+  },
+
+  getTeamPointsProgress({commit, state}, {teamId, reqParams}) {
+    return getTeamDataByIdAndSeason('getTeamPointsProgress', 'setTeamPointsProgress', 'teamPointsProgress',
+      commit, state, teamId, reqParams);
   }
 };
 
@@ -204,7 +220,7 @@ const mutations = {
     logger.debug('mutation: setTeamStats');
     let newStat = {};
     newStat.timestamp = stats.timestamp;
-    newStat.season = stats.season;
+    newStat.season = StoreUtils.convertSeason(stats.season);
     newStat.teams = [];
     for (let s of stats.results) {
       let team = {
@@ -220,7 +236,7 @@ const mutations = {
     logger.debug('mutation: setTeamSeasonInfo');
     let teamInfo = {};
     teamInfo.timestamp = info.timestamp;
-    teamInfo.season = info.season;
+    teamInfo.season = StoreUtils.convertSeason(info.season);
     teamInfo.team = info.team;
 
     teamInfo.goalsFor = info.stats[0];
@@ -280,7 +296,7 @@ const mutations = {
     logger.debug('mutation: setTeamSeasons');
     state.teamSeasons = {
       timestamp: result.timestamp,
-      seasons: result.seasons,
+      seasons: result.seasons.map((s) => StoreUtils.convertSeason(s)),
       team: {id: result.id}
     };
   },
@@ -293,7 +309,7 @@ const mutations = {
     newStat.seasons = [];
     for (let s of stats.results) {
       let season = {
-        season: s.season,
+        season: StoreUtils.convertSeason(s.season),
         stats: teamStatsArrayToObject(s.stats)
       };
       newStat.seasons.push(season);
@@ -306,7 +322,7 @@ const mutations = {
     let newStat = {};
     newStat.timestamp = result.timestamp;
     newStat.team = result.team;
-    newStat.season = result.season;
+    newStat.season = StoreUtils.convertSeason(result.season);
     newStat.skaters = [];
     newStat.goalies = [];
     for (let s of result.skaters) {
@@ -350,6 +366,17 @@ const mutations = {
     state.divisions = Object.keys(div).map((key) => {
       return {id: Number(key), name: div[key].name, cid: div[key].cid};
     }).sort((a, b) => a.id - b.id);
+  },
+
+  setTeamPointsProgress(state, stats) {
+    logger.debug('mutation: setTeamPointsProgress');
+    let season = StoreUtils.convertSeason(stats.season);
+    state.teamPointsProgress = {
+      timestamp: stats.timestamp,
+      season: season,
+      tid: stats.tid,
+      data: StoreUtils.prepareLineChartData(stats.data, season.start, stats.interval)
+    };
   }
 };
 

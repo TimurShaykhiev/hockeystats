@@ -17,6 +17,7 @@ import PlayerPersonalInfo from 'Components/PlayerPersonalInfo';
 import BarChart from 'Components/BarChart';
 import StackedBarChart from 'Components/StackedBarChart';
 import RadarChart from 'Components/RadarChart';
+import LineChart from 'Components/LineChart';
 
 // 3rd party CSS modules
 require('../node_modules/normalize.css/normalize.css');
@@ -41,6 +42,7 @@ Vue.component('player-personal-info', PlayerPersonalInfo);
 Vue.component('bar-chart', BarChart);
 Vue.component('stacked-bar-chart', StackedBarChart);
 Vue.component('radar-chart', RadarChart);
+Vue.component('line-chart', LineChart);
 
 new Vue({
   el: '#app',

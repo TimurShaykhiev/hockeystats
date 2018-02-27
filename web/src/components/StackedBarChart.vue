@@ -11,7 +11,7 @@ import {select} from 'd3-selection';
 import {scaleBand, scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
-import {DEFAULT_CHART_HEIGHT, getChartMargin, getBarChartSize, prepareAxis, prepareArea} from 'Components/chartUtils';
+import ChartUtils from 'Components/chartUtils';
 import Utils from 'Root/utils';
 
 export default {
@@ -20,7 +20,7 @@ export default {
   props: {
     dataSet: {required: true},
     yCaption: {type: String},
-    height: {type: String, default: DEFAULT_CHART_HEIGHT},
+    height: {type: String, default: ChartUtils.DEFAULT_CHART_HEIGHT},
     legend: {type: Array, required: true},
     tooltipFormat: {type: Function},
     sorting: {type: String},
@@ -47,8 +47,8 @@ export default {
 
     draw() {
       let svg = select(this.$el).select('svg');
-      let margin = getChartMargin(this.rotateXLabels);
-      let {height, width} = getBarChartSize(svg, this.limit ? this.limit : this.dataSet.length, margin);
+      let margin = ChartUtils.getChartMargin(this.rotateXLabels);
+      let {height, width} = ChartUtils.getBarChartSize(svg, this.limit ? this.limit : this.dataSet.length, margin);
       let keys = this.dataSet.names;
 
       let x = scaleBand().rangeRound([0, width]).padding(0.1);
@@ -78,7 +78,7 @@ export default {
         });
       svg.call(tip);
 
-      let g = prepareArea(svg, margin);
+      let g = ChartUtils.prepareArea(svg, margin);
 
       g.append('g')
         .selectAll('g')
@@ -97,7 +97,10 @@ export default {
           .attr('width', x.bandwidth())
           .attr('fill', (d, i) => (i === keys.length) ? '#FFF' : z(keys[i]));
 
-      prepareAxis(g, height, x, y, 'stacked-bar', this.rotateXLabels, this.yCaption);
+      ChartUtils.prepareAxis(g, height, x, y, 'stacked-bar', {
+        rotateXLabels: this.rotateXLabels,
+        yCaption: this.yCaption
+      });
     },
 
     getStackData() {

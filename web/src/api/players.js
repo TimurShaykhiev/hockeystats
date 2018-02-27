@@ -47,5 +47,13 @@ export default {
 
   getGoalieAllStats(playerId) {
     return makeRequest({path: ['goalie', playerId, 'all-stats']});
+  },
+
+  getSkaterPointsProgress(playerId, reqParams) {
+    let reqData = {
+      path: ['skater', playerId, 'charts', 'points-progress'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };

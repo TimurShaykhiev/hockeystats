@@ -32,7 +32,8 @@ const state = {
   skaterAllStats: {},
   goalieAllStats: {},
   skaterStatRanges: skaterStatRanges,
-  goalieStatsLimits: {}
+  goalieStatsLimits: {},
+  skaterPointsProgress: {}
 };
 
 function isCorrectPlayer(playerId, stats) {
@@ -96,6 +97,16 @@ const getters = {
 
   getGoalieAllStats(state) {
     return getPlayerAllStats(state, 'goalieAllStats');
+  },
+
+  getPlayerSeasonChartData(state) {
+    return (chartName, season, playerId) => {
+      let stats = state[chartName];
+      if (StoreUtils.isCorrectSeason(season, stats) && stats.pid === playerId) {
+        return stats;
+      }
+      return null;
+    };
   }
 };
 
@@ -179,6 +190,11 @@ const actions = {
     };
     commit('setGoalieStatsLimits', newState);
     return Promise.resolve();
+  },
+
+  getSkaterPointsProgress({commit, state}, {playerId, reqParams}) {
+    return getPlayerDataByIdAndSeason('getSkaterPointsProgress', 'setSkaterPointsProgress', 'skaterPointsProgress',
+      commit, state, playerId, reqParams);
   }
 };
 
@@ -187,7 +203,7 @@ const mutations = {
     logger.debug('mutation: setSkaterStats');
     let newStat = {};
     newStat.timestamp = stats.timestamp;
-    newStat.season = stats.season;
+    newStat.season = StoreUtils.convertSeason(stats.season);
     newStat.skaters = [];
     for (let s of stats.results) {
       let skater = {
@@ -203,7 +219,7 @@ const mutations = {
     logger.debug('mutation: setGoalieStats');
     let newStat = {};
     newStat.timestamp = stats.timestamp;
-    newStat.season = stats.season;
+    newStat.season = StoreUtils.convertSeason(stats.season);
     newStat.goalies = [];
     for (let s of stats.results) {
       let goalie = {
@@ -219,7 +235,7 @@ const mutations = {
     logger.debug('mutation: setSkaterSeasonInfo');
     let skaterInfo = {};
     skaterInfo.timestamp = info.timestamp;
-    skaterInfo.season = info.season;
+    skaterInfo.season = StoreUtils.convertSeason(info.season);
     skaterInfo.player = info.player;
 
     skaterInfo.assists = info.stats[0];
@@ -288,7 +304,7 @@ const mutations = {
     logger.debug('mutation: setGoalieSeasonInfo');
     let goalieInfo = {};
     goalieInfo.timestamp = info.timestamp;
-    goalieInfo.season = info.season;
+    goalieInfo.season = StoreUtils.convertSeason(info.season);
     goalieInfo.player = info.player;
 
     goalieInfo.saves = info.stats[0];
@@ -325,7 +341,7 @@ const mutations = {
     logger.debug('mutation: setSkaterSeasons');
     state.skaterSeasons = {
       timestamp: result.timestamp,
-      seasons: result.seasons,
+      seasons: result.seasons.map((s) => StoreUtils.convertSeason(s)),
       player: {id: result.id}
     };
   },
@@ -334,7 +350,7 @@ const mutations = {
     logger.debug('mutation: setGoalieSeasons');
     state.goalieSeasons = {
       timestamp: result.timestamp,
-      seasons: result.seasons,
+      seasons: result.seasons.map((s) => StoreUtils.convertSeason(s)),
       player: {id: result.id}
     };
   },
@@ -347,7 +363,7 @@ const mutations = {
     newStat.seasons = [];
     for (let s of stats.results) {
       let season = {
-        season: s.season,
+        season: StoreUtils.convertSeason(s.season),
         teamId: s.tid,
         stats: StoreUtils.skaterStatsArrayToObject(s.stats)
       };
@@ -364,7 +380,7 @@ const mutations = {
     newStat.seasons = [];
     for (let s of stats.results) {
       let season = {
-        season: s.season,
+        season: StoreUtils.convertSeason(s.season),
         teamId: s.tid,
         stats: StoreUtils.goalieStatsArrayToObject(s.stats)
       };
@@ -376,6 +392,17 @@ const mutations = {
   setGoalieStatsLimits(state, stats) {
     logger.debug('mutation: setGoalieStatsLimits');
     state.goalieStatsLimits = stats;
+  },
+
+  setSkaterPointsProgress(state, stats) {
+    logger.debug('mutation: setSkaterPointsProgress');
+    let season = StoreUtils.convertSeason(stats.season);
+    state.skaterPointsProgress = {
+      timestamp: stats.timestamp,
+      season: season,
+      pid: stats.pid,
+      data: StoreUtils.prepareLineChartData(stats.data, season.start, stats.interval)
+    };
   }
 };
 

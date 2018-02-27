@@ -39,5 +39,13 @@ export default {
       query: reqParams.getQueryParams()
     };
     return makeRequest(reqData);
+  },
+
+  getTeamPointsProgress(teamId, reqParams) {
+    let reqData = {
+      path: ['team', teamId, 'charts', 'points-progress'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };
