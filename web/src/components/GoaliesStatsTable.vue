@@ -1,5 +1,8 @@
 <template>
   <div class="goalies-stats-table">
+    <div v-if="showFilter" class="goalies-stats-table__filter-container container-row">
+      <table-filter :columns="columns" v-on:apply-table-filter="applyFilter" v-on:reset-table-filter="resetFilter"/>
+    </div>
     <vue-good-table
       :title="tableCaption"
       :columns="columns"
@@ -32,6 +35,7 @@
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
 import {omitInteger, toiToStr, getSeasonName, getPaginationText, seasonToStr, filterName} from 'Components/utils';
+import TableFilter from 'Components/TableFilter';
 import {format} from 'd3-format';
 
 const TYPE_ALL = 'all';
@@ -40,6 +44,7 @@ const TYPE_PLAYER = 'player';
 
 export default {
   name: 'goalies-stats-table',
+  components: {TableFilter},
   props: {
     type: {type: String, required: true}
   },
@@ -58,7 +63,9 @@ export default {
   data() {
     return {
       showLineNumbers: this.type !== TYPE_PLAYER,
-      showPagination: this.type === TYPE_ALL
+      showPagination: this.type === TYPE_ALL,
+      showFilter: this.type === TYPE_ALL,
+      filterData: null
     };
   },
   created() {
@@ -240,8 +247,12 @@ export default {
       }
 
       let f2 = format('.2f');
-      return goalieStats.map((t) => {
+      let result = [];
+      for (let t of goalieStats) {
         let rowData = Object.assign({}, t.stats);
+        if (this.filterData && !this.filterData.filter(rowData)) {
+          continue;
+        }
         if (this.type !== TYPE_PLAYER) {
           rowData.playerId = t.player.id;
           rowData.name = t.player.name;
@@ -257,8 +268,9 @@ export default {
         rowData.toi = toiToStr(rowData.toi);
         rowData.gaa = f2(rowData.gaa);
         rowData.svp = omitInteger(rowData.svp, 3);
-        return rowData;
-      });
+        result.push(rowData);
+      }
+      return result;
     }
   },
   methods: {
@@ -287,6 +299,16 @@ export default {
 
     canSortRows() {
       return this.type !== TYPE_PLAYER;
+    },
+
+    applyFilter(filterData) {
+      if (!filterData.isEqual(this.filterData)) {
+        this.filterData = filterData;
+      }
+    },
+
+    resetFilter() {
+      this.filterData = null;
     }
   }
 };
@@ -296,6 +318,9 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
+  .goalies-stats-table__filter-container {
+    justify-content: flex-end;
+  }
   .goalies-stats-table__table {
     .desktop({
       font-size: @table-font-size-desktop;

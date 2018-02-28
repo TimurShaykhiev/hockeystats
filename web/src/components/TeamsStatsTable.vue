@@ -1,5 +1,8 @@
 <template>
   <div class="team-stats-table">
+    <div v-if="showFilter" class="team-stats-table__filter-container container-row">
+      <table-filter :columns="columns" v-on:apply-table-filter="applyFilter" v-on:reset-table-filter="resetFilter"/>
+    </div>
     <vue-good-table
       :title="tableCaption"
       :columns="columns"
@@ -26,6 +29,7 @@
 <script>
 import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
 import {getSeasonName, seasonToStr} from 'Components/utils';
+import TableFilter from 'Components/TableFilter';
 import {format} from 'd3-format';
 
 const TYPE_ALL = 'all';
@@ -33,6 +37,7 @@ const TYPE_TEAM = 'team';
 
 export default {
   name: 'teams-stats-table',
+  components: {TableFilter},
   props: {
     type: {type: String, required: true}
   },
@@ -52,7 +57,9 @@ export default {
   },
   data() {
     return {
-      showLineNumbers: this.type === TYPE_ALL
+      showLineNumbers: this.type === TYPE_ALL,
+      showFilter: this.type === TYPE_ALL,
+      filterData: null
     };
   },
   created() {
@@ -230,8 +237,12 @@ export default {
 
       let f1 = format('.1f');
       let f2 = format('.2f');
-      return teamStats.map((t) => {
+      let result = [];
+      for (let t of teamStats) {
         let rowData = Object.assign({}, t.stats);
+        if (this.filterData && !this.filterData.filter(rowData)) {
+          continue;
+        }
         if (this.type === TYPE_ALL) {
           rowData.teamId = t.id;
           rowData.teamName = allTeams[t.id].name;
@@ -245,8 +256,9 @@ export default {
         rowData.pkPercentage = f1(rowData.pkPercentage);
         rowData.shotsPerGame = f1(rowData.shotsPerGame);
         rowData.faceOffWinsPercentage = f1(rowData.faceOffWinsPercentage);
-        return rowData;
-      });
+        result.push(rowData);
+      }
+      return result;
     }
   },
   methods: {
@@ -269,6 +281,16 @@ export default {
 
     canSortRows() {
       return this.type === TYPE_ALL;
+    },
+
+    applyFilter(filterData) {
+      if (!filterData.isEqual(this.filterData)) {
+        this.filterData = filterData;
+      }
+    },
+
+    resetFilter() {
+      this.filterData = null;
     }
   }
 };
@@ -278,6 +300,9 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
+  .team-stats-table__filter-container {
+    justify-content: flex-end;
+  }
   .team-stats-table__table {
     .desktop({
       font-size: @table-font-size-desktop;
