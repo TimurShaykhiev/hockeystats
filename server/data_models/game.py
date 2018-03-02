@@ -137,6 +137,13 @@ class Game(Model):
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
 
     @classmethod
+    def get_team_vs_team_games(cls, db_conn, team1_id, team2_id, regular, limit=10):
+        q = cls._create_query().select()
+        q.where('is_regular = %s AND ((home_team_id=%s AND away_team_id=%s) OR (home_team_id=%s AND away_team_id=%s))')
+        q.order_by(['-date']).limit(limit)
+        return cls._get_columns_from_db(db_conn, q.query, (regular, team1_id, team2_id, team2_id, team1_id))[::-1]
+
+    @classmethod
     def get_season_games(cls, db_conn, from_date, to_date, regular):
         q = cls._create_query().select()
         q.where('date >= %s AND date < %s AND is_regular = %s')

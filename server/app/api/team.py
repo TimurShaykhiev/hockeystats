@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from app.models.team_info import TeamInfo, TeamAllSeasonStatsCollection, TeamPlayersSeasonStatsCollection
+from app.models.team_info import TeamInfo, TeamAllSeasonStatsCollection, TeamPlayersSeasonStatsCollection, TeamCompare
 from app.models.season import Season, TeamSeasonCollection
 from app.models.team_charts import TeamPointsProgressChart
 from .response_utils import response, CACHE_TYPE_CURRENT_SEASON_STATS, CACHE_TYPE_OLD_SEASON_STATS, \
@@ -31,6 +31,13 @@ def team_all_stats(team_id):
 def team_players_stats(team_id):
     season = Season.create()
     return response(TeamPlayersSeasonStatsCollection(team_id, season).get_collection(),
+                    CACHE_TYPE_CURRENT_SEASON_STATS if season.current else CACHE_TYPE_OLD_SEASON_STATS)
+
+
+@team_api.route('/<int:team1_id>/compare/<int:team2_id>')
+def team_compare(team1_id, team2_id):
+    season = Season.create()
+    return response(TeamCompare(team1_id, team2_id, season).get_data(),
                     CACHE_TYPE_CURRENT_SEASON_STATS if season.current else CACHE_TYPE_OLD_SEASON_STATS)
 
 

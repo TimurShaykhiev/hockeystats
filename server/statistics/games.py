@@ -3,7 +3,7 @@ from collections import namedtuple
 import numpy as np
 
 from data_models.game import Game
-from . import INT_ARRAY_DATA_TYPE, date_to_int
+from . import INT_ARRAY_DATA_TYPE, date_to_int, percentage
 
 COL_GAME_ID = 0
 COL_GAME_DATE = 1
@@ -39,6 +39,12 @@ GAME_WIN_TYPE_REGULAR = 0
 GAME_WIN_TYPE_OVERTIME = 1
 GAME_WIN_TYPE_SHOOTOUT = 2
 
+WIN_TYPE_MAP = {
+    Game.WIN_TYPE_REGULAR: GAME_WIN_TYPE_REGULAR,
+    Game.WIN_TYPE_OVERTIME: GAME_WIN_TYPE_OVERTIME,
+    Game.WIN_TYPE_SHOOTOUT: GAME_WIN_TYPE_SHOOTOUT
+}
+
 _TeamStats = namedtuple('TeamStats', ['goals', 'shots', 'pp_goals', 'pp_opportunities', 'no_goals', 'pim'])
 
 TeamHomeAwayStats = namedtuple('TeamHomeAwayStats',
@@ -50,6 +56,8 @@ TeamHomeAwayStats = namedtuple('TeamHomeAwayStats',
                                 'home_pim', 'home_opp_pim', 'away_pim', 'away_opp_pim'])
 
 GameTeams = namedtuple('GameTeams', ['home_tid', 'away_tid'])
+
+GameScore = namedtuple('GameScore', ['date', 'teams', 'goals', 'win_type'])
 
 
 def get_team_home_away_stats(team_id, games):
@@ -79,6 +87,33 @@ def get_home_away_dict(games):
     return dict((g[COL_GAME_ID], GameTeams(g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID])) for g in games)
 
 
+def get_scores(games):
+    return [
+        GameScore(g[COL_GAME_DATE], [g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID]], [g[COL_HOME_GOALS], g[COL_AWAY_GOALS]],
+                  WIN_TYPE_MAP[g[COL_WIN_TYPE]]) for g in games]
+
+
+def get_team_vs_team_stats(games, team1_id, team2_id, start_date, end_date):
+    start = date_to_int(start_date)
+    end = date_to_int(end_date)
+    games_arr = _games_to_array(games)
+    games_arr = games_arr[np.logical_and(start <= games_arr[:, COL_GAME_DATE], games_arr[:, COL_GAME_DATE] < end), :]
+
+    home1 = games_arr[games_arr[:, COL_HOME_TEAM_ID] == team1_id, COL_HOME_GOALS:COL_AWAY_GOALS]
+    away1 = games_arr[games_arr[:, COL_AWAY_TEAM_ID] == team1_id, COL_AWAY_GOALS:COL_FACE_OFF_TAKEN]
+    home2 = games_arr[games_arr[:, COL_HOME_TEAM_ID] == team2_id, COL_HOME_GOALS:COL_AWAY_GOALS]
+    away2 = games_arr[games_arr[:, COL_AWAY_TEAM_ID] == team2_id, COL_AWAY_GOALS:COL_FACE_OFF_TAKEN]
+    team1_stats_arr = np.concatenate((home1, away1))
+    team2_stats_arr = np.concatenate((home2, away2))
+    team1_stats = _calc_stats(team1_stats_arr)
+    team2_stats = _calc_stats(team2_stats_arr)
+
+    team1_ppp = percentage(team1_stats.pp_goals, team1_stats.pp_opportunities)
+    team2_ppp = percentage(team2_stats.pp_goals, team2_stats.pp_opportunities)
+    return [team1_stats.goals, team1_stats.shots, team1_stats.pim, team1_ppp, 100 - team2_ppp,
+            team2_stats.goals, team2_stats.shots, team2_stats.pim, team2_ppp, 100 - team1_ppp]
+
+
 def get_points_progress(team_id, games, start_date, interval):
     # interval is timedelta
     res = [0]
@@ -99,12 +134,7 @@ def get_points_progress(team_id, games, start_date, interval):
 
 
 def _games_to_array(games):
-    win_type_map = {
-        Game.WIN_TYPE_REGULAR: GAME_WIN_TYPE_REGULAR,
-        Game.WIN_TYPE_OVERTIME: GAME_WIN_TYPE_OVERTIME,
-        Game.WIN_TYPE_SHOOTOUT: GAME_WIN_TYPE_SHOOTOUT
-    }
-    games_arr = [(x[0], date_to_int(x[1]), x[2], win_type_map[x[3]]) + x[4:] for x in games]
+    games_arr = [(x[0], date_to_int(x[1]), x[2], WIN_TYPE_MAP[x[3]]) + x[4:] for x in games]
     return np.array(games_arr, dtype=INT_ARRAY_DATA_TYPE)
 
 

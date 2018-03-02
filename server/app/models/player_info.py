@@ -14,6 +14,23 @@ from .utils import get_team_players, get_player_season_team_map
 from . import ModelSchema, StatValue
 
 
+def _get_skater_full_stats(db, season, pid, tid):
+    start, end = season.get_dates()
+    sum_stats = SkaterSumStat.get_stat_tuples(db, season.id, season.regular)
+    stats = SkaterStat.get_player_stats_by_date(db, pid, start, end)
+    games = Game.get_season_games(db, start, end, season.regular)
+    team_players = get_team_players(db, tid, season)
+    return get_skater_ext_stats(pid, sum_stats, team_players, stats, games)
+
+
+def _get_goalie_full_stats(db, season, pid):
+    start, end = season.get_dates()
+    sum_stats = GoalieSumStat.get_stat_tuples(db, season.id, season.regular)
+    stats = GoalieStat.get_player_stats_by_date(db, pid, start, end)
+    games = Game.get_season_games(db, start, end, season.regular)
+    return get_goalie_ext_stats(pid, sum_stats, stats, games)
+
+
 class _PlayerInfo:
     def __init__(self, player_id, season):
         self.season = season
@@ -30,12 +47,7 @@ class _PlayerInfoSchema(ModelSchema):
 class SkaterInfo(_PlayerInfo):
     def get_info(self):
         db = get_db()
-        start, end = self.season.get_dates()
-        team_players = get_team_players(db, self.player.team_id, self.season)
-        sum_stats = SkaterSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
-        stats = SkaterStat.get_player_stats_by_date(db, self.player.id, start, end)
-        games = Game.get_season_games(db, start, end, self.season.regular)
-        self.stats = get_skater_ext_stats(self.player.id, sum_stats, team_players, stats, games)
+        self.stats = _get_skater_full_stats(db, self.season, self.player.id, self.player.team_id)
         schema = _PlayerInfoSchema()
         return schema.dumps(self)
 
@@ -43,11 +55,7 @@ class SkaterInfo(_PlayerInfo):
 class GoalieInfo(_PlayerInfo):
     def get_info(self):
         db = get_db()
-        start, end = self.season.get_dates()
-        sum_stats = GoalieSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
-        stats = GoalieStat.get_player_stats_by_date(db, self.player.id, start, end)
-        games = Game.get_season_games(db, start, end, self.season.regular)
-        self.stats = get_goalie_ext_stats(self.player.id, sum_stats, stats, games)
+        self.stats = _get_goalie_full_stats(db, self.season, self.player.id)
         schema = _PlayerInfoSchema()
         return schema.dumps(self)
 
@@ -106,3 +114,38 @@ class GoalieAllSeasonStatsCollection(_PlayerAllSeasonStatsCollection):
         super().__init__(player_id)
         self.sum_stat_cls = GoalieSumStat
         self.calc_stats_func = get_goalies_stats
+
+
+class _PlayerCompare:
+    def __init__(self, player1_id, player2_id, season):
+        self.season = season
+        self.player1 = PlayerFullInfo.create(player1_id, season)
+        self.player2 = PlayerFullInfo.create(player2_id, season)
+        self.stats1 = []
+        self.stats2 = []
+
+
+class SkaterCompare(_PlayerCompare):
+    def get_data(self):
+        db = get_db()
+        self.stats1 = _get_skater_full_stats(db, self.season, self.player1.id, self.player1.team_id)
+        self.stats2 = _get_skater_full_stats(db, self.season, self.player2.id, self.player2.team_id)
+        schema = _PlayerCompareSchema()
+        return schema.dumps(self)
+
+
+class GoalieCompare(_PlayerCompare):
+    def get_data(self):
+        db = get_db()
+        self.stats1 = _get_goalie_full_stats(db, self.season, self.player1.id)
+        self.stats2 = _get_goalie_full_stats(db, self.season, self.player2.id)
+        schema = _PlayerCompareSchema()
+        return schema.dumps(self)
+
+
+class _PlayerCompareSchema(ModelSchema):
+    season = fields.Nested(SeasonSchema)
+    player1 = fields.Nested(PlayerFullInfoSchema)
+    player2 = fields.Nested(PlayerFullInfoSchema)
+    stats1 = fields.List(StatValue())
+    stats2 = fields.List(StatValue())
