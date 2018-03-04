@@ -47,6 +47,8 @@ def _configure_blueprints(flask_app):
     flask_app.register_blueprint(api.skater_api)
     flask_app.register_blueprint(api.goalie_api)
     flask_app.register_blueprint(api.teams_api)
+    flask_app.register_blueprint(api.skaters_api)
+    flask_app.register_blueprint(api.goalies_api)
 
 
 def _configure_error_handlers(flask_app):

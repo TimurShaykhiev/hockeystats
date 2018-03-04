@@ -54,6 +54,14 @@ class Team(EntityModel):
         team.active = bool(fields[7])
         return team
 
+    @classmethod
+    def get_for_season(cls, db_conn, season_id, columns=None, named_tuple_cls=None):
+        q = cls._create_query().select(columns)
+        q.where('id IN (SELECT team_id FROM team_sum_stats WHERE season_id = %s AND is_regular = 1)')
+        if columns is None:
+            return cls._get_all_from_db(db_conn, q.query, (season_id,))
+        return cls._get_columns_from_db(db_conn, q.query, (season_id,), named_tuple_cls=named_tuple_cls)
+
     def to_tuple(self):
         return (self.id, self.name, self.abbreviation, self.location,
                 self.venue.name if self.venue else None,

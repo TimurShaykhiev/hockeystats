@@ -22,7 +22,7 @@ PLAYER_SHOOTS = {
 
 
 # convert height from string <6' 2"> to inches
-def convert_height(value):
+def _convert_height(value):
     v = value.split(' ')
     feet = int(v[0][:-1])
     inches = int(v[1][:-1])
@@ -64,7 +64,7 @@ class Player(EntityModel):
         player.nationality = obj.get('nationality', player.nationality)
         height = obj.get('height')
         if height:
-            player.height = convert_height(obj.get('height'))
+            player.height = _convert_height(obj.get('height'))
         player.weight = obj.get('weight', player.weight)
         shoots_catches = obj.get('shootsCatches')
         if shoots_catches is None:
@@ -129,6 +129,22 @@ class Player(EntityModel):
     @classmethod
     def get_goalies(cls, db_conn, columns=None, named_tuple_cls=None):
         return cls.get_filtered(db_conn, ['primary_pos'], ['goalie'], columns, named_tuple_cls)
+
+    @classmethod
+    def get_skaters_for_season(cls, db_conn, season_id, regular, columns=None, named_tuple_cls=None):
+        return cls._get_players_for_season(db_conn, season_id, regular, columns, named_tuple_cls, 'skater_sum_stats')
+
+    @classmethod
+    def get_goalies_for_season(cls, db_conn, season_id, regular, columns=None, named_tuple_cls=None):
+        return cls._get_players_for_season(db_conn, season_id, regular, columns, named_tuple_cls, 'goalie_sum_stats')
+
+    @classmethod
+    def _get_players_for_season(cls, db_conn, season_id, regular, columns, named_tuple_cls, sum_stat_table):
+        q = cls._create_query().select(columns)
+        q.where('id IN (SELECT player_id FROM {} WHERE season_id = %s AND is_regular = %s)'.format(sum_stat_table))
+        if columns is None:
+            return cls._get_all_from_db(db_conn, q.query, (season_id, regular))
+        return cls._get_columns_from_db(db_conn, q.query, (season_id, regular), named_tuple_cls=named_tuple_cls)
 
     @classmethod
     def get_by_ids(cls, db_conn, id_array, columns=None, named_tuple_cls=None):

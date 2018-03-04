@@ -4,3 +4,5 @@ from .team import team_api
 from .skater import skater_api
 from .goalie import goalie_api
 from .teams import teams_api
+from .skaters import skaters_api
+from .goalies import goalies_api
