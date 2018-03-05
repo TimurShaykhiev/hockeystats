@@ -65,6 +65,22 @@ export default {
     return makeRequest({path: ['goalie', playerId, 'all-stats']});
   },
 
+  getSkatersComparison(player1Id, player2Id, reqParams) {
+    let reqData = {
+      path: ['skater', player1Id, 'compare', player2Id],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
+  getGoaliesComparison(player1Id, player2Id, reqParams) {
+    let reqData = {
+      path: ['goalie', player1Id, 'compare', player2Id],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
   getSkaterPointsProgress(playerId, reqParams) {
     let reqData = {
       path: ['skater', playerId, 'charts', 'points-progress'],

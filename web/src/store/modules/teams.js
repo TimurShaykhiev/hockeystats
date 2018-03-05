@@ -34,6 +34,7 @@ const state = {
   conferences: [],
   divisions: [],
   teamStatRanges: teamStatRanges,
+  teamsComparison: {},
   teamPointsProgress: {}
 };
 
@@ -90,6 +91,16 @@ const getters = {
     return (teamId) => {
       let stats = state.teamAllStats;
       if (isCorrectTeam(teamId, stats)) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
+  getTeamsComparison(state) {
+    return (season, team1Id, team2Id) => {
+      let stats = state.teamsComparison;
+      if (StoreUtils.isCorrectSeason(season, stats) && stats.team1.id === team1Id && stats.team2.id === team2Id) {
         return stats;
       }
       return null;
@@ -186,6 +197,18 @@ const actions = {
       commit, state, teamId, reqParams);
   },
 
+  getTeamsComparison({commit, state}, {team1Id, team2Id, reqParams}) {
+    logger.debug('action: getTeamsComparison');
+    let tc = state.teamsComparison;
+    if (tc.timestamp && team1Id === tc.team1.id && team2Id === tc.team2.id && reqParams.isSeasonEqual(tc.season)) {
+      logger.debug('action: getTeamsComparison data is in storage');
+      return Promise.resolve(tc);
+    }
+    let requestPromise = teamsApi.getTeamsComparison(team1Id, team2Id, reqParams);
+    return StoreUtils.processRequest('getTeamsComparison', 'setTeamsComparison', 'teamsComparison',
+                                     commit, state, requestPromise);
+  },
+
   getTeamPointsProgress({commit, state}, {teamId, reqParams}) {
     return getTeamDataByIdAndSeason('getTeamPointsProgress', 'setTeamPointsProgress', 'teamPointsProgress',
       commit, state, teamId, reqParams);
@@ -212,6 +235,60 @@ function teamStatsArrayToObject(statsArray) {
     shotsPerGame: statsArray[15],
     faceOffWinsPercentage: statsArray[16],
     goalsDiff: statsArray[0] - statsArray[1]
+  };
+}
+
+function teamInfoArrayToObject(statsArray) {
+  return {
+    goalsFor: statsArray[0],
+    goalsAgainst: statsArray[1],
+    ppGoals: statsArray[2],
+    shGoalsAgainst: statsArray[3],
+    pointPercentage: statsArray[4],
+    ppPercentage: statsArray[5],
+    pkPercentage: statsArray[6],
+    goalsForPerGame: statsArray[7],
+    goalsAgainstPerGame: statsArray[8],
+    shotsPerGame: statsArray[9],
+    faceOffWinsPercentage: statsArray[10],
+    shootingPercentage: statsArray[11],
+    shotsAgainstPerGame: statsArray[12],
+    oppShootingPercentage: statsArray[13],
+    scoringEfficiencyRatio: statsArray[14],
+    shotEfficiencyRatio: statsArray[15],
+    penaltyEfficiencyRatio: statsArray[16],
+    pointsPerGame: statsArray[17],
+    ppGoalsPerGame: statsArray[18],
+    shGoalsAgainstPerGame: statsArray[19],
+    ppPerGame: statsArray[20],
+    shPerGame: statsArray[21],
+    savePercentage: statsArray[22],
+    oppSavePercentage: statsArray[23],
+    shutouts: statsArray[24],
+    homeGoals: statsArray[25],
+    awayGoals: statsArray[26],
+    homeGoalsAgainst: statsArray[27],
+    awayGoalsAgainst: statsArray[28],
+    homeShots: statsArray[29],
+    awayShots: statsArray[30],
+    homeShotsAgainst: statsArray[31],
+    awayShotsAgainst: statsArray[32],
+    homePPPercentage: statsArray[33],
+    awayPPPercentage: statsArray[34],
+    homePKPercentage: statsArray[35],
+    awayPKPercentage: statsArray[36],
+    ppPercentageRate: statsArray[37],
+    ppPercentageAvg: statsArray[38],
+    pkPercentageRate: statsArray[39],
+    pkPercentageAvg: statsArray[40],
+    goalsForPerGameRate: statsArray[41],
+    goalsForPerGameAvg: statsArray[42],
+    goalsAgainstPerGameRate: statsArray[43],
+    goalsAgainstPerGameAvg: statsArray[44],
+    faceOffWinsPercentageRate: statsArray[45],
+    faceOffWinsPercentageAvg: statsArray[46],
+    shootingPercentageRate: statsArray[47],
+    shootingPercentageAvg: statsArray[48]
   };
 }
 
@@ -245,60 +322,10 @@ const mutations = {
 
   setTeamSeasonInfo(state, info) {
     logger.debug('mutation: setTeamSeasonInfo');
-    let teamInfo = {};
+    let teamInfo = teamInfoArrayToObject(info.stats);
     teamInfo.timestamp = info.timestamp;
     teamInfo.season = StoreUtils.convertSeason(info.season);
     teamInfo.team = info.team;
-
-    teamInfo.goalsFor = info.stats[0];
-    teamInfo.goalsAgainst = info.stats[1];
-    teamInfo.ppGoals = info.stats[2];
-    teamInfo.shGoalsAgainst = info.stats[3];
-    teamInfo.pointPercentage = info.stats[4];
-    teamInfo.ppPercentage = info.stats[5];
-    teamInfo.pkPercentage = info.stats[6];
-    teamInfo.goalsForPerGame = info.stats[7];
-    teamInfo.goalsAgainstPerGame = info.stats[8];
-    teamInfo.shotsPerGame = info.stats[9];
-    teamInfo.faceOffWinsPercentage = info.stats[10];
-    teamInfo.shootingPercentage = info.stats[11];
-    teamInfo.shotsAgainstPerGame = info.stats[12];
-    teamInfo.oppShootingPercentage = info.stats[13];
-    teamInfo.scoringEfficiencyRatio = info.stats[14];
-    teamInfo.shotEfficiencyRatio = info.stats[15];
-    teamInfo.penaltyEfficiencyRatio = info.stats[16];
-    teamInfo.pointsPerGame = info.stats[17];
-    teamInfo.ppGoalsPerGame = info.stats[18];
-    teamInfo.shGoalsAgainstPerGame = info.stats[19];
-    teamInfo.ppPerGame = info.stats[20];
-    teamInfo.shPerGame = info.stats[21];
-    teamInfo.savePercentage = info.stats[22];
-    teamInfo.oppSavePercentage = info.stats[23];
-    teamInfo.shutouts = info.stats[24];
-    teamInfo.homeGoals = info.stats[25];
-    teamInfo.awayGoals = info.stats[26];
-    teamInfo.homeGoalsAgainst = info.stats[27];
-    teamInfo.awayGoalsAgainst = info.stats[28];
-    teamInfo.homeShots = info.stats[29];
-    teamInfo.awayShots = info.stats[30];
-    teamInfo.homeShotsAgainst = info.stats[31];
-    teamInfo.awayShotsAgainst = info.stats[32];
-    teamInfo.homePPPercentage = info.stats[33];
-    teamInfo.awayPPPercentage = info.stats[34];
-    teamInfo.homePKPercentage = info.stats[35];
-    teamInfo.awayPKPercentage = info.stats[36];
-    teamInfo.ppPercentageRate = info.stats[37];
-    teamInfo.ppPercentageAvg = info.stats[38];
-    teamInfo.pkPercentageRate = info.stats[39];
-    teamInfo.pkPercentageAvg = info.stats[40];
-    teamInfo.goalsForPerGameRate = info.stats[41];
-    teamInfo.goalsForPerGameAvg = info.stats[42];
-    teamInfo.goalsAgainstPerGameRate = info.stats[43];
-    teamInfo.goalsAgainstPerGameAvg = info.stats[44];
-    teamInfo.faceOffWinsPercentageRate = info.stats[45];
-    teamInfo.faceOffWinsPercentageAvg = info.stats[46];
-    teamInfo.shootingPercentageRate = info.stats[47];
-    teamInfo.shootingPercentageAvg = info.stats[48];
 
     state.teamSeasonInfo = teamInfo;
   },
@@ -377,6 +404,43 @@ const mutations = {
     state.divisions = Object.keys(div).map((key) => {
       return {id: Number(key), name: div[key].name, cid: div[key].cid};
     }).sort((a, b) => a.id - b.id);
+  },
+
+  setTeamsComparison(state, stats) {
+    logger.debug('mutation: setTeamsComparison');
+    let tc = {};
+    tc.timestamp = stats.timestamp;
+    tc.season = StoreUtils.convertSeason(stats.season);
+    tc.team1 = stats.team1;
+    tc.team2 = stats.team2;
+    tc.stats1 = teamInfoArrayToObject(stats.stats1);
+    tc.stats2 = teamInfoArrayToObject(stats.stats2);
+    tc.vs = {
+      goals1: stats.vs[0],
+      shots1: stats.vs[1],
+      pim1: stats.vs[2],
+      ppp1: stats.vs[3],
+      pkp1: stats.vs[4],
+      goals2: stats.vs[5],
+      shots2: stats.vs[6],
+      pim2: stats.vs[7],
+      ppp2: stats.vs[8],
+      pkp2: stats.vs[9]
+    };
+    tc.scores = [];
+    for (let s of stats.scores) {
+      let score = {
+        date: StoreUtils.parseDate(s.date),
+        homeTeamId: s.teams[0],
+        awayTeamId: s.teams[1],
+        homeTeamGoals: s.goals[0],
+        awayTeamGoals: s.goals[1],
+        winType: s.winType
+      };
+      tc.scores.push(score);
+    }
+
+    state.teamsComparison = tc;
   },
 
   setTeamPointsProgress(state, stats) {

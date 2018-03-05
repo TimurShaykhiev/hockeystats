@@ -36,6 +36,8 @@ const state = {
   skaterStatRanges: skaterStatRanges,
   skaterStatsLimits: {},
   goalieStatsLimits: {},
+  skatersComparison: {},
+  goaliesComparison: {},
   skaterPointsProgress: {}
 };
 
@@ -67,6 +69,17 @@ function getPlayerAllStats(state, attrName) {
   return (playerId) => {
     let stats = state[attrName];
     if (isCorrectPlayer(playerId, stats)) {
+      return stats;
+    }
+    return null;
+  };
+}
+
+function getPlayersCompare(state, attrName) {
+  return (season, player1Id, player2Id) => {
+    let stats = state[attrName];
+    if (StoreUtils.isCorrectSeason(season, stats) && stats.player1.id === player1Id &&
+        stats.player2.id === player2Id) {
       return stats;
     }
     return null;
@@ -110,6 +123,14 @@ const getters = {
     return getPlayerAllStats(state, 'goalieAllStats');
   },
 
+  getSkatersComparison(state) {
+    return getPlayersCompare(state, 'skatersComparison');
+  },
+
+  getGoaliesComparison(state) {
+    return getPlayersCompare(state, 'goaliesComparison');
+  },
+
   getPlayerSeasonChartData(state) {
     return (chartName, season, playerId) => {
       let stats = state[chartName];
@@ -149,6 +170,17 @@ function getPlayerDataById(actName, mutName, stateName, commit, state, playerId)
     return Promise.resolve(state[stateName]);
   }
   let requestPromise = playersApi[actName](playerId);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
+}
+
+function getPlayersCompareData(actName, mutName, stateName, commit, state, player1Id, player2Id, reqParams) {
+  logger.debug(`action: ${actName}`);
+  if (state[stateName].timestamp && player1Id === state[stateName].player1.id &&
+      player2Id === state[stateName].player2.id && reqParams.isSeasonEqual(state[stateName].season)) {
+    logger.debug(`action: ${actName} data is in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  let requestPromise = playersApi[actName](player1Id, player2Id, reqParams);
   return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
@@ -195,6 +227,16 @@ const actions = {
     return getPlayerDataById('getGoalieAllStats', 'setGoalieAllStats', 'goalieAllStats', commit, state, playerId);
   },
 
+  getSkatersComparison({commit, state}, {player1Id, player2Id, reqParams}) {
+    return getPlayersCompareData('getSkatersComparison', 'setSkatersComparison', 'skatersComparison',
+                                 commit, state, player1Id, player2Id, reqParams);
+  },
+
+  getGoaliesComparison({commit, state}, {player1Id, player2Id, reqParams}) {
+    return getPlayersCompareData('getGoaliesComparison', 'setGoaliesComparison', 'goaliesComparison',
+                                 commit, state, player1Id, player2Id, reqParams);
+  },
+
   getSkaterStatsLimits({commit, state}, {season}) {
     logger.debug('action: getSkaterStatsLimits');
     if (StoreUtils.isCorrectSeason(season, state.skaterStatsLimits)) {
@@ -232,6 +274,100 @@ const actions = {
       commit, state, playerId, reqParams);
   }
 };
+
+function skaterInfoArrayToObject(statsArray) {
+  return {
+    assists: statsArray[0],
+    goals: statsArray[1],
+    shots: statsArray[2],
+    hits: statsArray[3],
+    penaltyMinutes: statsArray[4],
+    takeaways: statsArray[5],
+    giveaways: statsArray[6],
+    blocks: statsArray[7],
+    plusMinus: statsArray[8],
+    points: statsArray[9],
+    ppPoints: statsArray[10],
+    shPoints: statsArray[11],
+    turnover: statsArray[12],
+    pointsPerGame: statsArray[13],
+    toiPerGame: statsArray[14],
+    shootingPercentage: statsArray[15],
+    faceOffWinsPercentage: statsArray[16],
+    pointsPer60min: statsArray[17],
+    goalPercentageOfPoints: statsArray[18],
+    assistPercentageOfPoints: statsArray[19],
+    goalsPerGame: statsArray[20],
+    goalsPer60min: statsArray[21],
+    evenStrengthGoalsPercentage: statsArray[22],
+    ppGoalPercentage: statsArray[23],
+    assistsPerGame: statsArray[24],
+    assistsPer60min: statsArray[25],
+    evenAssistPercentage: statsArray[26],
+    ppAssistPercentage: statsArray[27],
+    shotsPerGame: statsArray[28],
+    shotsPer60min: statsArray[29],
+    shotsPerGoal: statsArray[30],
+    turnoverPer60min: statsArray[31],
+    turnoverRatio: statsArray[32],
+    blocksPer60min: statsArray[33],
+    hitsPer60min: statsArray[34],
+    PIMsPer60min: statsArray[35],
+    homeGoals: statsArray[36],
+    awayGoals: statsArray[37],
+    homeAssists: statsArray[38],
+    awayAssists: statsArray[39],
+    homePlusMinus: statsArray[40],
+    awayPlusMinus: statsArray[41],
+    homeTurnover: statsArray[42],
+    awayTurnover: statsArray[43],
+    homePointsPerGame: statsArray[44],
+    awayPointsPerGame: statsArray[45],
+    homePim: statsArray[46],
+    awayPim: statsArray[47],
+    goalsRateTotal: statsArray[48],
+    assistsRateTotal: statsArray[49],
+    pointsRateTotal: statsArray[50],
+    plusMinusRateTotal: statsArray[51],
+    turnoverRateTotal: statsArray[52],
+    goalsRateTeam: statsArray[53],
+    assistsRateTeam: statsArray[54],
+    pointsRateTeam: statsArray[55],
+    plusMinusRateTeam: statsArray[56],
+    turnoverRateTeam: statsArray[57]
+  };
+}
+
+function goalieInfoArrayToObject(statsArray) {
+  return {
+    saves: statsArray[0],
+    wins: statsArray[1],
+    shutout: statsArray[2],
+    goalsAgainst: statsArray[3],
+    gaa: statsArray[4],
+    svp: statsArray[5],
+    winPercentage: statsArray[6],
+    evenStrengthGoalsAgainst: statsArray[7],
+    ppGoalsAgainst: statsArray[8],
+    shGoalsAgainst: statsArray[9],
+    savesPerGame: statsArray[10],
+    shotsAgainstPerGoal: statsArray[11],
+    evenStrengthGoalsAgainstPercentage: statsArray[12],
+    homeGaa: statsArray[13],
+    awayGaa: statsArray[14],
+    homeSvp: statsArray[15],
+    awaySvp: statsArray[16],
+    homeWinPercentage: statsArray[17],
+    awayWinPercentage: statsArray[18],
+    homeWins: statsArray[19],
+    awayWins: statsArray[20],
+    gaaRate: statsArray[21],
+    svpRate: statsArray[22],
+    winPercentageRate: statsArray[23],
+    winsRate: statsArray[24],
+    shutoutRate: statsArray[25]
+  };
+}
 
 const mutations = {
   setAllSkaters(state, players) {
@@ -286,106 +422,20 @@ const mutations = {
 
   setSkaterSeasonInfo(state, info) {
     logger.debug('mutation: setSkaterSeasonInfo');
-    let skaterInfo = {};
+    let skaterInfo = skaterInfoArrayToObject(info.stats);
     skaterInfo.timestamp = info.timestamp;
     skaterInfo.season = StoreUtils.convertSeason(info.season);
     skaterInfo.player = info.player;
-
-    skaterInfo.assists = info.stats[0];
-    skaterInfo.goals = info.stats[1];
-    skaterInfo.shots = info.stats[2];
-    skaterInfo.hits = info.stats[3];
-    skaterInfo.penaltyMinutes = info.stats[4];
-    skaterInfo.takeaways = info.stats[5];
-    skaterInfo.giveaways = info.stats[6];
-    skaterInfo.blocks = info.stats[7];
-    skaterInfo.plusMinus = info.stats[8];
-    skaterInfo.points = info.stats[9];
-    skaterInfo.ppPoints = info.stats[10];
-    skaterInfo.shPoints = info.stats[11];
-    skaterInfo.turnover = info.stats[12];
-    skaterInfo.pointsPerGame = info.stats[13];
-    skaterInfo.toiPerGame = info.stats[14];
-    skaterInfo.shootingPercentage = info.stats[15];
-    skaterInfo.faceOffWinsPercentage = info.stats[16];
-    skaterInfo.pointsPer60min = info.stats[17];
-    skaterInfo.goalPercentageOfPoints = info.stats[18];
-    skaterInfo.assistPercentageOfPoints = info.stats[19];
-    skaterInfo.goalsPerGame = info.stats[20];
-    skaterInfo.goalsPer60min = info.stats[21];
-    skaterInfo.evenStrengthGoalsPercentage = info.stats[22];
-    skaterInfo.ppGoalPercentage = info.stats[23];
-    skaterInfo.assistsPerGame = info.stats[24];
-    skaterInfo.assistsPer60min = info.stats[25];
-    skaterInfo.evenAssistPercentage = info.stats[26];
-    skaterInfo.ppAssistPercentage = info.stats[27];
-    skaterInfo.shotsPerGame = info.stats[28];
-    skaterInfo.shotsPer60min = info.stats[29];
-    skaterInfo.shotsPerGoal = info.stats[30];
-    skaterInfo.turnoverPer60min = info.stats[31];
-    skaterInfo.turnoverRatio = info.stats[32];
-    skaterInfo.blocksPer60min = info.stats[33];
-    skaterInfo.hitsPer60min = info.stats[34];
-    skaterInfo.PIMsPer60min = info.stats[35];
-    skaterInfo.homeGoals = info.stats[36];
-    skaterInfo.awayGoals = info.stats[37];
-    skaterInfo.homeAssists = info.stats[38];
-    skaterInfo.awayAssists = info.stats[39];
-    skaterInfo.homePlusMinus = info.stats[40];
-    skaterInfo.awayPlusMinus = info.stats[41];
-    skaterInfo.homeTurnover = info.stats[42];
-    skaterInfo.awayTurnover = info.stats[43];
-    skaterInfo.homePointsPerGame = info.stats[44];
-    skaterInfo.awayPointsPerGame = info.stats[45];
-    skaterInfo.homePim = info.stats[46];
-    skaterInfo.awayPim = info.stats[47];
-    skaterInfo.goalsRateTotal = info.stats[48];
-    skaterInfo.assistsRateTotal = info.stats[49];
-    skaterInfo.pointsRateTotal = info.stats[50];
-    skaterInfo.plusMinusRateTotal = info.stats[51];
-    skaterInfo.turnoverRateTotal = info.stats[52];
-    skaterInfo.goalsRateTeam = info.stats[53];
-    skaterInfo.assistsRateTeam = info.stats[54];
-    skaterInfo.pointsRateTeam = info.stats[55];
-    skaterInfo.plusMinusRateTeam = info.stats[56];
-    skaterInfo.turnoverRateTeam = info.stats[57];
 
     state.skaterSeasonInfo = skaterInfo;
   },
 
   setGoalieSeasonInfo(state, info) {
     logger.debug('mutation: setGoalieSeasonInfo');
-    let goalieInfo = {};
+    let goalieInfo = goalieInfoArrayToObject(info.stats);
     goalieInfo.timestamp = info.timestamp;
     goalieInfo.season = StoreUtils.convertSeason(info.season);
     goalieInfo.player = info.player;
-
-    goalieInfo.saves = info.stats[0];
-    goalieInfo.wins = info.stats[1];
-    goalieInfo.shutout = info.stats[2];
-    goalieInfo.goalsAgainst = info.stats[3];
-    goalieInfo.gaa = info.stats[4];
-    goalieInfo.svp = info.stats[5];
-    goalieInfo.winPercentage = info.stats[6];
-    goalieInfo.evenStrengthGoalsAgainst = info.stats[7];
-    goalieInfo.ppGoalsAgainst = info.stats[8];
-    goalieInfo.shGoalsAgainst = info.stats[9];
-    goalieInfo.savesPerGame = info.stats[10];
-    goalieInfo.shotsAgainstPerGoal = info.stats[11];
-    goalieInfo.evenStrengthGoalsAgainstPercentage = info.stats[12];
-    goalieInfo.homeGaa = info.stats[13];
-    goalieInfo.awayGaa = info.stats[14];
-    goalieInfo.homeSvp = info.stats[15];
-    goalieInfo.awaySvp = info.stats[16];
-    goalieInfo.homeWinPercentage = info.stats[17];
-    goalieInfo.awayWinPercentage = info.stats[18];
-    goalieInfo.homeWins = info.stats[19];
-    goalieInfo.awayWins = info.stats[20];
-    goalieInfo.gaaRate = info.stats[21];
-    goalieInfo.svpRate = info.stats[22];
-    goalieInfo.winPercentageRate = info.stats[23];
-    goalieInfo.winsRate = info.stats[24];
-    goalieInfo.shutoutRate = info.stats[25];
 
     state.goalieSeasonInfo = goalieInfo;
   },
@@ -440,6 +490,32 @@ const mutations = {
       newStat.seasons.push(season);
     }
     state.goalieAllStats = newStat;
+  },
+
+  setSkatersComparison(state, stats) {
+    logger.debug('mutation: setSkatersComparison');
+    let sc = {};
+    sc.timestamp = stats.timestamp;
+    sc.season = StoreUtils.convertSeason(stats.season);
+    sc.player1 = stats.player1;
+    sc.player2 = stats.player2;
+    sc.stats1 = skaterInfoArrayToObject(stats.stats1);
+    sc.stats2 = skaterInfoArrayToObject(stats.stats2);
+
+    state.skatersComparison = sc;
+  },
+
+  setGoaliesComparison(state, stats) {
+    logger.debug('mutation: setGoaliesComparison');
+    let gc = {};
+    gc.timestamp = stats.timestamp;
+    gc.season = StoreUtils.convertSeason(stats.season);
+    gc.player1 = stats.player1;
+    gc.player2 = stats.player2;
+    gc.stats1 = goalieInfoArrayToObject(stats.stats1);
+    gc.stats2 = goalieInfoArrayToObject(stats.stats2);
+
+    state.goaliesComparison = gc;
   },
 
   setSkaterStatsLimits(state, stats) {

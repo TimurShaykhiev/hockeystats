@@ -88,11 +88,12 @@ export default {
     return Utils.percentile(arr, STAT_LIMIT_PERCENTILE[statName]);
   },
 
+  parseDate: timeParse('%Y-%m-%d'),
+
   convertSeason(season) {
     let s = season;
-    let parseDate = timeParse('%Y-%m-%d');
-    s.start = parseDate(s.start);
-    s.end = parseDate(s.end);
+    s.start = this.parseDate(s.start);
+    s.end = this.parseDate(s.end);
     return s;
   },
 

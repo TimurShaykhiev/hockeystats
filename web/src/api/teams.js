@@ -41,6 +41,14 @@ export default {
     return makeRequest(reqData);
   },
 
+  getTeamsComparison(team1Id, team2Id, reqParams) {
+    let reqData = {
+      path: ['team', team1Id, 'compare', team2Id],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
   getTeamPointsProgress(teamId, reqParams) {
     let reqData = {
       path: ['team', teamId, 'charts', 'points-progress'],
