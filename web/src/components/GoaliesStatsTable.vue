@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
+import {SeasonRequestParams} from 'Store/types';
 import {omitInteger, toiToStr, getSeasonName, getPaginationText, seasonToStr, filterName} from 'Components/utils';
 import TableFilter from 'Components/TableFilter';
 import {format} from 'd3-format';
@@ -72,7 +72,7 @@ export default {
     if (this.type === TYPE_TEAM) {
       this.requestTeamPlayersStats();
     } else {
-      this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
+      this.requestAllTeams();
       if (this.type === TYPE_ALL) {
         this.requestGoalieStats();
       } else {
@@ -217,11 +217,14 @@ export default {
     },
 
     rows() {
-      let allTeams = this.$store.state.teams.allTeams.teams;
-      if (!allTeams && this.type !== TYPE_TEAM) {
+      let selSeason = this.$store.state.season.selectedSeason;
+      let allTeams = this.$store.getters.getAllTeams(selSeason);
+      if (allTeams === null && this.type !== TYPE_TEAM) {
+        this.requestAllTeams();
         return [];
       }
 
+      allTeams = allTeams.teams;
       let goalieStats;
       if (this.type === TYPE_PLAYER) {
         let stats = this.$store.getters.getGoalieAllStats(parseInt(this.$route.params.id));
@@ -231,7 +234,6 @@ export default {
         }
         goalieStats = stats.seasons;
       } else {
-        let selSeason = this.$store.state.season.selectedSeason;
         let stats = this.type === TYPE_ALL ?
           this.$store.getters.getGoalieStats(selSeason) :
           this.$store.getters.getTeamPlayersStats(selSeason, parseInt(this.$route.params.id));
@@ -274,6 +276,15 @@ export default {
     }
   },
   methods: {
+    requestAllTeams() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.$store.dispatch('getAllTeams', {
+          reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+        });
+      }
+    },
+
     requestGoalieStats() {
       let season = this.$store.state.season.selectedSeason;
       if (season.id !== undefined) {

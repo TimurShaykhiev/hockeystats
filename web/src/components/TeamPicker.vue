@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import {LocaleRequestParams} from 'Store/types';
+import {SeasonRequestParams} from 'Store/types';
 import Utils from 'Root/utils';
 
 export default {
@@ -38,7 +38,7 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
+    this.requestAllTeams();
   },
   computed: {
     divisions() {
@@ -50,11 +50,13 @@ export default {
     },
 
     teams() {
-      let divisions = this.$store.state.teams.divisions;
-      let allTeams = this.$store.state.teams.allTeams.teams;
-      if (divisions.length === 0 || !allTeams) {
+      let season = this.$store.state.season.selectedSeason;
+      let allTeams = this.$store.getters.getAllTeams(season);
+      if (allTeams === null) {
+        this.requestAllTeams();
         return {};
       }
+      let divisions = this.$store.state.teams.divisions;
       let teams = {};
       for (let d of divisions) {
         let divTeams = [];
@@ -69,6 +71,15 @@ export default {
     }
   },
   methods: {
+    requestAllTeams() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.$store.dispatch('getAllTeams', {
+          reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+        });
+      }
+    },
+
     toggleTeamsView() {
       this.showTeams = !this.showTeams;
     }

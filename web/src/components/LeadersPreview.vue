@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
+import {SeasonRequestParams} from 'Store/types';
 import {omitInteger} from 'Components/utils';
 import {format} from 'd3-format';
 
@@ -99,8 +99,10 @@ export default {
     return {};
   },
   created() {
-    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
     this.$store.dispatch('getCurrentSeason').then((season) => {
+      this.$store.dispatch('getAllTeams', {
+        reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+      });
       this.$store.dispatch(typesMap[this.type].action, {
         reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
       });

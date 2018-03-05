@@ -42,6 +42,16 @@ function isCorrectTeam(teamId, stats) {
 }
 
 const getters = {
+  getAllTeams(state) {
+    return (season) => {
+      let stats = state.allTeams;
+      if (StoreUtils.isCorrectSeason(season, stats)) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
   getTeamStatRange(state) {
     return (statName) => state.teamStatRanges[statName];
   },
@@ -209,6 +219,7 @@ const mutations = {
   setAllTeams(state, teams) {
     let allTeams = {};
     allTeams.timestamp = teams.timestamp;
+    allTeams.season = StoreUtils.convertSeason(teams.season);
     allTeams.teams = {};
     for (let t of teams.teams) {
       allTeams.teams[t.id] = t;

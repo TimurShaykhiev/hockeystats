@@ -1,6 +1,22 @@
 import makeRequest from 'Api/request';
 
 export default {
+  getAllSkaters(reqParams) {
+    let reqData = {
+      path: ['skaters'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
+  getAllGoalies(reqParams) {
+    let reqData = {
+      path: ['goalies'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
   getSkaterStats(reqParams) {
     let reqData = {
       path: ['stats', 'skaters'],

@@ -23,6 +23,8 @@ const skaterStatRanges = {
 };
 
 const state = {
+  allSkaters: {},
+  allGoalies: {},
   skaterStats: {},
   goalieStats: {},
   skaterSeasonInfo: {},
@@ -41,7 +43,7 @@ function isCorrectPlayer(playerId, stats) {
   return stats.player && stats.player.id === playerId;
 }
 
-function getPlayerStats(state, attrName) {
+function getAllPlayersSeasonData(state, attrName) {
   return (season) => {
     let stats = state[attrName];
     if (StoreUtils.isCorrectSeason(season, stats)) {
@@ -51,7 +53,7 @@ function getPlayerStats(state, attrName) {
   };
 }
 
-function getPlayerSeasonInfo(state, attrName) {
+function getPlayerSeasonData(state, attrName) {
   return (season, playerId) => {
     let stats = state[attrName];
     if (StoreUtils.isCorrectSeason(season, stats) && isCorrectPlayer(playerId, stats)) {
@@ -76,20 +78,28 @@ const getters = {
     return (statName) => state.skaterStatRanges[statName];
   },
 
+  getAllSkaters(state) {
+    return getAllPlayersSeasonData(state, 'allSkaters');
+  },
+
+  getAllGoalies(state) {
+    return getAllPlayersSeasonData(state, 'allGoalies');
+  },
+
   getSkaterStats(state) {
-    return getPlayerStats(state, 'skaterStats');
+    return getAllPlayersSeasonData(state, 'skaterStats');
   },
 
   getGoalieStats(state) {
-    return getPlayerStats(state, 'goalieStats');
+    return getAllPlayersSeasonData(state, 'goalieStats');
   },
 
   getSkaterSeasonInfo(state) {
-    return getPlayerSeasonInfo(state, 'skaterSeasonInfo');
+    return getPlayerSeasonData(state, 'skaterSeasonInfo');
   },
 
   getGoalieSeasonInfo(state) {
-    return getPlayerSeasonInfo(state, 'goalieSeasonInfo');
+    return getPlayerSeasonData(state, 'goalieSeasonInfo');
   },
 
   getSkaterAllStats(state) {
@@ -143,6 +153,14 @@ function getPlayerDataById(actName, mutName, stateName, commit, state, playerId)
 }
 
 const actions = {
+  getAllSkaters({commit, state}, {reqParams}) {
+    return getPlayersDataBySeason('getAllSkaters', 'setAllSkaters', 'allSkaters', commit, state, reqParams);
+  },
+
+  getAllGoalies({commit, state}, {reqParams}) {
+    return getPlayersDataBySeason('getAllGoalies', 'setAllGoalies', 'allGoalies', commit, state, reqParams);
+  },
+
   getSkaterStats({commit, state}, {reqParams}) {
     return getPlayersDataBySeason('getSkaterStats', 'setSkaterStats', 'skaterStats', commit, state, reqParams);
   },
@@ -216,6 +234,24 @@ const actions = {
 };
 
 const mutations = {
+  setAllSkaters(state, players) {
+    logger.debug('mutation: setAllSkaters');
+    let allSkaters = {};
+    allSkaters.timestamp = players.timestamp;
+    allSkaters.season = StoreUtils.convertSeason(players.season);
+    allSkaters.players = players.players;
+    state.allSkaters = allSkaters;
+  },
+
+  setAllGoalies(state, players) {
+    logger.debug('mutation: setAllGoalies');
+    let allGoalies = {};
+    allGoalies.timestamp = players.timestamp;
+    allGoalies.season = StoreUtils.convertSeason(players.season);
+    allGoalies.players = players.players;
+    state.allGoalies = allGoalies;
+  },
+
   setSkaterStats(state, stats) {
     logger.debug('mutation: setSkaterStats');
     let newStat = {};

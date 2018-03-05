@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
+import {SeasonRequestParams} from 'Store/types';
 import {format} from 'd3-format';
 import {statsToChartData} from 'Components/utils';
 
@@ -46,7 +46,7 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
+    this.requestAllTeams();
     this.requestTeamStats();
   },
   computed: {
@@ -57,10 +57,12 @@ export default {
         this.requestTeamStats();
         return {};
       }
-      let allTeams = this.$store.state.teams.allTeams.teams;
-      if (!allTeams) {
+      let allTeams = this.$store.getters.getAllTeams(selSeason);
+      if (allTeams === null) {
+        this.requestAllTeams();
         return {};
       }
+      allTeams = allTeams.teams;
       let getTeamName = (t) => allTeams[t.id].name;
       let teamStats = stats.teams;
       if (this.selectedChart === CHART_POINTS) {
@@ -175,6 +177,15 @@ export default {
     }
   },
   methods: {
+    requestAllTeams() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.$store.dispatch('getAllTeams', {
+          reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+        });
+      }
+    },
+
     requestTeamStats() {
       let season = this.$store.state.season.selectedSeason;
       if (season.id !== undefined) {

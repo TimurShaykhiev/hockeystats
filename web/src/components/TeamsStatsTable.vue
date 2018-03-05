@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
+import {SeasonRequestParams} from 'Store/types';
 import {getSeasonName, seasonToStr} from 'Components/utils';
 import TableFilter from 'Components/TableFilter';
 import {format} from 'd3-format';
@@ -64,7 +64,7 @@ export default {
   },
   created() {
     if (this.type === TYPE_ALL) {
-      this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
+      this.requestAllTeams();
       this.requestTeamStats();
     } else {
       this.requestTeamAllStats();
@@ -215,17 +215,19 @@ export default {
       let allTeams;
       let teamStats;
       if (this.type === TYPE_ALL) {
-        allTeams = this.$store.state.teams.allTeams.teams;
-        if (!allTeams) {
+        let selSeason = this.$store.state.season.selectedSeason;
+        allTeams = this.$store.getters.getAllTeams(selSeason);
+        if (allTeams === null) {
+          this.requestAllTeams();
           return [];
         }
-        let selSeason = this.$store.state.season.selectedSeason;
         let stats = this.$store.getters.getTeamStats(selSeason);
         if (stats === null) {
           this.requestTeamStats();
           return [];
         }
         teamStats = stats.teams;
+        allTeams = allTeams.teams;
       } else {
         let stats = this.$store.getters.getTeamAllStats(parseInt(this.$route.params.id));
         if (stats === null) {
@@ -262,6 +264,15 @@ export default {
     }
   },
   methods: {
+    requestAllTeams() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.$store.dispatch('getAllTeams', {
+          reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+        });
+      }
+    },
+
     requestTeamStats() {
       let season = this.$store.state.season.selectedSeason;
       if (season.id !== undefined) {

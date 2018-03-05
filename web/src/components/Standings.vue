@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {SeasonRequestParams, LocaleRequestParams} from 'Store/types';
+import {SeasonRequestParams} from 'Store/types';
 import {format} from 'd3-format';
 
 function compareStandings(a, b) {
@@ -105,8 +105,10 @@ export default {
     return {};
   },
   created() {
-    this.$store.dispatch('getAllTeams', {reqParams: new LocaleRequestParams(this.$store)});
     this.$store.dispatch('getCurrentSeason').then((season) => {
+      this.$store.dispatch('getAllTeams', {
+        reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+      });
       this.$store.dispatch('getTeamStats', {
         reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
       });
