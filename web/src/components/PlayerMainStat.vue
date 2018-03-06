@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import {numberToOrdinal} from 'Components/utils';
+import CompUtils from 'Components/utils';
 
 export default {
   name: 'player-main-stat',
@@ -41,8 +41,8 @@ export default {
     return {
       caption: this.label.toUpperCase(),
       statValue: this.precision ? this.precision(this.value) : this.value.toString(),
-      placeInTotalRate: numberToOrdinal(this.rating, (str) => this.$t(str)),
-      placeInTeamRate: this.teamRating ? numberToOrdinal(this.teamRating, (str) => this.$t(str)) : ''
+      placeInTotalRate: CompUtils.numberToOrdinal(this.rating, (str) => this.$t(str)),
+      placeInTeamRate: this.teamRating ? CompUtils.numberToOrdinal(this.teamRating, (str) => this.$t(str)) : ''
     };
   }
 };

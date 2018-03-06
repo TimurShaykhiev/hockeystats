@@ -15,7 +15,7 @@
 <script>
 import {SeasonRequestParams} from 'Store/types';
 import {format} from 'd3-format';
-import {statsToChartData, toiToStr} from 'Components/utils';
+import CompUtils from 'Components/utils';
 
 let f2 = format('.2f');
 
@@ -62,7 +62,7 @@ export default {
       }
       let skaterStats = stats.skaters;
       if (this.selectedChart === CHART_GOALS_ASSISTS) {
-        let data = statsToChartData(skaterStats, [
+        let data = CompUtils.statsToChartData(skaterStats, [
           {from: 'goals', to: 'goals'},
           {from: 'assists', to: 'assists'}
         ]);
@@ -82,7 +82,7 @@ export default {
         };
       }
       if (this.selectedChart === CHART_POINTS) {
-        let data = statsToChartData(skaterStats, [
+        let data = CompUtils.statsToChartData(skaterStats, [
           {from: 'evenPoints', to: 'evenPoints'},
           {from: 'ppPoints', to: 'ppPoints'},
           {from: 'shPoints', to: 'shPoints'}
@@ -104,7 +104,7 @@ export default {
         };
       }
       if (this.selectedChart === CHART_GOALS) {
-        let data = statsToChartData(skaterStats, [
+        let data = CompUtils.statsToChartData(skaterStats, [
           {from: 'evenGoals', to: 'evenGoals'},
           {from: 'ppGoals', to: 'ppGoals'},
           {from: 'shGoals', to: 'shGoals'}
@@ -126,7 +126,7 @@ export default {
         };
       }
       if (this.selectedChart === CHART_ASSISTS) {
-        let data = statsToChartData(skaterStats, [
+        let data = CompUtils.statsToChartData(skaterStats, [
           {from: 'evenAssists', to: 'evenAssists'},
           {from: 'ppAssists', to: 'ppAssists'},
           {from: 'shAssists', to: 'shAssists'}
@@ -155,8 +155,8 @@ export default {
             sorting: 'desc',
             yCaption: this.$t('charts.toiCaptionY'),
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
-            tooltipFormat: (t) => toiToStr(t * 60)
+            dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
+            tooltipFormat: (t) => CompUtils.toiToStr(t * 60)
           }
         };
       }
@@ -167,7 +167,7 @@ export default {
             rotateXLabels: true,
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
+            dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
           }
         };
       }
@@ -179,7 +179,7 @@ export default {
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
             preciseYDomain: true,
-            dataSet: statsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
+            dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
             tooltipFormat: (t) => f2(t)
           }
         };
@@ -191,7 +191,7 @@ export default {
             rotateXLabels: true,
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
+            dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
           }
         };
       }
@@ -204,7 +204,7 @@ export default {
             rotateXLabels: true,
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(skaterStats, [{
+            dataSet: CompUtils.statsToChartData(skaterStats, [{
               from: 'faceOffWinsPercentage',
               to: 'y',
               filterFn: (d) => d > faceOffTakenLimit,

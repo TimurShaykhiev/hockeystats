@@ -53,6 +53,7 @@
     "vue-good-table": "^1.19.3",
     "vue-i18n": "^7.4.2",
     "vue-router": "^2.8.1",
+    "vue-select": "^2.4.0",
     "vuex": "^2.5.0",
     "whatwg-fetch": "^2.0.3"
   }

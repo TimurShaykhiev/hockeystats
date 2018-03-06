@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {numberToOrdinal} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
 export default {
@@ -48,7 +48,7 @@ export default {
     return {
       caption: this.label.toUpperCase(),
       statValue: f(this.value),
-      placeInRate: numberToOrdinal(this.rating, (str) => this.$t(str)),
+      placeInRate: CompUtils.numberToOrdinal(this.rating, (str) => this.$t(str)),
       leagueAverage: f(this.average),
       statBarHeight: `${Math.round(this.value / Math.max(this.value, this.average) * 100)}px`,
       avgBarHeight: `${Math.round(this.average / Math.max(this.value, this.average) * 100)}px`

@@ -34,7 +34,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {toiToStr, getSeasonName, getPaginationText, seasonToStr, filterName} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import TableFilter from 'Components/TableFilter';
 import {format} from 'd3-format';
 
@@ -92,7 +92,7 @@ export default {
         if (selSeason.id === undefined || all === undefined) {
           return '';
         }
-        return getSeasonName(selSeason, all, (str) => this.$t(str));
+        return CompUtils.getSeasonName(selSeason, all, (str) => this.$t(str));
       } else if (this.type === TYPE_TEAM) {
         return this.$t('captionTeamType');
       } else {
@@ -114,7 +114,7 @@ export default {
         field: 'name',
         sortable: this.canSortRows(),
         filterable: this.type === TYPE_ALL,
-        filter: filterName,
+        filter: CompUtils.filterName,
         placeholder: '',
         hidden: this.type === TYPE_PLAYER
       }, {
@@ -229,7 +229,7 @@ export default {
     },
 
     paginationText() {
-      return getPaginationText((str) => this.$t(str));
+      return CompUtils.getPaginationText((str) => this.$t(str));
     },
 
     rows() {
@@ -282,9 +282,9 @@ export default {
           rowData.team = allTeams[t.teamId].abbr;
         }
         if (this.type === TYPE_PLAYER) {
-          rowData.seasonName = seasonToStr(t.season, (str) => this.$t(str));
+          rowData.seasonName = CompUtils.seasonToStr(t.season, (str) => this.$t(str));
         }
-        rowData.toiPerGame = toiToStr(rowData.toiPerGame);
+        rowData.toiPerGame = CompUtils.toiToStr(rowData.toiPerGame);
         rowData.pointsPerGame = f2(rowData.pointsPerGame);
         rowData.shootingPercentage = f2(rowData.shootingPercentage);
         rowData.faceOffWinsPercentage = f2(rowData.faceOffWinsPercentage);

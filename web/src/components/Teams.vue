@@ -15,7 +15,7 @@
 <script>
 import {SeasonRequestParams} from 'Store/types';
 import {format} from 'd3-format';
-import {statsToChartData} from 'Components/utils';
+import CompUtils from 'Components/utils';
 
 let f2 = format('.2f');
 
@@ -71,12 +71,12 @@ export default {
           chartData: {
             rotateXLabels: true,
             sorting: 'desc',
-            dataSet: statsToChartData(teamStats, [{from: 'points', to: 'y'}], getTeamName)
+            dataSet: CompUtils.statsToChartData(teamStats, [{from: 'points', to: 'y'}], getTeamName)
           }
         };
       }
       if (this.selectedChart === CHART_WINS) {
-        let data = statsToChartData(teamStats, [
+        let data = CompUtils.statsToChartData(teamStats, [
           {from: 'winRegular', to: 'winRegular'},
           {from: 'winOvertime', to: 'winOvertime'},
           {from: 'winShootout', to: 'winShootout'}
@@ -97,7 +97,7 @@ export default {
         };
       }
       if (this.selectedChart === CHART_LOSSES) {
-        let data = statsToChartData(teamStats, [
+        let data = CompUtils.statsToChartData(teamStats, [
           {from: 'loseRegular', to: 'loseRegular'},
           {from: 'loseOvertime', to: 'loseOvertime'},
           {from: 'loseShootout', to: 'loseShootout'}
@@ -123,7 +123,7 @@ export default {
           chartData: {
             rotateXLabels: true,
             sorting: 'desc',
-            dataSet: statsToChartData(teamStats, [{from: 'ppPercentage', to: 'y'}], getTeamName),
+            dataSet: CompUtils.statsToChartData(teamStats, [{from: 'ppPercentage', to: 'y'}], getTeamName),
             tooltipFormat: (t) => f2(t)
           }
         };
@@ -135,7 +135,7 @@ export default {
             preciseYDomain: true,
             rotateXLabels: true,
             sorting: 'desc',
-            dataSet: statsToChartData(teamStats, [{from: 'pkPercentage', to: 'y'}], getTeamName),
+            dataSet: CompUtils.statsToChartData(teamStats, [{from: 'pkPercentage', to: 'y'}], getTeamName),
             tooltipFormat: (t) => f2(t)
           }
         };
@@ -147,7 +147,7 @@ export default {
             preciseYDomain: true,
             rotateXLabels: true,
             sorting: 'desc',
-            dataSet: statsToChartData(teamStats, [{from: 'goalsFor', to: 'y'}], getTeamName)
+            dataSet: CompUtils.statsToChartData(teamStats, [{from: 'goalsFor', to: 'y'}], getTeamName)
           }
         };
       }
@@ -158,7 +158,7 @@ export default {
             preciseYDomain: true,
             rotateXLabels: true,
             sorting: 'desc',
-            dataSet: statsToChartData(teamStats, [{from: 'goalsAgainst', to: 'y'}], getTeamName)
+            dataSet: CompUtils.statsToChartData(teamStats, [{from: 'goalsAgainst', to: 'y'}], getTeamName)
           }
         };
       }
@@ -169,7 +169,7 @@ export default {
             preciseYDomain: true,
             rotateXLabels: true,
             sorting: 'desc',
-            dataSet: statsToChartData(teamStats, [{from: 'goalsDiff', to: 'y'}], getTeamName)
+            dataSet: CompUtils.statsToChartData(teamStats, [{from: 'goalsDiff', to: 'y'}], getTeamName)
           }
         };
       }

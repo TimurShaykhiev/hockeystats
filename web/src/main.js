@@ -5,6 +5,7 @@ import router from 'Root/router';
 import store from 'Store/store';
 import {logger, DEBUG} from 'Root/logger';
 import VueGoodTable from 'vue-good-table';
+import vSelect from 'vue-select';
 import Tab from 'Components/Tab';
 import Tabs from 'Components/Tabs';
 import SeasonPicker from 'Components/SeasonPicker';
@@ -30,6 +31,7 @@ if (window.location.search.slice(1, 6) === 'debug') {
 }
 
 Vue.use(VueGoodTable);
+Vue.component('v-select', vSelect);
 Vue.component('tab', Tab);
 Vue.component('tabs', Tabs);
 Vue.component('season-picker', SeasonPicker);

@@ -44,8 +44,7 @@ import {SeasonRequestParams} from 'Store/types';
 import TeamMainStat from 'Components/TeamMainStat';
 import TeamPicker from 'Components/TeamPicker';
 import {format} from 'd3-format';
-import {allStatsToChartData, statsToChartData, seasonStatsToChartData, getAxis,
-        toiToStr} from 'Components/utils';
+import CompUtils from 'Components/utils';
 
 let f1 = format('.1f');
 let f2 = format('.2f');
@@ -406,30 +405,31 @@ export default {
         if (this.selectedChart === CHART_SKILLS) {
           let getRange = this.$store.getters.getTeamStatRange;
           let axises = [
-            getAxis('goalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
-            getAxis('goalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
-            getAxis('ppPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
-            getAxis('pkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current),
-            getAxis('faceOffWinsPercentage', this.$t('statNames.faceOffWinsPercentage'), getRange, selSeason.current)
+            CompUtils.getAxis('goalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
+            CompUtils.getAxis('goalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
+            CompUtils.getAxis('ppPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
+            CompUtils.getAxis('pkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current),
+            CompUtils.getAxis('faceOffWinsPercentage', this.$t('statNames.faceOffWinsPercentage'), getRange,
+              selSeason.current)
           ];
           return {
             radarChart: true,
             chartData: {
               homogeneous: false,
               axises: axises,
-              dataSet: [seasonStatsToChartData(teamInfo, axises, teamInfo.team.id)]
+              dataSet: [CompUtils.seasonStatsToChartData(teamInfo, axises, teamInfo.team.id)]
             }
           };
         }
         if (this.selectedChart === CHART_HOME_AWAY) {
           let getRange = this.$store.getters.getTeamStatRange;
           let axises = [
-            getAxis('haGoalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
-            getAxis('haGoalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
-            getAxis('haShots', this.$t('statNames.shots'), getRange, selSeason.current),
-            getAxis('haShotsAgainst', this.$t('statNames.shotsAgainst'), getRange, selSeason.current),
-            getAxis('haPpPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
-            getAxis('haPkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current)
+            CompUtils.getAxis('haGoalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
+            CompUtils.getAxis('haGoalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
+            CompUtils.getAxis('haShots', this.$t('statNames.shots'), getRange, selSeason.current),
+            CompUtils.getAxis('haShotsAgainst', this.$t('statNames.shotsAgainst'), getRange, selSeason.current),
+            CompUtils.getAxis('haPpPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
+            CompUtils.getAxis('haPkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current)
           ];
           return {
             radarChart: true,
@@ -441,7 +441,7 @@ export default {
                 {key: 'away', name: this.$t('charts.awayGames')}
               ],
               dataSet: [
-                seasonStatsToChartData(teamInfo, axises, 'home', {
+                CompUtils.seasonStatsToChartData(teamInfo, axises, 'home', {
                   'haGoalsFor': 'homeGoals',
                   'haGoalsAgainst': 'homeGoalsAgainst',
                   'haShots': 'homeShots',
@@ -449,7 +449,7 @@ export default {
                   'haPpPercentage': 'homePPPercentage',
                   'haPkPercentage': 'homePKPercentage'
                 }),
-                seasonStatsToChartData(teamInfo, axises, 'away', {
+                CompUtils.seasonStatsToChartData(teamInfo, axises, 'away', {
                   'haGoalsFor': 'awayGoals',
                   'haGoalsAgainst': 'awayGoalsAgainst',
                   'haShots': 'awayShots',
@@ -470,12 +470,12 @@ export default {
           return {
             barChart: true,
             chartData: {
-              dataSet: allStatsToChartData(teamStats, [{from: 'points', to: 'y'}])
+              dataSet: CompUtils.allStatsToChartData(teamStats, [{from: 'points', to: 'y'}])
             }
           };
         }
         if (this.selectedChart === CHART_WINS) {
-          let data = allStatsToChartData(teamStats, [
+          let data = CompUtils.allStatsToChartData(teamStats, [
             {from: 'winRegular', to: 'winRegular'},
             {from: 'winOvertime', to: 'winOvertime'},
             {from: 'winShootout', to: 'winShootout'}
@@ -494,7 +494,7 @@ export default {
           };
         }
         if (this.selectedChart === CHART_LOSSES) {
-          let data = allStatsToChartData(teamStats, [
+          let data = CompUtils.allStatsToChartData(teamStats, [
             {from: 'loseRegular', to: 'loseRegular'},
             {from: 'loseOvertime', to: 'loseOvertime'},
             {from: 'loseShootout', to: 'loseShootout'}
@@ -516,7 +516,7 @@ export default {
           return {
             barChart: true,
             chartData: {
-              dataSet: allStatsToChartData(teamStats, [{from: 'ppPercentage', to: 'y'}]),
+              dataSet: CompUtils.allStatsToChartData(teamStats, [{from: 'ppPercentage', to: 'y'}]),
               tooltipFormat: (t) => f2(t)
             }
           };
@@ -525,7 +525,7 @@ export default {
           return {
             barChart: true,
             chartData: {
-              dataSet: allStatsToChartData(teamStats, [{from: 'pkPercentage', to: 'y'}]),
+              dataSet: CompUtils.allStatsToChartData(teamStats, [{from: 'pkPercentage', to: 'y'}]),
               tooltipFormat: (t) => f2(t)
             }
           };
@@ -537,7 +537,7 @@ export default {
         }
         let skaterStats = stats.skaters;
         if (this.selectedChart === CHART_GOALS_ASSISTS) {
-          let data = statsToChartData(skaterStats, [
+          let data = CompUtils.statsToChartData(skaterStats, [
             {from: 'goals', to: 'goals'},
             {from: 'assists', to: 'assists'}
           ]);
@@ -556,7 +556,7 @@ export default {
           };
         }
         if (this.selectedChart === CHART_PLAYER_POINTS) {
-          let data = statsToChartData(skaterStats, [
+          let data = CompUtils.statsToChartData(skaterStats, [
             {from: 'evenPoints', to: 'evenPoints'},
             {from: 'ppPoints', to: 'ppPoints'},
             {from: 'shPoints', to: 'shPoints'}
@@ -583,8 +583,8 @@ export default {
               rotateXLabels: true,
               sorting: 'desc',
               yCaption: this.$t('charts.toiCaptionY'),
-              dataSet: statsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
-              tooltipFormat: (t) => toiToStr(t * 60)
+              dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
+              tooltipFormat: (t) => CompUtils.toiToStr(t * 60)
             }
           };
         }
@@ -594,7 +594,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: statsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
+              dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
             }
           };
         }
@@ -604,7 +604,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: statsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
+              dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'penaltyMinutes', to: 'y'}])
             }
           };
         }
@@ -614,7 +614,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: statsToChartData(skaterStats, [{from: 'games', to: 'y'}])
+              dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'games', to: 'y'}])
             }
           };
         }
@@ -624,7 +624,7 @@ export default {
             chartData: {
               rotateXLabels: true,
               sorting: 'desc',
-              dataSet: statsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
+              dataSet: CompUtils.statsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
               tooltipFormat: (t) => f2(t)
             }
           };

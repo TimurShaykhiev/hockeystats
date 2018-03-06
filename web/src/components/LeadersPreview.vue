@@ -15,7 +15,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {omitInteger} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
 const ITEMS_TO_SHOW = 5;
@@ -65,7 +65,7 @@ const typesMap = {
     getStats: 'goalieStats',
     setLimits: 'setGoalieStatsLimits',
     getValue: (plStats) => plStats.stats.games >= GAMES_LIMIT ? plStats.stats.svp : 0,
-    showValue: (value) => omitInteger(value, 3),
+    showValue: (value) => CompUtils.omitInteger(value, 3),
     descSort: true
   }
 };

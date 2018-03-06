@@ -28,7 +28,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {getSeasonName, seasonToStr} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import TableFilter from 'Components/TableFilter';
 import {format} from 'd3-format';
 
@@ -78,7 +78,7 @@ export default {
         if (selSeason.id === undefined || all === undefined) {
           return '';
         }
-        return getSeasonName(selSeason, all, (str) => this.$t(str));
+        return CompUtils.getSeasonName(selSeason, all, (str) => this.$t(str));
       } else {
         return this.$t('teamStatsTable.caption');
       }
@@ -249,7 +249,7 @@ export default {
           rowData.teamId = t.id;
           rowData.teamName = allTeams[t.id].name;
         } else {
-          rowData.seasonName = seasonToStr(t.season, (str) => this.$t(str));
+          rowData.seasonName = CompUtils.seasonToStr(t.season, (str) => this.$t(str));
         }
         rowData.pointPercentage = f1(rowData.pointPercentage);
         rowData.goalsForPerGame = f2(rowData.goalsForPerGame);

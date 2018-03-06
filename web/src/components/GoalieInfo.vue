@@ -28,7 +28,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {allStatsToChartData, toiToStr} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
 let f1 = format('.1f');
@@ -235,7 +235,7 @@ export default {
         return {
           barChart: true,
           chartData: {
-            dataSet: allStatsToChartData(goalieStats, [{from: 'gaa', to: 'y'}]),
+            dataSet: CompUtils.allStatsToChartData(goalieStats, [{from: 'gaa', to: 'y'}]),
             preciseYDomain: true,
             tooltipFormat: (t) => f3(t)
           }
@@ -245,14 +245,14 @@ export default {
         return {
           barChart: true,
           chartData: {
-            dataSet: allStatsToChartData(goalieStats, [{from: 'svp', to: 'y'}]),
+            dataSet: CompUtils.allStatsToChartData(goalieStats, [{from: 'svp', to: 'y'}]),
             preciseYDomain: true,
             tooltipFormat: (t) => f3(t)
           }
         };
       }
       if (this.selectedChart === CHART_WINS) {
-        let data = allStatsToChartData(goalieStats, [
+        let data = CompUtils.allStatsToChartData(goalieStats, [
           {from: 'wins', to: 'wins'},
           {from: 'losses', to: 'losses'}
         ]);
@@ -272,7 +272,7 @@ export default {
         return {
           barChart: true,
           chartData: {
-            dataSet: allStatsToChartData(goalieStats, [{from: 'shutout', to: 'y'}])
+            dataSet: CompUtils.allStatsToChartData(goalieStats, [{from: 'shutout', to: 'y'}])
           }
         };
       }
@@ -281,8 +281,8 @@ export default {
           barChart: true,
           chartData: {
             yCaption: this.$t('charts.toiCaptionY'),
-            dataSet: allStatsToChartData(goalieStats, [{from: 'toi', to: 'y', convert: (t) => t / 60}]),
-            tooltipFormat: (t) => toiToStr(t * 60)
+            dataSet: CompUtils.allStatsToChartData(goalieStats, [{from: 'toi', to: 'y', convert: (t) => t / 60}]),
+            tooltipFormat: (t) => CompUtils.toiToStr(t * 60)
           }
         };
       }

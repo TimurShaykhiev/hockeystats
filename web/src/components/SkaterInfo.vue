@@ -34,7 +34,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {allStatsToChartData, toiToStr, seasonStatsToChartData, getAxis} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
 let f1 = format('.1f');
@@ -406,30 +406,30 @@ export default {
         if (this.selectedChart === CHART_SKILLS) {
           let getRange = this.$store.getters.getSkaterStatRange;
           let axises = [
-            getAxis('goals', this.$t('statNames.goals'), getRange, selSeason.current),
-            getAxis('assists', this.$t('statNames.assists'), getRange, selSeason.current),
-            getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
-            getAxis('turnover', this.$t('statNames.turnover'), getRange, selSeason.current),
-            getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
+            CompUtils.getAxis('goals', this.$t('statNames.goals'), getRange, selSeason.current),
+            CompUtils.getAxis('assists', this.$t('statNames.assists'), getRange, selSeason.current),
+            CompUtils.getAxis('plusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
+            CompUtils.getAxis('turnover', this.$t('statNames.turnover'), getRange, selSeason.current),
+            CompUtils.getAxis('penaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
           ];
           return {
             radarChart: true,
             chartData: {
               homogeneous: false,
               axises: axises,
-              dataSet: [seasonStatsToChartData(skaterInfo, axises, skaterInfo.player.id)]
+              dataSet: [CompUtils.seasonStatsToChartData(skaterInfo, axises, skaterInfo.player.id)]
             }
           };
         }
         if (this.selectedChart === CHART_HOME_AWAY) {
           let getRange = this.$store.getters.getSkaterStatRange;
           let axises = [
-            getAxis('haGoals', this.$t('statNames.goals'), getRange, selSeason.current),
-            getAxis('haAssists', this.$t('statNames.assists'), getRange, selSeason.current),
-            getAxis('haPlusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
-            getAxis('haTurnover', this.$t('statNames.turnover'), getRange, selSeason.current),
-            getAxis('haPointsPerGame', this.$t('statNames.pointsPerGame'), getRange, selSeason.current),
-            getAxis('haPenaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
+            CompUtils.getAxis('haGoals', this.$t('statNames.goals'), getRange, selSeason.current),
+            CompUtils.getAxis('haAssists', this.$t('statNames.assists'), getRange, selSeason.current),
+            CompUtils.getAxis('haPlusMinus', this.$t('statNames.plusMinus'), getRange, selSeason.current),
+            CompUtils.getAxis('haTurnover', this.$t('statNames.turnover'), getRange, selSeason.current),
+            CompUtils.getAxis('haPointsPerGame', this.$t('statNames.pointsPerGame'), getRange, selSeason.current),
+            CompUtils.getAxis('haPenaltyMinutes', this.$t('statNames.penaltyMinutes'), getRange, selSeason.current)
           ];
           return {
             radarChart: true,
@@ -441,7 +441,7 @@ export default {
                 {key: 'away', name: this.$t('charts.awayGames')}
               ],
               dataSet: [
-                seasonStatsToChartData(skaterInfo, axises, 'home', {
+                CompUtils.seasonStatsToChartData(skaterInfo, axises, 'home', {
                   'haGoals': 'homeGoals',
                   'haAssists': 'homeAssists',
                   'haPlusMinus': 'homePlusMinus',
@@ -449,7 +449,7 @@ export default {
                   'haPointsPerGame': 'homePointsPerGame',
                   'haPenaltyMinutes': 'homePim'
                 }),
-                seasonStatsToChartData(skaterInfo, axises, 'away', {
+                CompUtils.seasonStatsToChartData(skaterInfo, axises, 'away', {
                   'haGoals': 'awayGoals',
                   'haAssists': 'awayAssists',
                   'haPlusMinus': 'awayPlusMinus',
@@ -467,7 +467,7 @@ export default {
           return {};
         }
         if (this.selectedChart === CHART_GOALS_ASSISTS) {
-          let data = allStatsToChartData(skaterStats, [
+          let data = CompUtils.allStatsToChartData(skaterStats, [
             {from: 'goals', to: 'goals'},
             {from: 'assists', to: 'assists'}
           ]);
@@ -484,7 +484,7 @@ export default {
           };
         }
         if (this.selectedChart === CHART_POINT) {
-          let data = allStatsToChartData(skaterStats, [
+          let data = CompUtils.allStatsToChartData(skaterStats, [
             {from: 'evenPoints', to: 'evenPoints'},
             {from: 'ppPoints', to: 'ppPoints'},
             {from: 'shPoints', to: 'shPoints'}
@@ -503,7 +503,7 @@ export default {
           };
         }
         if (this.selectedChart === CHART_GOALS) {
-          let data = allStatsToChartData(skaterStats, [
+          let data = CompUtils.allStatsToChartData(skaterStats, [
             {from: 'evenGoals', to: 'evenGoals'},
             {from: 'ppGoals', to: 'ppGoals'},
             {from: 'shGoals', to: 'shGoals'}
@@ -522,7 +522,7 @@ export default {
           };
         }
         if (this.selectedChart === CHART_ASSISTS) {
-          let data = allStatsToChartData(skaterStats, [
+          let data = CompUtils.allStatsToChartData(skaterStats, [
             {from: 'evenAssists', to: 'evenAssists'},
             {from: 'ppAssists', to: 'ppAssists'},
             {from: 'shAssists', to: 'shAssists'}
@@ -545,8 +545,12 @@ export default {
             barChart: true,
             chartData: {
               yCaption: this.$t('charts.toiCaptionY'),
-              dataSet: allStatsToChartData(skaterStats, [{from: 'toiPerGame', to: 'y', convert: (t) => t / 60}]),
-              tooltipFormat: (t) => toiToStr(t * 60)
+              dataSet: CompUtils.allStatsToChartData(skaterStats, [{
+                from: 'toiPerGame',
+                to: 'y',
+                convert: (t) => t / 60
+              }]),
+              tooltipFormat: (t) => CompUtils.toiToStr(t * 60)
             }
           };
         }
@@ -554,7 +558,7 @@ export default {
           return {
             barChart: true,
             chartData: {
-              dataSet: allStatsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
+              dataSet: CompUtils.allStatsToChartData(skaterStats, [{from: 'plusMinus', to: 'y'}])
             }
           };
         }
@@ -562,7 +566,7 @@ export default {
           return {
             barChart: true,
             chartData: {
-              dataSet: allStatsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
+              dataSet: CompUtils.allStatsToChartData(skaterStats, [{from: 'pointsPerGame', to: 'y'}]),
               tooltipFormat: (t) => f2(t)
             }
           };

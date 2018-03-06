@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import {toiToStr} from 'Components/utils';
+import CompUtils from 'Components/utils';
 
 export default {
   name: 'stats-block',
@@ -29,7 +29,7 @@ export default {
       return this.items.map((el) => {
         let valueStr;
         if (el.time) {
-          valueStr = toiToStr(el.value);
+          valueStr = CompUtils.toiToStr(el.value);
         } else {
           valueStr = el.precision ? el.precision(el.value) : el.value.toString();
           if (el.percentage) {

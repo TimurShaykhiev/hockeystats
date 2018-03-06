@@ -14,7 +14,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
-import {statsToChartData, toiToStr} from 'Components/utils';
+import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
 let f3 = format('.3f');
@@ -62,7 +62,7 @@ export default {
             rotateXLabels: true,
             sorting: 'asc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(goalieStats, [{
+            dataSet: CompUtils.statsToChartData(goalieStats, [{
               from: 'gaa',
               to: 'y',
               filterFn: (d) => d > gameLimit,
@@ -80,7 +80,7 @@ export default {
             rotateXLabels: true,
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(goalieStats, [{
+            dataSet: CompUtils.statsToChartData(goalieStats, [{
               from: 'svp',
               to: 'y',
               filterFn: (d) => d > gameLimit,
@@ -92,7 +92,7 @@ export default {
         };
       }
       if (this.selectedChart === CHART_WINS) {
-        let data = statsToChartData(goalieStats, [
+        let data = CompUtils.statsToChartData(goalieStats, [
           {from: 'wins', to: 'wins'},
           {from: 'losses', to: 'losses'}
         ]);
@@ -118,7 +118,7 @@ export default {
             rotateXLabels: true,
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
-            dataSet: statsToChartData(goalieStats, [{from: 'shutout', to: 'y'}])
+            dataSet: CompUtils.statsToChartData(goalieStats, [{from: 'shutout', to: 'y'}])
           }
         };
       }
@@ -130,7 +130,7 @@ export default {
             sorting: 'desc',
             limit: CHART_PLAYER_LIMIT,
             yCaption: this.$t('charts.toiCaptionY'),
-            dataSet: statsToChartData(goalieStats, [{from: 'toi', to: 'y', convert: (t) => t / 60}]),
+            dataSet: CompUtils.statsToChartData(goalieStats, [{from: 'toi', to: 'y', convert: (t) => t / 60}]),
             tooltipFormat: (t) => toiToStr(t * 60)
           }
         };
