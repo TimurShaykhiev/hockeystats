@@ -227,14 +227,14 @@ const actions = {
     return getPlayerDataById('getGoalieAllStats', 'setGoalieAllStats', 'goalieAllStats', commit, state, playerId);
   },
 
-  getSkatersComparison({commit, state}, {player1Id, player2Id, reqParams}) {
+  getSkatersComparison({commit, state}, {id1, id2, reqParams}) {
     return getPlayersCompareData('getSkatersComparison', 'setSkatersComparison', 'skatersComparison',
-                                 commit, state, player1Id, player2Id, reqParams);
+                                 commit, state, id1, id2, reqParams);
   },
 
-  getGoaliesComparison({commit, state}, {player1Id, player2Id, reqParams}) {
+  getGoaliesComparison({commit, state}, {id1, id2, reqParams}) {
     return getPlayersCompareData('getGoaliesComparison', 'setGoaliesComparison', 'goaliesComparison',
-                                 commit, state, player1Id, player2Id, reqParams);
+                                 commit, state, id1, id2, reqParams);
   },
 
   getSkaterStatsLimits({commit, state}, {season}) {

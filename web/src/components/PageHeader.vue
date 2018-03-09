@@ -24,6 +24,9 @@
         <router-link tag="li" :to="{name: 'goalies'}" class="header__goalies-link">
           <a>{{$t("navBar.goalies")}}</a>
         </router-link>
+        <router-link tag="li" :to="{name: 'compare'}" class="header__compare-link">
+          <a>{{$t("navBar.compare")}}</a>
+        </router-link>
         <hr/>
       </ul>
     </nav>
@@ -43,7 +46,8 @@ export default {
           home: 'Home',
           teams: 'Teams',
           skaters: 'Skaters',
-          goalies: 'Goaltenders'
+          goalies: 'Goaltenders',
+          compare: 'Compare'
         },
         chooseLang: {
           rus: 'Русский',
@@ -56,7 +60,8 @@ export default {
           home: 'Главная',
           teams: 'Команды',
           skaters: 'Игроки',
-          goalies: 'Вратари'
+          goalies: 'Вратари',
+          compare: 'Сравнить'
         },
         chooseLang: {
           rus: 'Русский',
@@ -118,7 +123,7 @@ export default {
         a {
           box-sizing: border-box;
           display: inline-block;
-          width: 24%;
+          width: 19%;
           color: @header-text-color;
           text-align: center;
           padding: .5rem;
@@ -130,21 +135,25 @@ export default {
         visibility: visible;
       }
       .header__teams-link:hover ~ hr {
-        margin-left: 30%;
+        margin-left: 24%;
         visibility: visible;
       }
       .header__skaters-link:hover ~ hr {
-        margin-left: 55%;
+        margin-left: 44%;
         visibility: visible;
       }
       .header__goalies-link:hover ~ hr {
-        margin-left: 77%;
+        margin-left: 63%;
+        visibility: visible;
+      }
+      .header__compare-link:hover ~ hr {
+        margin-left: 83%;
         visibility: visible;
       }
       hr {
         visibility: hidden;
         height: .25rem;
-        width: 15%;
+        width: 10%;
         margin: 0;
         background: @header-text-color;
         border: none;

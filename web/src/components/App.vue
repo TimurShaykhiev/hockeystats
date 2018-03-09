@@ -2,7 +2,7 @@
   <div class="wrapper container-col">
     <page-header></page-header>
     <div class="top-banner"></div>
-    <div class="container-row">
+    <div class="main-area container-row">
       <div class="main-content">
         <router-view></router-view>
       </div>
@@ -28,6 +28,9 @@ export default {
     height: 5px;
     background: lightgrey;
     margin: 5px;
+  }
+  .main-area {
+    flex: 1;
   }
   .main-content {
     flex: 5 5 0;

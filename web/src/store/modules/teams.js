@@ -152,7 +152,7 @@ function getTeamDataById(actName, mutName, stateName, commit, state, teamId) {
 const actions = {
   getAllTeams({commit, state}, {reqParams}) {
     logger.debug('action: getAllTeams');
-    if (state.allTeams.timestamp) {
+    if (reqParams.isSeasonEqual(state.allTeams.season)) {
       logger.debug('action: getAllTeams data is in storage');
       return Promise.resolve(state.allTeams);
     }
@@ -161,12 +161,8 @@ const actions = {
         (result) => {
           logger.debug('action: getAllTeams result received');
           StoreUtils.commitNew(commit, 'setAllTeams', state.allTeams, result);
-          if (state.conferences.length === 0) {
-            commit('setConferences', result);
-          }
-          if (state.divisions.length === 0) {
-            commit('setDivisions', result);
-          }
+          commit('setConferences', result);
+          commit('setDivisions', result);
           return state.allTeams;
         },
         (error) => {
@@ -197,14 +193,14 @@ const actions = {
       commit, state, teamId, reqParams);
   },
 
-  getTeamsComparison({commit, state}, {team1Id, team2Id, reqParams}) {
+  getTeamsComparison({commit, state}, {id1, id2, reqParams}) {
     logger.debug('action: getTeamsComparison');
     let tc = state.teamsComparison;
-    if (tc.timestamp && team1Id === tc.team1.id && team2Id === tc.team2.id && reqParams.isSeasonEqual(tc.season)) {
+    if (tc.timestamp && id1 === tc.team1.id && id2 === tc.team2.id && reqParams.isSeasonEqual(tc.season)) {
       logger.debug('action: getTeamsComparison data is in storage');
       return Promise.resolve(tc);
     }
-    let requestPromise = teamsApi.getTeamsComparison(team1Id, team2Id, reqParams);
+    let requestPromise = teamsApi.getTeamsComparison(id1, id2, reqParams);
     return StoreUtils.processRequest('getTeamsComparison', 'setTeamsComparison', 'teamsComparison',
                                      commit, state, requestPromise);
   },
