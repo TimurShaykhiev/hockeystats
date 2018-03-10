@@ -2,7 +2,10 @@
   <div class="player-personal-info container-col">
     <div class="player-personal-info__title container-row">
       <img :src="logoUrl" class="player-personal-info__logo">
-      <h1 class="player-personal-info__player-name">{{name}}</h1>
+      <div class="player-personal-info__player-info container-col">
+        <h1 class="player-personal-info__player-name">{{name}}</h1>
+        <h3 class="player-personal-info__team-name">{{teamName}}</h3>
+      </div>
     </div>
     <hr class="player-personal-info__divider"/>
     <div class="player-personal-info__vitals container-row">
@@ -16,6 +19,7 @@
 </template>
 
 <script>
+import {SeasonRequestParams} from 'Store/types';
 
 export default {
   name: 'player-personal-info',
@@ -73,12 +77,22 @@ export default {
       }
     }
   },
-  data() {
-    return {};
+  created() {
+    this.requestAllTeams();
   },
   computed: {
     logoUrl() {
       return `images/team${this.tid}.svg`;
+    },
+
+    teamName() {
+      let season = this.$store.state.season.selectedSeason;
+      let allTeams = this.$store.getters.getAllTeams(season);
+      if (allTeams === null) {
+        this.requestAllTeams();
+        return '';
+      }
+      return allTeams.teams[this.tid].name
     },
 
     vitals() {
@@ -89,6 +103,16 @@ export default {
         {name: this.$t('playerPersonalInfo.weight'), value: this.weight},
         {name: this.$t('playerPersonalInfo.age'), value: this.age}
       ];
+    }
+  },
+  methods: {
+    requestAllTeams() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.$store.dispatch('getAllTeams', {
+          reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
+        });
+      }
     }
   }
 };
@@ -109,9 +133,16 @@ export default {
     width: 10rem;
     height: 10rem;
   }
-  .player-personal-info__player-name {
-    font-size: 4rem;
-    margin: 0 0 0 2.5rem;
+  .player-personal-info__player-info {
+     margin: 0 0 0 2.5rem;
+
+    .player-personal-info__player-name {
+      font-size: 4rem;
+    }
+    .player-personal-info__team-name {
+      font-size: 1.4rem;
+      margin-top: 1rem;
+    }
   }
   .player-personal-info__vitals {
     justify-content: space-around;
