@@ -5,9 +5,9 @@
       <h1 class="team-info__name">{{teamName}}</h1>
     </div>
     <hr class="team-info__divider"/>
-    <team-picker/>
-    <div class="team-info__season-picker container-row">
-      <season-picker type="team"/>
+    <div class="team-info__selectors container-row">
+      <item-selector class="team-info__selector" type="team"/>
+      <season-picker class="team-info__season-picker" type="team"/>
     </div>
     <div class="container-row">
       <team-main-stat v-for="el in ratings" :key="el.id"  v-bind="el"/>
@@ -42,7 +42,7 @@
 <script>
 import {SeasonRequestParams} from 'Store/types';
 import TeamMainStat from 'Components/TeamMainStat';
-import TeamPicker from 'Components/TeamPicker';
+import ItemSelector from 'Components/ItemSelector';
 import {format} from 'd3-format';
 import CompUtils from 'Components/utils';
 
@@ -70,7 +70,7 @@ const CHART_POINTS_PER_GAME = 106;
 
 export default {
   name: 'team-info',
-  components: {TeamMainStat, TeamPicker},
+  components: {TeamMainStat, ItemSelector},
   i18n: {
     messages: {
       en: {
@@ -709,10 +709,14 @@ export default {
     font-size: 4rem;
     margin: 0 0 0 2.5rem;
   }
-  .team-info__season-picker {
-    justify-content: flex-end;
+  .team-info__selectors {
+    justify-content: space-between;
+    align-items: center;
     padding: 0 2rem;
     margin: 1rem 0;
+    .team-info__selector {
+      width: 70%;
+    }
   }
   .team-info__divider {
     background: @border-color;

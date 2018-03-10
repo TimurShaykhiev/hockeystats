@@ -1,8 +1,9 @@
 <template>
   <div class="skater-info container-col">
     <player-personal-info v-bind="playerInfo" v-if="playerInfo.id"/>
-    <div class="skater-info__season-picker container-row">
-      <season-picker type="skater"/>
+    <div class="skater-info__selectors container-row">
+      <item-selector class="skater-info__selector" type="skater"/>
+      <season-picker class="skater-info__season-picker" type="skater"/>
     </div>
     <div class="container-row">
       <player-main-stat v-for="el in ratings" :key="el.id" v-bind="el"/>
@@ -34,6 +35,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
+import ItemSelector from 'Components/ItemSelector';
 import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
@@ -53,7 +55,7 @@ const CHART_POINTS_PROGRESS = 10;
 
 export default {
   name: 'skater-info',
-  components: {},
+  components: {ItemSelector},
   i18n: {
     messages: {
       en: {
@@ -624,9 +626,13 @@ export default {
 </script>
 
 <style lang="less">
-  .skater-info__season-picker {
-    justify-content: flex-end;
+  .skater-info__selectors {
+    justify-content: space-between;
+    align-items: center;
     padding: 0 2rem;
     margin: 1rem 0;
+    .skater-info__selector {
+      width: 70%;
+    }
   }
 </style>

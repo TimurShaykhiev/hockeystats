@@ -191,6 +191,11 @@ let locales = {
         goalsDiff: 'Goals Difference',
         pointsProgress: 'Points Progress',
         faceoffWin: 'Faceoff Win'
+      },
+      itemSelectorPlaceholder: {
+        team: 'Select a team',
+        skater: 'Select a skater',
+        goalie: 'Select a goaltender'
       }
     },
     ru: {
@@ -375,6 +380,11 @@ let locales = {
         goalsDiff: 'Разница шайб',
         pointsProgress: 'Набор очков',
         faceoffWin: 'Выигранные вбрасывания'
+      },
+      itemSelectorPlaceholder: {
+        team: 'Выбери команду',
+        skater: 'Выбери игрока',
+        goalie: 'Выбери вратаря'
       }
     }
   }

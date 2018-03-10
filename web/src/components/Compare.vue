@@ -51,11 +51,6 @@ export default {
           skaters: 'Skaters',
           goalies: 'Goaltenders'
         },
-        selectTitle: {
-          team: 'Select a team',
-          skater: 'Select a skater',
-          goalie: 'Select a goaltender'
-        },
         compareButton: 'Compare'
       },
       ru: {
@@ -64,11 +59,6 @@ export default {
           teams: 'Команды',
           skaters: 'Игроки',
           goalies: 'Вратари'
-        },
-        selectTitle: {
-          team: 'Выбери команду',
-          skater: 'Выбери игрока',
-          goalie: 'Выбери вратаря'
         },
         compareButton: 'Сравнить'
       }
@@ -86,11 +76,11 @@ export default {
   },
   computed: {
     selectBoxPlaceholder() {
-      let result = this.$t('selectTitle.team');
+      let result = this.$t('itemSelectorPlaceholder.team');
       if (this.compareType === COMPARE_TYPE_SKATER) {
-        result = this.$t('selectTitle.skater');
+        result = this.$t('itemSelectorPlaceholder.skater');
       } else if (this.compareType === COMPARE_TYPE_GOALIE) {
-        result = this.$t('selectTitle.goalie');
+        result = this.$t('itemSelectorPlaceholder.goalie');
       }
       return result;
     },

@@ -1,8 +1,9 @@
 <template>
   <div class="goalie-info container-col">
     <player-personal-info v-bind="playerInfo" v-if="playerInfo.id"/>
-    <div class="goalie-info__season-picker container-row">
-      <season-picker type="goalie"/>
+    <div class="goalie-info__selectors container-row">
+      <item-selector class="goalie-info__selector" type="goalie"/>
+      <season-picker class="goalie-info__season-picker" type="goalie"/>
     </div>
     <div class="container-row">
       <player-main-stat v-for="el in ratings" :key="el.id" v-bind="el"/>
@@ -28,6 +29,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
+import ItemSelector from 'Components/ItemSelector';
 import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
 
@@ -43,7 +45,7 @@ const CHART_TOI = 5;
 
 export default {
   name: 'goalie-info',
-  components: {},
+  components: {ItemSelector},
   props: {
   },
   i18n: {
@@ -323,9 +325,13 @@ export default {
 </script>
 
 <style lang="less">
-  .goalie-info__season-picker {
-    justify-content: flex-end;
+  .goalie-info__selectors {
+    justify-content: space-between;
+    align-items: center;
     padding: 0 2rem;
     margin: 1rem 0;
+    .goalie-info__selector {
+      width: 70%;
+    }
   }
 </style>

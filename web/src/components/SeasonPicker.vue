@@ -9,6 +9,11 @@
 
 <script>
 
+const TYPE_ALL = 'all';
+const TYPE_TEAM = 'team';
+const TYPE_SKATER = 'skater';
+const TYPE_GOALIE = 'goalie';
+
 export default {
   name: 'season-picker',
   props: {
@@ -33,19 +38,19 @@ export default {
     };
   },
   created() {
-    if (this.type === 'all') {
+    if (this.type === TYPE_ALL) {
       this.$store.dispatch('getAllSeasons').then((result) => {
         this.setSelectedSeason(result.seasons);
       });
-    } else if (this.type === 'team') {
+    } else if (this.type === TYPE_TEAM) {
       this.$store.dispatch('getTeamSeasons', {teamId: this.$route.params.id}).then((result) => {
         this.setSelectedSeason(result.seasons);
       });
-    } else if (this.type === 'skater') {
+    } else if (this.type === TYPE_SKATER) {
       this.$store.dispatch('getSkaterSeasons', {playerId: this.$route.params.id}).then((result) => {
         this.setSelectedSeason(result.seasons);
       });
-    } else if (this.type === 'goalie') {
+    } else if (this.type === TYPE_GOALIE) {
       this.$store.dispatch('getGoalieSeasons', {playerId: this.$route.params.id}).then((result) => {
         this.setSelectedSeason(result.seasons);
       });
@@ -75,13 +80,13 @@ export default {
   },
   methods: {
     getSeasons() {
-      if (this.type === 'all') {
+      if (this.type === TYPE_ALL) {
         return this.$store.state.season.allSeasons.seasons;
-      } else if (this.type === 'team') {
+      } else if (this.type === TYPE_TEAM) {
         return this.$store.state.teams.teamSeasons.seasons;
-      } else if (this.type === 'skater') {
+      } else if (this.type === TYPE_SKATER) {
         return this.$store.state.players.skaterSeasons.seasons;
-      } else if (this.type === 'goalie') {
+      } else if (this.type === TYPE_GOALIE) {
         return this.$store.state.players.goalieSeasons.seasons;
       }
     },
@@ -115,6 +120,7 @@ export default {
 <style lang="less">
   .season-picker {
     font-size: 1.2rem;
+    height: 1.5rem;
   }
   .season-picker__label {
     margin: 0 .8rem;
