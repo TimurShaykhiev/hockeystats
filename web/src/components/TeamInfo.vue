@@ -45,10 +45,9 @@ import TeamMainStat from 'Components/TeamMainStat';
 import ItemSelector from 'Components/ItemSelector';
 import {format} from 'd3-format';
 import CompUtils from 'Components/utils';
+import {NumValue} from 'Components/statValue';
 
-let f1 = format('.1f');
 let f2 = format('.2f');
-let f3 = format('.3f');
 
 // Team charts
 const CHART_SKILLS = 1;
@@ -148,34 +147,34 @@ export default {
       return [{
         id: 'goalsForPerGame',
         label: this.$t('statNames.goalsForPerGame'),
-        value: teamInfo.goalsForPerGame,
-        rating: teamInfo.goalsForPerGameRate,
-        average: teamInfo.goalsForPerGameAvg
+        value: new NumValue(teamInfo.goalsForPerGame),
+        rating: new NumValue(teamInfo.goalsForPerGameRate),
+        average: new NumValue(teamInfo.goalsForPerGameAvg)
       }, {
         id: 'goalsAgainstPerGame',
         label: this.$t('statNames.goalsAgainstPerGame'),
-        value: teamInfo.goalsAgainstPerGame,
-        rating: teamInfo.goalsAgainstPerGameRate,
-        average: teamInfo.goalsAgainstPerGameAvg,
+        value: new NumValue(teamInfo.goalsAgainstPerGame),
+        rating: new NumValue(teamInfo.goalsAgainstPerGameRate),
+        average: new NumValue(teamInfo.goalsAgainstPerGameAvg),
         sortOrder: 'asc'
       }, {
         id: 'ppPercentage',
         label: this.$t('statNames.ppPercentage'),
-        value: teamInfo.ppPercentage,
-        rating: teamInfo.ppPercentageRate,
-        average: teamInfo.ppPercentageAvg
+        value: new NumValue(teamInfo.ppPercentage),
+        rating: new NumValue(teamInfo.ppPercentageRate),
+        average: new NumValue(teamInfo.ppPercentageAvg)
       }, {
         id: 'pkPercentage',
         label: this.$t('statNames.pkPercentage'),
-        value: teamInfo.pkPercentage,
-        rating: teamInfo.pkPercentageRate,
-        average: teamInfo.pkPercentageAvg
+        value: new NumValue(teamInfo.pkPercentage),
+        rating: new NumValue(teamInfo.pkPercentageRate),
+        average: new NumValue(teamInfo.pkPercentageAvg)
       }, {
         id: 'shootingPercentage',
         label: this.$t('statNames.shootingPercentage'),
-        value: teamInfo.shootingPercentage,
-        rating: teamInfo.shootingPercentageRate,
-        average: teamInfo.shootingPercentageAvg
+        value: new NumValue(teamInfo.shootingPercentage),
+        rating: new NumValue(teamInfo.shootingPercentageRate),
+        average: new NumValue(teamInfo.shootingPercentageAvg)
       }];
     },
 
@@ -186,18 +185,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsFor'),
-        value: teamInfo.goalsFor
+        value: new NumValue(teamInfo.goalsFor, 0)
       }, {
         name: this.$t('statNames.goalsForPerGame'),
-        value: teamInfo.goalsForPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.goalsForPerGame)
       }, {
         name: this.$t('statNames.goalsAgainst'),
-        value: teamInfo.goalsAgainst
+        value: new NumValue(teamInfo.goalsAgainst, 0)
       }, {
         name: this.$t('statNames.goalsAgainstPerGame'),
-        value: teamInfo.goalsAgainstPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.goalsAgainstPerGame)
       }];
     },
 
@@ -208,22 +205,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.shotsPerGame'),
-        value: teamInfo.shotsPerGame,
-        precision: f1
+        value: new NumValue(teamInfo.shotsPerGame, 1)
       }, {
         name: this.$t('statNames.shotsAgainstPerGame'),
-        value: teamInfo.shotsAgainstPerGame,
-        precision: f1
+        value: new NumValue(teamInfo.shotsAgainstPerGame, 1)
       }, {
         name: this.$t('statNames.shootingPercentage'),
-        value: teamInfo.shootingPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.shootingPercentage)
       }, {
         name: this.$t('statNames.oppShootingPercentage'),
-        value: teamInfo.oppShootingPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.oppShootingPercentage)
       }];
     },
 
@@ -234,25 +225,19 @@ export default {
       }
       return [{
         name: this.$t('statNames.scoringEfficiencyRatio'),
-        value: teamInfo.scoringEfficiencyRatio,
-        precision: f2
+        value: new NumValue(teamInfo.scoringEfficiencyRatio)
       }, {
         name: this.$t('statNames.shotEfficiencyRatio'),
-        value: teamInfo.shotEfficiencyRatio,
-        precision: f2
+        value: new NumValue(teamInfo.shotEfficiencyRatio)
       }, {
         name: this.$t('statNames.penaltyEfficiencyRatio'),
-        value: teamInfo.penaltyEfficiencyRatio,
-        precision: f2
+        value: new NumValue(teamInfo.penaltyEfficiencyRatio)
       }, {
         name: this.$t('statNames.pointsPerGame'),
-        value: teamInfo.pointsPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.pointsPerGame)
       }, {
         name: this.$t('statNames.faceOffWinsPercentage'),
-        value: teamInfo.faceOffWinsPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.faceOffWinsPercentage)
       }];
     },
 
@@ -263,20 +248,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.ppPercentage'),
-        value: teamInfo.ppPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.ppPercentage)
       }, {
         name: this.$t('statNames.ppGoals'),
-        value: teamInfo.ppGoals
+        value: new NumValue(teamInfo.ppGoals, 0)
       }, {
         name: this.$t('statNames.ppGoalsPerGame'),
-        value: teamInfo.ppGoalsPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.ppGoalsPerGame)
       }, {
         name: this.$t('statNames.ppPerGame'),
-        value: teamInfo.ppPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.ppPerGame)
       }];
     },
 
@@ -287,20 +268,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.pkPercentage'),
-        value: teamInfo.pkPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.pkPercentage)
       }, {
         name: this.$t('statNames.shGoalsAgainst'),
-        value: teamInfo.shGoalsAgainst
+        value: new NumValue(teamInfo.shGoalsAgainst, 0)
       }, {
         name: this.$t('statNames.shGoalsAgainstPerGame'),
-        value: teamInfo.shGoalsAgainstPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.shGoalsAgainstPerGame)
       }, {
         name: this.$t('statNames.shPerGame'),
-        value: teamInfo.shPerGame,
-        precision: f2
+        value: new NumValue(teamInfo.shPerGame)
       }];
     },
 
@@ -311,15 +288,13 @@ export default {
       }
       return [{
         name: this.$t('statNames.savePercentage'),
-        value: teamInfo.savePercentage,
-        precision: f3
+        value: new NumValue(teamInfo.savePercentage, 3)
       }, {
         name: this.$t('statNames.oppSavePercentage'),
-        value: teamInfo.oppSavePercentage,
-        precision: f3
+        value: new NumValue(teamInfo.oppSavePercentage, 3)
       }, {
         name: this.$t('statNames.shutouts'),
-        value: teamInfo.shutouts
+        value: new NumValue(teamInfo.shutouts, 0)
       }];
     },
 
@@ -330,26 +305,22 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsFor'),
-        value: teamInfo.homeGoals
+        value: new NumValue(teamInfo.homeGoals, 0)
       }, {
         name: this.$t('statNames.goalsAgainst'),
-        value: teamInfo.homeGoalsAgainst
+        value: new NumValue(teamInfo.homeGoalsAgainst, 0)
       }, {
         name: this.$t('statNames.shots'),
-        value: teamInfo.homeShots
+        value: new NumValue(teamInfo.homeShots, 0)
       }, {
         name: this.$t('statNames.shotsAgainst'),
-        value: teamInfo.homeShotsAgainst
+        value: new NumValue(teamInfo.homeShotsAgainst, 0)
       }, {
         name: this.$t('statNames.ppPercentage'),
-        value: teamInfo.homePPPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.homePPPercentage)
       }, {
         name: this.$t('statNames.pkPercentage'),
-        value: teamInfo.homePKPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.homePKPercentage)
       }];
     },
 
@@ -360,26 +331,22 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsFor'),
-        value: teamInfo.awayGoals
+        value: new NumValue(teamInfo.awayGoals, 0)
       }, {
         name: this.$t('statNames.goalsAgainst'),
-        value: teamInfo.awayGoalsAgainst
+        value: new NumValue(teamInfo.awayGoalsAgainst, 0)
       }, {
         name: this.$t('statNames.shots'),
-        value: teamInfo.awayShots
+        value: new NumValue(teamInfo.awayShots, 0)
       }, {
         name: this.$t('statNames.shotsAgainst'),
-        value: teamInfo.awayShotsAgainst
+        value: new NumValue(teamInfo.awayShotsAgainst, 0)
       }, {
         name: this.$t('statNames.ppPercentage'),
-        value: teamInfo.awayPPPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.awayPPPercentage)
       }, {
         name: this.$t('statNames.pkPercentage'),
-        value: teamInfo.awayPKPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(teamInfo.awayPKPercentage)
       }];
     },
 

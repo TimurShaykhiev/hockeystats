@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import CompUtils from 'Components/utils';
 
 export default {
   name: 'main-stat-compare',
@@ -36,11 +35,11 @@ export default {
       stats: {
         left: {
           value: this.leftData.value.toStr(),
-          rate: CompUtils.numberToOrdinal(this.leftData.rate, (str) => this.$t(str))
+          rate: this.leftData.rate.toOrdinal()
         },
         right: {
           value: this.rightData.value.toStr(),
-          rate: CompUtils.numberToOrdinal(this.rightData.rate, (str) => this.$t(str))
+          rate: this.rightData.rate.toOrdinal()
         }
       }
     };

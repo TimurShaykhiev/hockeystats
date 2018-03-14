@@ -21,16 +21,14 @@
 </template>
 
 <script>
-import CompUtils from 'Components/utils';
-import {format} from 'd3-format';
 
 export default {
   name: 'team-main-stat',
   props: {
     label: {type: String, required: true},
-    value: {type: Number, required: true},
-    rating: {type: Number, required: true},
-    average: {type: Number, required: true},
+    value: {required: true},
+    rating: {required: true},
+    average: {required: true},
     sortOrder: {type: String, default: 'desc'}
   },
   i18n: {
@@ -44,22 +42,25 @@ export default {
     }
   },
   data() {
-    let f = format('.2f');
+    let val = this.value.value;
+    let avg = this.average.value;
     return {
       caption: this.label.toUpperCase(),
-      statValue: f(this.value),
-      placeInRate: CompUtils.numberToOrdinal(this.rating, (str) => this.$t(str)),
-      leagueAverage: f(this.average),
-      statBarHeight: `${Math.round(this.value / Math.max(this.value, this.average) * 100)}px`,
-      avgBarHeight: `${Math.round(this.average / Math.max(this.value, this.average) * 100)}px`
+      statValue: this.value.toStr(),
+      placeInRate: this.rating.toOrdinal(),
+      leagueAverage: this.average.toStr(),
+      statBarHeight: `${Math.round(val / Math.max(val, avg) * 100)}px`,
+      avgBarHeight: `${Math.round(avg / Math.max(val, avg) * 100)}px`
     };
   },
   computed: {
     statQualityClass() {
+      let val = this.value.value;
+      let avg = this.average.value;
       if (this.sortOrder === 'desc') {
-        return this.value > this.average ? 'good-stat' : 'bad-stat';
+        return val > avg ? 'good-stat' : 'bad-stat';
       }
-      return this.value <= this.average ? 'good-stat' : 'bad-stat';
+      return val <= avg ? 'good-stat' : 'bad-stat';
     }
   }
 };

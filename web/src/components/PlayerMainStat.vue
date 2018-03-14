@@ -14,16 +14,14 @@
 </template>
 
 <script>
-import CompUtils from 'Components/utils';
 
 export default {
   name: 'player-main-stat',
   props: {
     label: {type: String, required: true},
-    value: {type: Number, required: true},
-    precision: {type: Function},
-    rating: {type: Number, required: true},
-    teamRating: {type: Number}
+    value: {required: true},
+    rating: {required: true},
+    teamRating: {}
   },
   i18n: {
     messages: {
@@ -40,9 +38,9 @@ export default {
   data() {
     return {
       caption: this.label.toUpperCase(),
-      statValue: this.precision ? this.precision(this.value) : this.value.toString(),
-      placeInTotalRate: CompUtils.numberToOrdinal(this.rating, (str) => this.$t(str)),
-      placeInTeamRate: this.teamRating ? CompUtils.numberToOrdinal(this.teamRating, (str) => this.$t(str)) : ''
+      statValue: this.value.toStr(),
+      placeInTotalRate: this.rating.toOrdinal(),
+      placeInTeamRate: this.teamRating ? this.teamRating.toOrdinal() : ''
     };
   }
 };

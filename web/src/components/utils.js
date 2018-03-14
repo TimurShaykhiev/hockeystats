@@ -1,5 +1,6 @@
 import {format} from 'd3-format';
 import {NumValue, TimeValue} from 'Components/statValue';
+import i18n from 'Root/locales';
 
 function getPlayerName(s) {
   return s.player.name;
@@ -23,40 +24,31 @@ export default {
     return sec < 10 ? `${min}:0${sec}` : `${min}:${sec}`;
   },
 
-  seasonToStr(season, translateFunc) {
+  seasonToStr(season) {
     let years = `${season.year}-${season.year % 100 + 1}`;
     let str = season.regular ? 'season.regular' : 'season.playoff';
-    return `${translateFunc(str)} ${years}`;
+    return `${i18n.t(str)} ${years}`;
   },
 
-  getSeasonName(selectedSeason, seasons, translateFunc) {
+  getSeasonName(selectedSeason, seasons) {
     for (let s of seasons) {
       if (s.id === selectedSeason.id) {
         let years = `${s.year}-${s.year % 100 + 1}`;
         let str = selectedSeason.regular ? 'season.regular' : 'season.playoff';
-        return `${translateFunc(str)} ${years}`;
+        return `${i18n.t(str)} ${years}`;
       }
     }
     return '';
   },
 
-  getPaginationText(translateFunc) {
+  getPaginationText() {
     return {
-      next: translateFunc('pagination.next'),
-      prev: translateFunc('pagination.prev'),
-      rowsPerPage: translateFunc('pagination.rowsPerPage'),
-      ofText: translateFunc('pagination.ofText'),
-      allText: translateFunc('pagination.allText')
+      next: i18n.t('pagination.next'),
+      prev: i18n.t('pagination.prev'),
+      rowsPerPage: i18n.t('pagination.rowsPerPage'),
+      ofText: i18n.t('pagination.ofText'),
+      allText: i18n.t('pagination.allText')
     };
-  },
-
-  numberToOrdinal(num, translateFunc) {
-    // Now it is applicable for english and russian languages only
-    let rem = num % 100;
-    if (rem === 11 || rem === 12) {
-      return `${num}${translateFunc('ordinalNumbers[0]')}`;
-    }
-    return `${num}${translateFunc(`ordinalNumbers[${num % 10}]`)}`;
   },
 
   allStatsToChartData(allStats, fieldMap) {
@@ -146,12 +138,12 @@ export default {
       leftData: {
         name: lName,
         value: new NumValue(data.stats1[attr], precision),
-        rate: data.stats1[rateAttr]
+        rate: new NumValue(data.stats1[rateAttr])
       },
       rightData: {
         name: rName,
         value: new NumValue(data.stats2[attr], precision),
-        rate: data.stats2[rateAttr]
+        rate: new NumValue(data.stats2[rateAttr])
       },
       sortOrder: order
     };

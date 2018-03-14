@@ -1,5 +1,6 @@
 import {format} from 'd3-format';
 import CompUtils from 'Components/utils';
+import i18n from 'Root/locales';
 
 const FORMATS = [
   (d) => d.toString(),
@@ -9,18 +10,26 @@ const FORMATS = [
 ];
 
 export class NumValue {
-  constructor(value, precision=2, percentage=false) {
+  constructor(value, precision=2) {
     this.value = value;
     this.precision = FORMATS[Math.min(precision, 3)];
-    this.percentage = percentage;
   }
 
   toStr() {
-    return `${this.precision(this.value)}${this.percentage ? '%' : ''}`;
+    return this.precision(this.value);
+  }
+
+  toOrdinal() {
+    // Now it is applicable for english and russian languages only
+    const rem = this.value % 100;
+    if (rem === 11 || rem === 12) {
+      return `${this.value}${i18n.t('ordinalNumbers[0]')}`;
+    }
+    return `${this.value}${i18n.t(`ordinalNumbers[${this.value % 10}]`)}`;
   }
 
   format(value) {
-    return `${this.precision(value)}${this.percentage ? '%' : ''}`;
+    return this.precision(value);
   }
 }
 

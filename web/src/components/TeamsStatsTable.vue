@@ -78,7 +78,7 @@ export default {
         if (selSeason.id === undefined || all === undefined) {
           return '';
         }
-        return CompUtils.getSeasonName(selSeason, all, (str) => this.$t(str));
+        return CompUtils.getSeasonName(selSeason, all);
       } else {
         return this.$t('teamStatsTable.caption');
       }
@@ -249,7 +249,7 @@ export default {
           rowData.teamId = t.id;
           rowData.teamName = allTeams[t.id].name;
         } else {
-          rowData.seasonName = CompUtils.seasonToStr(t.season, (str) => this.$t(str));
+          rowData.seasonName = CompUtils.seasonToStr(t.season);
         }
         rowData.pointPercentage = f1(rowData.pointPercentage);
         rowData.goalsForPerGame = f2(rowData.goalsForPerGame);

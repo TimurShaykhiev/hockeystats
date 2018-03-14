@@ -38,8 +38,8 @@ import {SeasonRequestParams} from 'Store/types';
 import ItemSelector from 'Components/ItemSelector';
 import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
+import {NumValue, TimeValue} from 'Components/statValue';
 
-let f1 = format('.1f');
 let f2 = format('.2f');
 
 const CHART_POINT = 1;
@@ -121,33 +121,33 @@ export default {
       return [{
         id: 'goals',
         label: this.$t('statNames.goals'),
-        value: skaterInfo.goals,
-        rating: skaterInfo.goalsRateTotal,
-        teamRating: skaterInfo.goalsRateTeam
+        value: new NumValue(skaterInfo.goals, 0),
+        rating: new NumValue(skaterInfo.goalsRateTotal),
+        teamRating: new NumValue(skaterInfo.goalsRateTeam)
       }, {
         id: 'assists',
         label: this.$t('statNames.assists'),
-        value: skaterInfo.assists,
-        rating: skaterInfo.assistsRateTotal,
-        teamRating: skaterInfo.assistsRateTeam
+        value: new NumValue(skaterInfo.assists, 0),
+        rating: new NumValue(skaterInfo.assistsRateTotal),
+        teamRating: new NumValue(skaterInfo.assistsRateTeam)
       }, {
         id: 'points',
         label: this.$t('statNames.points'),
-        value: skaterInfo.points,
-        rating: skaterInfo.pointsRateTotal,
-        teamRating: skaterInfo.pointsRateTeam
+        value: new NumValue(skaterInfo.points, 0),
+        rating: new NumValue(skaterInfo.pointsRateTotal),
+        teamRating: new NumValue(skaterInfo.pointsRateTeam)
       }, {
         id: 'plusMinus',
         label: this.$t('statNames.plusMinus'),
-        value: skaterInfo.plusMinus,
-        rating: skaterInfo.plusMinusRateTotal,
-        teamRating: skaterInfo.plusMinusRateTeam
+        value: new NumValue(skaterInfo.plusMinus, 0),
+        rating: new NumValue(skaterInfo.plusMinusRateTotal),
+        teamRating: new NumValue(skaterInfo.plusMinusRateTeam)
       }, {
         id: 'turnover',
         label: this.$t('statNames.turnover'),
-        value: skaterInfo.turnover,
-        rating: skaterInfo.turnoverRateTotal,
-        teamRating: skaterInfo.turnoverRateTeam
+        value: new NumValue(skaterInfo.turnover, 0),
+        rating: new NumValue(skaterInfo.turnoverRateTotal),
+        teamRating: new NumValue(skaterInfo.turnoverRateTeam)
       }];
     },
 
@@ -158,25 +158,19 @@ export default {
       }
       return [{
         name: this.$t('statNames.points'),
-        value: skaterInfo.points
+        value: new NumValue(skaterInfo.points, 0)
       }, {
         name: this.$t('statNames.pointsPerGame'),
-        value: skaterInfo.pointsPerGame,
-        precision: f2
+        value: new NumValue(skaterInfo.pointsPerGame)
       }, {
         name: this.$t('statNames.pointsPer60min'),
-        value: skaterInfo.pointsPer60min,
-        precision: f2
+        value: new NumValue(skaterInfo.pointsPer60min)
       }, {
         name: this.$t('statNames.goalPercentageOfPoints'),
-        value: skaterInfo.goalPercentageOfPoints,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.goalPercentageOfPoints, 1)
       }, {
         name: this.$t('statNames.assistPercentageOfPoints'),
-        value: skaterInfo.assistPercentageOfPoints,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.assistPercentageOfPoints, 1)
       }];
     },
 
@@ -187,25 +181,19 @@ export default {
       }
       return [{
         name: this.$t('statNames.goals'),
-        value: skaterInfo.goals
+        value: new NumValue(skaterInfo.goals, 0)
       }, {
         name: this.$t('statNames.goalsPerGame'),
-        value: skaterInfo.goalsPerGame,
-        precision: f2
+        value: new NumValue(skaterInfo.goalsPerGame)
       }, {
         name: this.$t('statNames.goalsPer60min'),
-        value: skaterInfo.goalsPer60min,
-        precision: f2
+        value: new NumValue(skaterInfo.goalsPer60min)
       }, {
         name: this.$t('statNames.evenStrengthGoalsPercentage'),
-        value: skaterInfo.evenStrengthGoalsPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.evenStrengthGoalsPercentage, 1)
       }, {
         name: this.$t('statNames.ppGoalPercentage'),
-        value: skaterInfo.ppGoalPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.ppGoalPercentage, 1)
       }];
     },
 
@@ -216,25 +204,19 @@ export default {
       }
       return [{
         name: this.$t('statNames.assists'),
-        value: skaterInfo.assists
+        value: new NumValue(skaterInfo.assists, 0)
       }, {
         name: this.$t('statNames.assistsPerGame'),
-        value: skaterInfo.assistsPerGame,
-        precision: f2
+        value: new NumValue(skaterInfo.assistsPerGame)
       }, {
         name: this.$t('statNames.assistsPer60min'),
-        value: skaterInfo.assistsPer60min,
-        precision: f2
+        value: new NumValue(skaterInfo.assistsPer60min)
       }, {
         name: this.$t('statNames.evenAssistPercentage'),
-        value: skaterInfo.evenAssistPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.evenAssistPercentage, 1)
       }, {
         name: this.$t('statNames.ppAssistPercentage'),
-        value: skaterInfo.ppAssistPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.ppAssistPercentage, 1)
       }];
     },
 
@@ -245,24 +227,19 @@ export default {
       }
       return [{
         name: this.$t('statNames.shootingPercentage'),
-        value: skaterInfo.shootingPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.shootingPercentage, 1)
       }, {
         name: this.$t('statNames.shots'),
-        value: skaterInfo.shots
+        value: new NumValue(skaterInfo.shots, 0)
       }, {
         name: this.$t('statNames.shotsPerGame'),
-        value: skaterInfo.shotsPerGame,
-        precision: f1
+        value: new NumValue(skaterInfo.shotsPerGame, 1)
       }, {
         name: this.$t('statNames.shotsPer60min'),
-        value: skaterInfo.shotsPer60min,
-        precision: f1
+        value: new NumValue(skaterInfo.shotsPer60min, 1)
       }, {
         name: this.$t('statNames.shotsPerGoal'),
-        value: skaterInfo.shotsPerGoal,
-        precision: f1
+        value: new NumValue(skaterInfo.shotsPerGoal, 1)
       }];
     },
 
@@ -273,21 +250,19 @@ export default {
       }
       return [{
         name: this.$t('statNames.takeaways'),
-        value: skaterInfo.takeaways
+        value: new NumValue(skaterInfo.takeaways, 0)
       }, {
         name: this.$t('statNames.giveaways'),
-        value: skaterInfo.giveaways
+        value: new NumValue(skaterInfo.giveaways, 0)
       }, {
         name: this.$t('statNames.turnover'),
-        value: skaterInfo.turnover
+        value: new NumValue(skaterInfo.turnover, 0)
       }, {
         name: this.$t('statNames.turnoverPer60min'),
-        value: skaterInfo.turnoverPer60min,
-        precision: f2
+        value: new NumValue(skaterInfo.turnoverPer60min)
       }, {
         name: this.$t('statNames.turnoverRatio'),
-        value: skaterInfo.turnoverRatio,
-        precision: f2
+        value: new NumValue(skaterInfo.turnoverRatio)
       }];
     },
 
@@ -298,37 +273,31 @@ export default {
       }
       return [{
         name: this.$t('statNames.plusMinus'),
-        value: skaterInfo.plusMinus
+        value: new NumValue(skaterInfo.plusMinus, 0)
       }, {
         name: this.$t('statNames.blocks'),
-        value: skaterInfo.blocks
+        value: new NumValue(skaterInfo.blocks, 0)
       }, {
         name: this.$t('statNames.blocksPer60min'),
-        value: skaterInfo.blocksPer60min,
-        precision: f1
+        value: new NumValue(skaterInfo.blocksPer60min, 1)
       }, {
         name: this.$t('statNames.hits'),
-        value: skaterInfo.hits
+        value: new NumValue(skaterInfo.hits, 0)
       }, {
         name: this.$t('statNames.hitsPer60min'),
-        value: skaterInfo.hitsPer60min,
-        precision: f1
+        value: new NumValue(skaterInfo.hitsPer60min, 1)
       }, {
         name: this.$t('statNames.toiPerGame'),
-        value: skaterInfo.toiPerGame,
-        time: true
+        value: new TimeValue(skaterInfo.toiPerGame)
       }, {
         name: this.$t('statNames.faceOffWinsPercentage'),
-        value: skaterInfo.faceOffWinsPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(skaterInfo.faceOffWinsPercentage, 1)
       }, {
         name: this.$t('statNames.penaltyMinutes'),
-        value: skaterInfo.penaltyMinutes
+        value: new NumValue(skaterInfo.penaltyMinutes, 0)
       }, {
         name: this.$t('statNames.PIMsPer60min'),
-        value: skaterInfo.PIMsPer60min,
-        precision: f2
+        value: new NumValue(skaterInfo.PIMsPer60min)
       }];
     },
 
@@ -339,23 +308,22 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsFor'),
-        value: skaterInfo.homeGoals
+        value: new NumValue(skaterInfo.homeGoals, 0)
       }, {
         name: this.$t('statNames.assists'),
-        value: skaterInfo.homeAssists
+        value: new NumValue(skaterInfo.homeAssists, 0)
       }, {
         name: this.$t('statNames.plusMinus'),
-        value: skaterInfo.homePlusMinus
+        value: new NumValue(skaterInfo.homePlusMinus, 0)
       }, {
         name: this.$t('statNames.turnover'),
-        value: skaterInfo.homeTurnover
+        value: new NumValue(skaterInfo.homeTurnover, 0)
       }, {
         name: this.$t('statNames.pointsPerGame'),
-        value: skaterInfo.homePointsPerGame,
-        precision: f2
+        value: new NumValue(skaterInfo.homePointsPerGame)
       }, {
         name: this.$t('statNames.penaltyMinutes'),
-        value: skaterInfo.homePim
+        value: new NumValue(skaterInfo.homePim, 0)
       }];
     },
 
@@ -366,23 +334,22 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsFor'),
-        value: skaterInfo.awayGoals
+        value: new NumValue(skaterInfo.awayGoals, 0)
       }, {
         name: this.$t('statNames.assists'),
-        value: skaterInfo.awayAssists
+        value: new NumValue(skaterInfo.awayAssists, 0)
       }, {
         name: this.$t('statNames.plusMinus'),
-        value: skaterInfo.awayPlusMinus
+        value: new NumValue(skaterInfo.awayPlusMinus, 0)
       }, {
         name: this.$t('statNames.turnover'),
-        value: skaterInfo.awayTurnover
+        value: new NumValue(skaterInfo.awayTurnover, 0)
       }, {
         name: this.$t('statNames.pointsPerGame'),
-        value: skaterInfo.awayPointsPerGame,
-        precision: f2
+        value: new NumValue(skaterInfo.awayPointsPerGame)
       }, {
         name: this.$t('statNames.penaltyMinutes'),
-        value: skaterInfo.awayPim
+        value: new NumValue(skaterInfo.awayPim, 0)
       }];
     },
 

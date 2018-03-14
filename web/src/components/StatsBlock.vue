@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import CompUtils from 'Components/utils';
 
 export default {
   name: 'stats-block',
@@ -23,18 +22,7 @@ export default {
   },
   computed: {
     stats() {
-      return this.items.map((el) => {
-        let valueStr;
-        if (el.time) {
-          valueStr = CompUtils.toiToStr(el.value);
-        } else {
-          valueStr = el.precision ? el.precision(el.value) : el.value.toString();
-          if (el.percentage) {
-            valueStr += '%';
-          }
-        }
-        return {name: el.name.toUpperCase(), value: valueStr};
-      });
+      return this.items.map((el) => ({name: el.name.toUpperCase(), value: el.value.toStr()}));
     }
   }
 };

@@ -32,9 +32,8 @@ import {SeasonRequestParams} from 'Store/types';
 import ItemSelector from 'Components/ItemSelector';
 import CompUtils from 'Components/utils';
 import {format} from 'd3-format';
+import {NumValue} from 'Components/statValue';
 
-let f1 = format('.1f');
-let f2 = format('.2f');
 let f3 = format('.3f');
 
 const CHART_GAA = 1;
@@ -100,31 +99,28 @@ export default {
       return [{
         id: 'gaa',
         label: this.$t('statNames.goalsAgainstAverage'),
-        value: goalieInfo.gaa,
-        precision: f2,
-        rating: goalieInfo.gaaRate
+        value: new NumValue(goalieInfo.gaa),
+        rating: new NumValue(goalieInfo.gaaRate)
       }, {
         id: 'svp',
         label: this.$t('statNames.savePercentage'),
-        value: goalieInfo.svp,
-        precision: f3,
-        rating: goalieInfo.svpRate
+        value: new NumValue(goalieInfo.svp, 3),
+        rating: new NumValue(goalieInfo.svpRate)
       }, {
         id: 'wins',
         label: this.$t('statNames.wins'),
-        value: goalieInfo.wins,
-        rating: goalieInfo.winsRate
+        value: new NumValue(goalieInfo.wins, 0),
+        rating: new NumValue(goalieInfo.winsRate)
       }, {
         id: 'winPercentage',
         label: this.$t('statNames.winPercentage'),
-        value: goalieInfo.winPercentage,
-        precision: f2,
-        rating: goalieInfo.winPercentageRate
+        value: new NumValue(goalieInfo.winPercentage),
+        rating: new NumValue(goalieInfo.winPercentageRate)
       }, {
         id: 'shutout',
         label: this.$t('statNames.shutouts'),
-        value: goalieInfo.shutout,
-        rating: goalieInfo.shutoutRate
+        value: new NumValue(goalieInfo.shutout, 0),
+        rating: new NumValue(goalieInfo.shutoutRate)
       }];
     },
 
@@ -135,19 +131,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.savePercentage'),
-        value: goalieInfo.svp,
-        precision: f3
+        value: new NumValue(goalieInfo.svp, 3)
       }, {
         name: this.$t('statNames.saves'),
-        value: goalieInfo.saves
+        value: new NumValue(goalieInfo.saves, 0)
       }, {
         name: this.$t('statNames.savesPerGame'),
-        value: goalieInfo.savesPerGame,
-        precision: f2
+        value: new NumValue(goalieInfo.savesPerGame)
       }, {
         name: this.$t('statNames.shotsAgainstPerGoal'),
-        value: goalieInfo.shotsAgainstPerGoal,
-        precision: f2
+        value: new NumValue(goalieInfo.shotsAgainstPerGoal)
       }];
     },
 
@@ -158,25 +151,22 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsAgainstAverage'),
-        value: goalieInfo.gaa,
-        precision: f2
+        value: new NumValue(goalieInfo.gaa)
       }, {
         name: this.$t('statNames.goalsAgainst'),
-        value: goalieInfo.goalsAgainst
+        value: new NumValue(goalieInfo.goalsAgainst, 0)
       }, {
         name: this.$t('statNames.evenStrengthGoalsAgainst'),
-        value: goalieInfo.evenStrengthGoalsAgainst
+        value: new NumValue(goalieInfo.evenStrengthGoalsAgainst, 0)
       }, {
         name: this.$t('statNames.evenStrengthGoalsAgainstPercentage'),
-        value: goalieInfo.evenStrengthGoalsAgainstPercentage,
-        precision: f1,
-        percentage: true
+        value: new NumValue(goalieInfo.evenStrengthGoalsAgainstPercentage, 1)
       }, {
         name: this.$t('statNames.ppGoalsAllowed'),
-        value: goalieInfo.ppGoalsAgainst
+        value: new NumValue(goalieInfo.ppGoalsAgainst, 0)
       }, {
         name: this.$t('statNames.shGoalsAllowed'),
-        value: goalieInfo.shGoalsAgainst
+        value: new NumValue(goalieInfo.shGoalsAgainst, 0)
       }];
     },
 
@@ -187,20 +177,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsAgainstAverage'),
-        value: goalieInfo.homeGaa,
-        precision: f2
+        value: new NumValue(goalieInfo.homeGaa)
       }, {
         name: this.$t('statNames.savePercentage'),
-        value: goalieInfo.homeSvp,
-        precision: f3
+        value: new NumValue(goalieInfo.homeSvp, 3)
       }, {
         name: this.$t('statNames.winPercentage'),
-        value: goalieInfo.homeWinPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(goalieInfo.homeWinPercentage)
       }, {
         name: this.$t('statNames.wins'),
-        value: goalieInfo.homeWins
+        value: new NumValue(goalieInfo.homeWins, 0)
       }];
     },
 
@@ -211,20 +197,16 @@ export default {
       }
       return [{
         name: this.$t('statNames.goalsAgainstAverage'),
-        value: goalieInfo.awayGaa,
-        precision: f2
+        value: new NumValue(goalieInfo.awayGaa)
       }, {
         name: this.$t('statNames.savePercentage'),
-        value: goalieInfo.awaySvp,
-        precision: f3
+        value: new NumValue(goalieInfo.awaySvp, 3)
       }, {
         name: this.$t('statNames.winPercentage'),
-        value: goalieInfo.awayWinPercentage,
-        precision: f2,
-        percentage: true
+        value: new NumValue(goalieInfo.awayWinPercentage)
       }, {
         name: this.$t('statNames.wins'),
-        value: goalieInfo.awayWins
+        value: new NumValue(goalieInfo.awayWins, 0)
       }];
     },
 

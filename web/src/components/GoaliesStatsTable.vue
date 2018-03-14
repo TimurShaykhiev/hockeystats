@@ -88,7 +88,7 @@ export default {
         if (selSeason.id === undefined || all === undefined) {
           return '';
         }
-        return CompUtils.getSeasonName(selSeason, all, (str) => this.$t(str));
+        return CompUtils.getSeasonName(selSeason, all);
       } else if (this.type === TYPE_TEAM) {
         return this.$t('captionTeamType');
       } else {
@@ -213,7 +213,7 @@ export default {
     },
 
     paginationText() {
-      return CompUtils.getPaginationText((str) => this.$t(str));
+      return CompUtils.getPaginationText();
     },
 
     rows() {
@@ -265,7 +265,7 @@ export default {
           rowData.team = allTeams[t.teamId].abbr;
         }
         if (this.type === TYPE_PLAYER) {
-          rowData.seasonName = CompUtils.seasonToStr(t.season, (str) => this.$t(str));
+          rowData.seasonName = CompUtils.seasonToStr(t.season);
         }
         rowData.toi = CompUtils.toiToStr(rowData.toi);
         rowData.gaa = f2(rowData.gaa);
