@@ -1,4 +1,5 @@
 import {format} from 'd3-format';
+import {NumValue, TimeValue} from 'Components/statValue';
 
 function getPlayerName(s) {
   return s.player.name;
@@ -52,7 +53,7 @@ export default {
   numberToOrdinal(num, translateFunc) {
     // Now it is applicable for english and russian languages only
     let rem = num % 100;
-    if (rem === 11 || rem === 12 || rem === 12) {
+    if (rem === 11 || rem === 12) {
       return `${num}${translateFunc('ordinalNumbers[0]')}`;
     }
     return `${num}${translateFunc(`ordinalNumbers[${num % 10}]`)}`;
@@ -135,5 +136,39 @@ export default {
 
   filterName(str, filterStr) {
     return str.toLowerCase().indexOf(filterStr) !== -1;
+  },
+
+  createMainStatCompare(data, attr, rateAttr, label, getNamesFunc, precision, order='desc') {
+    let [lName, rName] = getNamesFunc(data);
+    return {
+      id: attr,
+      label: label,
+      leftData: {
+        name: lName,
+        value: new NumValue(data.stats1[attr], precision),
+        rate: data.stats1[rateAttr]
+      },
+      rightData: {
+        name: rName,
+        value: new NumValue(data.stats2[attr], precision),
+        rate: data.stats2[rateAttr]
+      },
+      sortOrder: order
+    };
+  },
+
+  createStatCompare(data, title, getNamesFunc, fields) {
+    let [lName, rName] = getNamesFunc(data);
+    return {
+      caption: {title: title, lName: lName, rName: rName},
+      stats: fields.map((el) => ({
+        name: el.name,
+        lValue: el.time ? new TimeValue(data.stats1[el.attrName]) :
+                          new NumValue(data.stats1[el.attrName], el.precision),
+        rValue: el.time ? new TimeValue(data.stats2[el.attrName]) :
+                          new NumValue(data.stats2[el.attrName], el.precision),
+        sortOrder: el.order || 'desc'
+      }))
+    };
   }
 };

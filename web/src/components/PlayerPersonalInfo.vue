@@ -92,7 +92,7 @@ export default {
         this.requestAllTeams();
         return '';
       }
-      return allTeams.teams[this.tid].name
+      return allTeams.teams[this.tid].name;
     },
 
     vitals() {

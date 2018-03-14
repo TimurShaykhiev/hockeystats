@@ -21,9 +21,6 @@ export default {
     caption: {type: String, required: true},
     items: {required: true}
   },
-  data() {
-    return {};
-  },
   computed: {
     stats() {
       return this.items.map((el) => {

@@ -133,8 +133,8 @@ export default {
   },
   computed: {
     teamName() {
-      let teamInfo = this.$store.state.teams.teamSeasonInfo;
-      if (!teamInfo.team) {
+      let teamInfo = this.getTeamInfo();
+      if (teamInfo === null) {
         return '';
       }
       return teamInfo.team.name;
