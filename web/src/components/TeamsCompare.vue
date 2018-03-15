@@ -75,10 +75,6 @@ export default {
     };
   },
   created() {
-    // debug only
-    let season = {regular: true, start: '2017-10-04', current: true, end: '2018-06-30', id: 5, year: 2017};
-    this.$store.commit('setSelectedSeason', season);
-    // debug only
     this.requestTeamsCompare();
   },
   computed: {

@@ -1,17 +1,17 @@
 <template>
   <div class="player-personal-info container-col">
     <div class="player-personal-info__title container-row">
-      <img :src="logoUrl" class="player-personal-info__logo">
+      <img :src="logoUrl" class="player-personal-info__logo" :class="layoutClasses">
       <div class="player-personal-info__player-info container-col">
-        <h1 class="player-personal-info__player-name">{{name}}</h1>
-        <h3 class="player-personal-info__team-name">{{teamName}}</h3>
+        <h1 class="player-personal-info__player-name" :class="playerNameClasses">{{playerInfo.name}}</h1>
+        <h3 class="player-personal-info__team-name" :class="layoutClasses">{{teamName}}</h3>
       </div>
     </div>
     <hr class="player-personal-info__divider"/>
     <div class="player-personal-info__vitals container-row">
-      <div v-for="el in vitals" class="player-personal-info__item">
-        <h1 class="player-personal-info__value">{{el.value}}</h1>
-        <h3 class="player-personal-info__name">{{el.name}}</h3>
+      <div v-for="el in vitals" class="player-personal-info__item" :class="layoutClasses">
+        <h1 class="player-personal-info__value" :class="layoutClasses">{{el.value}}</h1>
+        <h3 class="player-personal-info__name" :class="layoutClasses">{{el.name}}</h3>
       </div>
     </div>
     <hr class="player-personal-info__divider"/>
@@ -24,14 +24,9 @@ import {SeasonRequestParams} from 'Store/types';
 export default {
   name: 'player-personal-info',
   props: {
-    id: {type: Number, required: true},
-    name: {type: String, required: true},
-    pos: {type: String, required: true},
-    tid: {type: Number, required: true},
-    shoots: {type: String, required: true},
-    height: {type: String, required: true},
-    weight: {type: Number, required: true},
-    age: {type: Number, required: true}
+    playerInfo: {required: true},
+    fullWidth: {type: Boolean, default: true},
+    comparePosition: {type: String}
   },
   i18n: {
     messages: {
@@ -80,9 +75,21 @@ export default {
   created() {
     this.requestAllTeams();
   },
+  data() {
+    return {
+      playerNameClasses: {
+        'full-width': this.fullWidth,
+        'compare--left': this.comparePosition === 'left',
+        'compare--right': this.comparePosition === 'right'
+      },
+      layoutClasses: {
+        'full-width': this.fullWidth
+      }
+    };
+  },
   computed: {
     logoUrl() {
-      return `images/team${this.tid}.svg`;
+      return `images/team${this.playerInfo.tid}.svg`;
     },
 
     teamName() {
@@ -92,16 +99,16 @@ export default {
         this.requestAllTeams();
         return '';
       }
-      return allTeams.teams[this.tid].name;
+      return allTeams.teams[this.playerInfo.tid].name;
     },
 
     vitals() {
       return [
-        {name: this.$t('playerPersonalInfo.position'), value: this.$t(`position.${this.pos}`)},
-        {name: this.$t('playerPersonalInfo.shoots'), value: this.$t(`shootsType.${this.shoots}`)},
-        {name: this.$t('playerPersonalInfo.height'), value: this.height},
-        {name: this.$t('playerPersonalInfo.weight'), value: this.weight},
-        {name: this.$t('playerPersonalInfo.age'), value: this.age}
+        {name: this.$t('playerPersonalInfo.position'), value: this.$t(`position.${this.playerInfo.pos}`)},
+        {name: this.$t('playerPersonalInfo.shoots'), value: this.$t(`shootsType.${this.playerInfo.shoots}`)},
+        {name: this.$t('playerPersonalInfo.height'), value: this.playerInfo.height},
+        {name: this.$t('playerPersonalInfo.weight'), value: this.playerInfo.weight},
+        {name: this.$t('playerPersonalInfo.age'), value: this.playerInfo.age}
       ];
     }
   },
@@ -127,17 +134,30 @@ export default {
   }
   .player-personal-info__title {
     align-items: center;
-    padding: 0 3rem;
+    padding: 0 1rem;
+    min-height: 10rem;
+    &.full-width {
+      padding: 0 3rem;
+    }
   }
   .player-personal-info__logo {
-    width: 10rem;
-    height: 10rem;
+    flex: 1;
+    width: 8rem;
+    height: 8rem;
+    &.full-width {
+      width: 10rem;
+      height: 10rem;
+    }
   }
   .player-personal-info__player-info {
      margin: 0 0 0 2.5rem;
+     flex: 4;
 
     .player-personal-info__player-name {
-      font-size: 4rem;
+      font-size: 3rem;
+      &.full-width {
+        font-size: 4rem;
+      }
     }
     .player-personal-info__team-name {
       font-size: 1.4rem;
@@ -148,24 +168,35 @@ export default {
     justify-content: space-around;
   }
   .player-personal-info__item {
-    margin: .5rem;
+    margin: 0 .5rem;
     max-width: 8rem;
     min-width: 6rem;
-    height: 3rem;
     text-align: center;
+    &.full-width {
+      margin: .5rem;
+    }
   }
   .player-personal-info__value {
     font-size: 1.25rem;
+    &.full-width {
+      font-size: 1.25rem;
+    }
   }
   .player-personal-info__name {
     font-size: 1rem;
     margin: 0 .5rem;
+    &.full-width {
+      font-size: 1rem;
+    }
   }
   .player-personal-info__divider {
     background: @border-color;
     height: .25rem;
     width: 95%;
-    margin: 1rem 2.5%;
+    margin: .75rem 2.5%;
     border: none;
+    &.full-width {
+      margin: 1rem 2.5%;
+    }
   }
 </style>

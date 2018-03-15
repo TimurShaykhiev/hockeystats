@@ -1,6 +1,6 @@
 <template>
   <div class="skater-info container-col">
-    <player-personal-info v-bind="playerInfo" v-if="playerInfo.id"/>
+    <player-personal-info :playerInfo="playerInfo" v-if="playerInfo.id"/>
     <div class="skater-info__selectors container-row">
       <item-selector class="skater-info__selector" type="skater"/>
       <season-picker class="skater-info__season-picker" type="skater"/>

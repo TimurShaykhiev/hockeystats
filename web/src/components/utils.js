@@ -130,6 +130,21 @@ export default {
     return str.toLowerCase().indexOf(filterStr) !== -1;
   },
 
+  getPlayerShortNames(d) {
+    function shorten(str) {
+      let tokens = str.split(' ');
+      return tokens[tokens.length - 1].slice(0, 3).toUpperCase();
+    }
+    let name1 = shorten(d.player1.name);
+    let name2 = shorten(d.player2.name);
+    if (name1 === name2) {
+      // If last names start with the same 3 characters, add first name character
+      name1 = `${d.player1.name[0].toUpperCase()}.${name1}`;
+      name2 = `${d.player2.name[0].toUpperCase()}.${name2}`;
+    }
+    return [name1, name2];
+  },
+
   createMainStatCompare(data, attr, rateAttr, label, getNamesFunc, precision, order='desc') {
     let [lName, rName] = getNamesFunc(data);
     return {
