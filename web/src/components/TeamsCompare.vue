@@ -22,6 +22,10 @@
       <stats-compare-block v-if="awayStats" :caption="awayStats.caption" :items="awayStats.stats"/>
       <stats-compare-block v-if="vsStats" :caption="vsStats.caption" :items="vsStats.stats"/>
     </div>
+    <div class="teams-compare__charts container-row">
+      <radar-chart v-if="chartData.radarChart" v-bind="chartData.chartData"/>
+    </div>
+    <games-table :games="games"/>
   </div>
 </template>
 
@@ -29,6 +33,7 @@
 import {SeasonRequestParams} from 'Store/types';
 import CompUtils from 'Components/utils';
 import {NumValue} from 'Components/statValue';
+import GamesTable from 'Components/GamesTable';
 
 function getTeamNames(d) {
   return [d.team1.abbr, d.team2.abbr];
@@ -36,6 +41,7 @@ function getTeamNames(d) {
 
 export default {
   name: 'teams-compare',
+  components: {GamesTable},
   i18n: {
     messages: {
       en: {
@@ -324,6 +330,46 @@ export default {
             order: 'asc'
           }])
       };
+    },
+
+    games() {
+      let data = this.getTeamsCompare();
+      if (data === null) {
+        return [];
+      }
+      return data.scores;
+    },
+
+    chartData() {
+      let data = this.getTeamsCompare();
+      if (data === null) {
+        return {};
+      }
+      let selSeason = this.$store.state.season.selectedSeason;
+      let getRange = this.$store.getters.getTeamStatRange;
+      let axises = [
+        CompUtils.getAxis('goalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
+        CompUtils.getAxis('goalsAgainst', this.$t('statNames.goalsAgainst'), getRange, selSeason.current),
+        CompUtils.getAxis('ppPercentage', this.$t('statNames.ppPercentage'), getRange, selSeason.current),
+        CompUtils.getAxis('pkPercentage', this.$t('statNames.pkPercentage'), getRange, selSeason.current),
+        CompUtils.getAxis('faceOffWinsPercentage', this.$t('statNames.faceOffWinsPercentage'), getRange,
+          selSeason.current)
+      ];
+      return {
+        radarChart: true,
+        chartData: {
+          homogeneous: false,
+          axises: axises,
+          legend: [
+            {key: data.team1.id, name: data.team1.name},
+            {key: data.team2.id, name: data.team2.name}
+          ],
+          dataSet: [
+            CompUtils.seasonStatsToChartData(data.stats1, axises, data.team1.id),
+            CompUtils.seasonStatsToChartData(data.stats2, axises, data.team2.id)
+          ]
+        }
+      };
     }
   },
   methods: {
@@ -376,5 +422,9 @@ export default {
   .teams-compare__compare-blocks {
     margin: 2rem;
     flex-wrap: wrap;
+  }
+  .teams-compare__charts {
+    justify-content: center;
+    margin: 2rem;
   }
 </style>

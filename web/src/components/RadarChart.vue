@@ -1,6 +1,6 @@
 <template>
   <div class="radar-chart__container">
-    <svg xmlns="http://www.w3.org/2000/svg" :width="height" :height="height"></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" :width="chartWidth" :height="chartHeight"></svg>
     <chart-legend v-if="legend" :names="legend" :colors="colors"/>
   </div>
 </template>
@@ -15,7 +15,7 @@ import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {max} from 'd3-array';
 import ChartUtils from 'Components/chartUtils';
 
-const DEFAULT_RADAR_CHART_HEIGHT = '600px';
+const DEFAULT_RADAR_CHART_HEIGHT = 600;
 
 export default {
   name: 'radar-chart',
@@ -24,11 +24,13 @@ export default {
     dataSet: {required: true},
     axises: {required: true},
     homogeneous: {type: Boolean, default: true},
-    height: {type: String, default: DEFAULT_RADAR_CHART_HEIGHT},
+    height: {type: Number, default: DEFAULT_RADAR_CHART_HEIGHT},
     legend: {type: Array}
   },
   data() {
     return {
+      chartWidth: `${this.height * 1.3}px`,
+      chartHeight: `${this.height}px`,
       chartRadius: 0,
       nodeRadius: 5,
       factorLegend: .85,
@@ -55,6 +57,7 @@ export default {
     draw() {
       let svg = select(this.$el).select('svg');
       let margin = ChartUtils.getChartMargin();
+      margin.left *= 2;
       this.chartRadius = (svg.node().getBoundingClientRect().height - margin.top - margin.bottom) / 2;
       this.sector = 2 * Math.PI / this.axises.length;
 
