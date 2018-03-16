@@ -3,7 +3,7 @@ from collections import namedtuple
 import numpy as np
 
 from data_models.game import Game
-from . import INT_ARRAY_DATA_TYPE, date_to_int, percentage
+from . import INT_ARRAY_DATA_TYPE, date_to_int, percentage, fraction
 
 COL_GAME_ID = 0
 COL_GAME_DATE = 1
@@ -53,15 +53,22 @@ TeamHomeAwayStats = namedtuple('TeamHomeAwayStats',
                                 'home_pp_goals', 'away_pp_goals', 'home_pp_opp', 'away_pp_opp',
                                 'home_sh_goals', 'away_sh_goals', 'home_sh_opp', 'away_sh_opp',
                                 'home_shutouts', 'away_shutouts',
-                                'home_pim', 'home_opp_pim', 'away_pim', 'away_opp_pim'])
+                                'home_opp_shutouts', 'away_opp_shutouts',
+                                'home_pim', 'home_opp_pim', 'away_pim', 'away_opp_pim',
+                                'home_win_percentage', 'away_win_percentage'])
 
 GameTeams = namedtuple('GameTeams', ['home_tid', 'away_tid'])
 
-GameScore = namedtuple('GameScore', ['date', 'teams', 'goals', 'win_type'])
+GameStats = namedtuple('GameScore', ['date', 'stats'])
 
 
 def get_team_home_away_stats(team_id, games):
     games_arr = _games_to_array(games)
+
+    home_games_arr = games_arr[games_arr[:, COL_HOME_TEAM_ID] == team_id, :]
+    away_games_arr = games_arr[games_arr[:, COL_AWAY_TEAM_ID] == team_id, :]
+    home_wins = np.count_nonzero(home_games_arr[:, COL_HOME_GOALS] > home_games_arr[:, COL_AWAY_GOALS])
+    away_wins = np.count_nonzero(away_games_arr[:, COL_HOME_GOALS] < away_games_arr[:, COL_AWAY_GOALS])
 
     team_home_stats_arr = games_arr[games_arr[:, COL_HOME_TEAM_ID] == team_id, COL_HOME_GOALS:COL_AWAY_GOALS]
     opp_home_stats_arr = games_arr[games_arr[:, COL_HOME_TEAM_ID] == team_id, COL_AWAY_GOALS:COL_FACE_OFF_TAKEN]
@@ -80,17 +87,18 @@ def get_team_home_away_stats(team_id, games):
                              opp_home_stats.pp_goals, opp_away_stats.pp_goals,
                              opp_home_stats.pp_opportunities, opp_away_stats.pp_opportunities,
                              opp_home_stats.no_goals, opp_away_stats.no_goals,
-                             team_home_stats.pim, opp_home_stats.pim, team_away_stats.pim, opp_away_stats.pim)
+                             team_home_stats.no_goals, team_away_stats.no_goals,
+                             team_home_stats.pim, opp_home_stats.pim, team_away_stats.pim, opp_away_stats.pim,
+                             percentage(home_wins, home_games_arr.shape[0]),
+                             percentage(away_wins, away_games_arr.shape[0]))
 
 
 def get_home_away_dict(games):
     return dict((g[COL_GAME_ID], GameTeams(g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID])) for g in games)
 
 
-def get_scores(games):
-    return [
-        GameScore(g[COL_GAME_DATE], [g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID]], [g[COL_HOME_GOALS], g[COL_AWAY_GOALS]],
-                  WIN_TYPE_MAP[g[COL_WIN_TYPE]]) for g in games]
+def get_game_stats(games):
+    return [_create_game_stats(g) for g in games]
 
 
 def get_team_vs_team_stats(games, team1_id, team2_id, start_date, end_date):
@@ -146,3 +154,13 @@ def _calc_stats(stats):
     pp_opportunities = np.sum(stats[:, COL_HOME_PP_OPPORTUNITIES - COL_HOME_GOALS])
     no_goals = np.count_nonzero(stats[:, 0] == 0)
     return _TeamStats(goals, shots, pp_goals, pp_opportunities, no_goals, pim)
+
+
+def _create_game_stats(game):
+    return GameStats(game[COL_GAME_DATE], [WIN_TYPE_MAP[game[COL_WIN_TYPE]],
+         game[COL_HOME_TEAM_ID], game[COL_HOME_GOALS], game[COL_HOME_SHOTS], game[COL_HOME_PP_GOALS],
+         game[COL_HOME_PP_OPPORTUNITIES], game[COL_HOME_PENALTY_MINUTES],
+         fraction(game[COL_AWAY_SHOTS] - game[COL_AWAY_GOALS], game[COL_AWAY_SHOTS]),  # home save percentage
+         game[COL_AWAY_TEAM_ID], game[COL_AWAY_GOALS], game[COL_AWAY_SHOTS], game[COL_AWAY_PP_GOALS],
+         game[COL_AWAY_PP_OPPORTUNITIES], game[COL_AWAY_PENALTY_MINUTES],
+         fraction(game[COL_HOME_SHOTS] - game[COL_HOME_GOALS], game[COL_HOME_SHOTS])])  # away save percentage

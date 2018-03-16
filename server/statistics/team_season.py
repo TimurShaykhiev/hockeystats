@@ -55,7 +55,7 @@ INT_ARRAY_RESULT_COLUMNS = [COL_TEAM_ID, COL_SEASON_ID, COL_IS_REGULAR, COL_GOAL
                             COL_WIN_REGULAR, COL_WIN_OVERTIME, COL_WIN_SHOOTOUT, COL_LOSE_REGULAR, COL_LOSE_OVERTIME,
                             COL_LOSE_SHOOTOUT, COL_POINTS]
 
-EXT_INT_ARRAY_RESULT_COLUMNS = [COL_GOALS_FOR, COL_GOALS_AGAINST, COL_PP_GOALS, COL_SH_GOALS_AGAINST]
+EXT_INT_ARRAY_RESULT_COLUMNS = [COL_GOALS_FOR, COL_GOALS_AGAINST, COL_PP_GOALS, COL_SH_GOALS_AGAINST, COL_POINTS]
 
 
 def get_teams_stats(team_stats):
@@ -86,7 +86,7 @@ def get_team_ext_stats(team_id, team_stats, games):
 
 
 def _calc_teams_stats(arr_int, arr_fp):
-    arr_int[:, COL_POINTS] = team_points(arr_int)
+    _set_team_points(arr_int)
 
     arr_fp[:, COL_POINT_PERCENTAGE] = percentage(arr_int[:, COL_POINTS], arr_int[:, COL_GAMES] * 2)
     arr_fp[:, COL_PP_PERCENTAGE] = percentage(arr_int[:, COL_PP_GOALS], arr_int[:, COL_PP_OPPORTUNITIES])
@@ -105,6 +105,7 @@ def _calc_team_ext_stats(arr_int, arr_fp, team_row_idx, ha_stats):
     shots_against = ha_stats.home_sa + ha_stats.away_sa
     ext_stats = [
         fraction(shots_against, row[COL_GAMES]),  # shots against per game
+        fraction(shots_against, row[COL_GOALS_AGAINST]),  # shots against per goal
         percentage(row[COL_GOALS_AGAINST], shots_against),  # opponent shooting percentage
         fraction(row[COL_GOALS_FOR], row[COL_GOALS_AGAINST]),  # scoring efficiency ratio
         fraction(row[COL_SHOTS], shots_against),  # shot efficiency ratio
@@ -117,6 +118,9 @@ def _calc_team_ext_stats(arr_int, arr_fp, team_row_idx, ha_stats):
         fraction(shots_against - row[COL_GOALS_AGAINST], shots_against),  # save percentage
         fraction(row[COL_SHOTS] - row[COL_GOALS_FOR], row[COL_SHOTS]),  # opponent save percentage
         ha_stats.home_shutouts + ha_stats.away_shutouts,  # shutouts
+        ha_stats.home_opp_shutouts + ha_stats.away_opp_shutouts,  # opponent shutouts
+        # shootout winning %
+        percentage(row[COL_WIN_SHOOTOUT], row[COL_WIN_SHOOTOUT] + row[COL_LOSE_SHOOTOUT]),
         ha_stats.home_goals,
         ha_stats.away_goals,
         ha_stats.home_ga,
@@ -129,6 +133,8 @@ def _calc_team_ext_stats(arr_int, arr_fp, team_row_idx, ha_stats):
         percentage(ha_stats.away_pp_goals, ha_stats.away_pp_opp),  # away PP percentage
         100 - percentage(ha_stats.home_sh_goals, ha_stats.home_sh_opp),  # home PK percentage
         100 - percentage(ha_stats.away_sh_goals, ha_stats.away_sh_opp),  # away PK percentage
+        ha_stats.home_win_percentage,
+        ha_stats.away_win_percentage
     ]
 
     ratings = []
@@ -141,6 +147,7 @@ def _calc_team_ext_stats(arr_int, arr_fp, team_row_idx, ha_stats):
     return ext_stats, ratings
 
 
-def team_points(arr):
-    return (arr[:, COL_WIN_REGULAR] + arr[:, COL_WIN_OVERTIME] + arr[:, COL_WIN_SHOOTOUT]) * 2 + \
-           arr[:, COL_LOSE_OVERTIME] + arr[:, COL_LOSE_SHOOTOUT]
+def _set_team_points(arr):
+    if arr[0, COL_IS_REGULAR] == 1:
+        arr[:, COL_POINTS] = (arr[:, COL_WIN_REGULAR] + arr[:, COL_WIN_OVERTIME] + arr[:, COL_WIN_SHOOTOUT]) * 2 + \
+                             arr[:, COL_LOSE_OVERTIME] + arr[:, COL_LOSE_SHOOTOUT]
