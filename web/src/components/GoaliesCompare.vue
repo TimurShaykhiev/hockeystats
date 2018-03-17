@@ -8,6 +8,7 @@
         <player-personal-info :playerInfo="playersInfo.right" :fullWidth="false" comparePosition="right"/>
       </div>
     </div>
+    <h2 class="goalies-compare__season-name">{{seasonName}}</h2>
     <div class="goalies-compare__main-stats container-row">
       <main-stat-compare v-for="el in mainStats" :key="el.id"  v-bind="el"/>
     </div>
@@ -56,6 +57,14 @@ export default {
     this.requestGoaliesCompare();
   },
   computed: {
+    seasonName() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        return CompUtils.seasonToStr(season);
+      }
+      return '';
+    },
+
     playersInfo() {
       let data = this.getGoaliesCompare();
       if (data === null) {
@@ -231,6 +240,10 @@ export default {
     align-items: center;
     padding: 0 1rem;
     flex: 1;
+  }
+  .goalies-compare__season-name {
+    text-align: center;
+    margin: 1rem 0;
   }
   .goalies-compare__main-stats {
     margin: 2rem;

@@ -69,6 +69,8 @@ let locales = {
         plusMinusShort: '+/-',
         pointsPerGame: 'Points Per Game',
         pointsPerGameShort: 'P/GP',
+        powerPlay: 'Power Play',
+        powerPlayShort: 'PP',
         ppGoals: 'Power Play Goals',
         ppGoalsShort: 'PPG',
         ppPoints: 'Power Play Points',
@@ -138,7 +140,11 @@ let locales = {
         turnoverRatio: 'Turnover Ratio',
         blocksPer60min: 'Blocks Per 60 min',
         hitsPer60min: 'Hits Per 60 min',
-        PIMsPer60min: 'PIM Per 60 min'
+        PIMsPer60min: 'PIM Per 60 min',
+        homeWinPercentage: 'Home Win Percentage',
+        awayWinPercentage: 'Away Win Percentage',
+        shootoutWinPercentage: 'Shootout Win Percentage',
+        oppShutouts: 'Opponent shutouts'
       },
       season: {
         regular: 'Regular season',
@@ -258,6 +264,8 @@ let locales = {
         plusMinusShort: '+/-',
         pointsPerGame: 'В среднем очков за матч',
         pointsPerGameShort: 'Г/М',
+        powerPlay: 'Большинство',
+        powerPlayShort: 'БОЛ',
         ppGoals: 'Голы в большинстве',
         ppGoalsShort: 'Г БОЛ',
         ppPoints: 'Очки в большинстве',
@@ -327,7 +335,11 @@ let locales = {
         turnoverRatio: 'Отношение отборов/потерь шайбы',
         blocksPer60min: 'Блокированные броски за 60 мин',
         hitsPer60min: 'Силовые приёмы за 60 мин',
-        PIMsPer60min: 'Штрафные минуты за 60 мин'
+        PIMsPer60min: 'Штрафные минуты за 60 мин',
+        homeWinPercentage: 'Процент домашних побед',
+        awayWinPercentage: 'Процент гостевых побед',
+        shootoutWinPercentage: 'Процент побед по буллитам',
+        oppShutouts: 'Матчи на ноль у противника'
       },
       season: {
         regular: 'Регулярный сезон',

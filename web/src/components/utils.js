@@ -30,17 +30,6 @@ export default {
     return `${i18n.t(str)} ${years}`;
   },
 
-  getSeasonName(selectedSeason, seasons) {
-    for (let s of seasons) {
-      if (s.id === selectedSeason.id) {
-        let years = `${s.year}-${s.year % 100 + 1}`;
-        let str = selectedSeason.regular ? 'season.regular' : 'season.playoff';
-        return `${i18n.t(str)} ${years}`;
-      }
-    }
-    return '';
-  },
-
   getPaginationText() {
     return {
       next: i18n.t('pagination.next'),

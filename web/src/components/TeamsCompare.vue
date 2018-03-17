@@ -10,6 +10,7 @@
         <h1 class="teams-compare__header-name compare--right">{{teamCaptions.right.name}}</h1>
       </div>
     </div>
+    <h2 class="teams-compare__season-name">{{seasonName}}</h2>
     <div class="teams-compare__main-stats container-row">
       <main-stat-compare v-for="el in mainStats" :key="el.id"  v-bind="el"/>
     </div>
@@ -25,7 +26,7 @@
     <div class="teams-compare__charts container-row">
       <radar-chart v-if="chartData.radarChart" v-bind="chartData.chartData"/>
     </div>
-    <games-table :games="games"/>
+    <games-table :games="games" :team1Id="tid1" :team2Id="tid2"/>
   </div>
 </template>
 
@@ -78,6 +79,14 @@ export default {
     this.requestTeamsCompare();
   },
   computed: {
+    seasonName() {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        return CompUtils.seasonToStr(season);
+      }
+      return '';
+    },
+
     teamCaptions() {
       let data = this.getTeamsCompare();
       if (data === null) {
@@ -114,11 +123,24 @@ export default {
         return undefined;
       }
       return CompUtils.createStatCompare(data, this.$t('teamsCompare.overallStatistics'), getTeamNames, [{
+          name: this.$t('statNames.points'),
+          attrName: 'points',
+          precision: 0
+        }, {
           name: this.$t('statNames.pointPercentage'),
           attrName: 'pointPercentage'
         }, {
           name: this.$t('statNames.pointsPerGame'),
           attrName: 'pointsPerGame'
+        }, {
+          name: this.$t('statNames.homeWinPercentage'),
+          attrName: 'homeWinPercentage'
+        }, {
+          name: this.$t('statNames.awayWinPercentage'),
+          attrName: 'awayWinPercentage'
+        }, {
+          name: this.$t('statNames.shootoutWinPercentage'),
+          attrName: 'shootoutWinPercentage'
         }, {
           name: this.$t('statNames.faceOffWinsPercentage'),
           attrName: 'faceOffWinsPercentage'
@@ -195,6 +217,10 @@ export default {
           name: this.$t('statNames.shPerGame'),
           attrName: 'shPerGame',
           order: 'asc'
+        }, {
+          name: this.$t('statNames.oppShootingPercentage'),
+          attrName: 'oppShootingPercentage',
+          order: 'asc'
         }]
       );
     },
@@ -216,6 +242,11 @@ export default {
           name: this.$t('statNames.oppSavePercentage'),
           attrName: 'oppSavePercentage',
           precision: 3,
+          order: 'asc'
+        }, {
+          name: this.$t('statNames.oppShutouts'),
+          attrName: 'oppShutouts',
+          precision: 0,
           order: 'asc'
         }]
       );
@@ -333,7 +364,7 @@ export default {
       if (data === null) {
         return [];
       }
-      return data.scores;
+      return data.games;
     },
 
     chartData() {
@@ -410,6 +441,10 @@ export default {
     font-size: 2.5rem;
     padding-left: 1.5rem;
     flex: 4;
+  }
+  .teams-compare__season-name {
+    text-align: center;
+    margin: 1rem 0;
   }
   .teams-compare__main-stats {
     margin: 2rem;

@@ -74,11 +74,10 @@ export default {
     tableCaption() {
       if (this.type === TYPE_ALL) {
         let selSeason = this.$store.state.season.selectedSeason;
-        let all = this.$store.state.season.allSeasons.seasons;
-        if (selSeason.id === undefined || all === undefined) {
+        if (selSeason.id === undefined) {
           return '';
         }
-        return CompUtils.getSeasonName(selSeason, all);
+        return CompUtils.seasonToStr(selSeason);
       } else {
         return this.$t('teamStatsTable.caption');
       }
