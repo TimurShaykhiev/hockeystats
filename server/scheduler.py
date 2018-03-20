@@ -7,6 +7,7 @@ import config
 from logger import create_loader_logger
 from load import load, LOAD_RESULT_SUCCESS, LOAD_RESULT_TRY_AGAIN
 from check_season import check_season
+from correct_sum_stats import fix_sum_stats
 from db_utils.updates import get_last_stat_update, set_last_stat_update
 
 LOG = None
@@ -49,6 +50,7 @@ def main():
         if load_result != LOAD_RESULT_TRY_AGAIN:
             set_last_stat_update(db_conn, new_date, new_date, load_result == LOAD_RESULT_SUCCESS)
             check_season(db_conn, new_date)
+            fix_sum_stats(db_conn, new_date)
     finally:
         db_conn.close()
     LOG.info('Scheduler end.')
