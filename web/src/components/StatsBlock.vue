@@ -53,11 +53,11 @@ export default {
     margin: .5rem;
     max-width: 12rem;
     min-width: 10rem;
-    height: 10rem;
+    height: 8rem;
     text-align: center;
   }
   .stats-block__value {
-    font-size: 3rem;
+    font-size: 2rem;
     margin: 1rem 0;
   }
   .stats-block__name {

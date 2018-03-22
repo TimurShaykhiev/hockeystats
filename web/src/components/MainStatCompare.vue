@@ -59,6 +59,7 @@ export default {
       } else {
         name = diff < 0 ? this.leftData.name : this.rightData.name;
         cls = diff < 0 ? 'compare-block--left' : 'compare-block--right';
+        diff = -Math.abs(diff);
       }
       return {value: `${name.toUpperCase()} ${diff > 0 ? '+' : ''}${this.leftData.value.format(diff)}`, cls: cls};
     }

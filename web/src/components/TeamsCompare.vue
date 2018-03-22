@@ -3,11 +3,15 @@
     <div class="container-row" v-if="teamCaptions">
       <div class="teams-compare__header container-row">
         <img :src="teamCaptions.left.logoUrl" class="teams-compare__header-logo">
-        <h1 class="teams-compare__header-name compare--left">{{teamCaptions.left.name}}</h1>
+        <router-link tag="h1" :to="{name: 'team', params: {id: tid1}}" class="teams-compare__header-name">
+          <a class="compare--left">{{teamCaptions.left.name}}</a>
+        </router-link>
       </div>
       <div class="teams-compare__header container-row">
         <img :src="teamCaptions.right.logoUrl" class="teams-compare__header-logo">
-        <h1 class="teams-compare__header-name compare--right">{{teamCaptions.right.name}}</h1>
+        <router-link tag="h1" :to="{name: 'team', params: {id: tid2}}" class="teams-compare__header-name">
+          <a class="compare--right">{{teamCaptions.right.name}}</a>
+        </router-link>
       </div>
     </div>
     <h2 class="teams-compare__season-name">{{seasonName}}</h2>
@@ -441,6 +445,9 @@ export default {
     font-size: 2.5rem;
     padding-left: 1.5rem;
     flex: 4;
+    a {
+      text-decoration: none;
+    }
   }
   .teams-compare__season-name {
     text-align: center;

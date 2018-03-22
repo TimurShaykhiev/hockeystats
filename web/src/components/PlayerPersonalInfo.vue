@@ -3,7 +3,13 @@
     <div class="player-personal-info__title container-row">
       <img :src="logoUrl" class="player-personal-info__logo" :class="layoutClasses">
       <div class="player-personal-info__player-info container-col">
-        <h1 class="player-personal-info__player-name" :class="playerNameClasses">{{playerInfo.name}}</h1>
+        <h1 v-if="fullWidth" class="player-personal-info__player-name" :class="playerNameClasses">
+          {{playerInfo.name}}
+        </h1>
+        <router-link v-else tag="h1" :to="{name: routeName, params: {id: playerInfo.id}}"
+                     class="player-personal-info__player-name">
+          <a :class="playerNameClasses">{{playerInfo.name}}</a>
+        </router-link>
         <h3 class="player-personal-info__team-name" :class="layoutClasses">{{teamName}}</h3>
       </div>
     </div>
@@ -102,6 +108,10 @@ export default {
       return allTeams.teams[this.playerInfo.tid].name;
     },
 
+    routeName() {
+      return this.playerInfo.pos === 'G' ? 'goalie' : 'skater';
+    },
+
     vitals() {
       return [
         {name: this.$t('playerPersonalInfo.position'), value: this.$t(`position.${this.playerInfo.pos}`)},
@@ -157,6 +167,9 @@ export default {
       font-size: 3rem;
       &.full-width {
         font-size: 4rem;
+      }
+      a {
+        text-decoration: none;
       }
     }
     .player-personal-info__team-name {

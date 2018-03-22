@@ -4,7 +4,7 @@
       <caption>{{$t(type)}}</caption>
       <tr v-for="elem in dataSet">
         <td>
-          <span class="preview-table__player-name">{{elem.name}}</span>
+          <router-link :to="{name: elem.routeName, params: {id: elem.pid}}">{{elem.name}}</router-link>
           <span class="preview-table__team-name">{{elem.team}}</span>
         </td>
         <td>{{elem.value}}</td>
@@ -28,6 +28,7 @@ const typesMap = {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
     setLimits: 'setSkaterStatsLimits',
+    routeName: 'skater',
     getValue: (plStats) => plStats.stats.goals,
     descSort: true
   },
@@ -35,6 +36,7 @@ const typesMap = {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
     setLimits: 'setSkaterStatsLimits',
+    routeName: 'skater',
     getValue: (plStats) => plStats.stats.assists,
     descSort: true
   },
@@ -42,6 +44,7 @@ const typesMap = {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
     setLimits: 'setSkaterStatsLimits',
+    routeName: 'skater',
     getValue: (plStats) => plStats.stats.goals + plStats.stats.assists,
     descSort: true
   },
@@ -49,6 +52,7 @@ const typesMap = {
     action: 'getSkaterStats',
     getStats: 'skaterStats',
     setLimits: 'setSkaterStatsLimits',
+    routeName: 'skater',
     getValue: (plStats) => plStats.stats.plusMinus,
     descSort: true
   },
@@ -56,6 +60,7 @@ const typesMap = {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
     setLimits: 'setGoalieStatsLimits',
+    routeName: 'goalie',
     getValue: (plStats) => plStats.stats.games >= GAMES_LIMIT ? plStats.stats.gaa : 1000,
     showValue: (value) => f2(value),
     descSort: false
@@ -64,6 +69,7 @@ const typesMap = {
     action: 'getGoalieStats',
     getStats: 'goalieStats',
     setLimits: 'setGoalieStatsLimits',
+    routeName: 'goalie',
     getValue: (plStats) => plStats.stats.games >= GAMES_LIMIT ? plStats.stats.svp : 0,
     showValue: (value) => CompUtils.omitInteger(value, 3),
     descSort: true
@@ -135,9 +141,12 @@ export default {
       } else {
         statsToShow = allStats.slice(allStats.length-ITEMS_TO_SHOW).reverse();
       }
+      const routeName = typesMap[this.type].routeName;
       return statsToShow.map((x) => {
         return {
+          pid: x.player.id,
           name: x.player.name,
+          routeName: routeName,
           team: allTeams[x.player.tid].name,
           value: showValueFunc ? showValueFunc(getValueFunc(x)) : getValueFunc(x)
         };
@@ -194,13 +203,13 @@ export default {
       }
       overflow: hidden;
       text-overflow: ellipsis;
-      span {
-        &.preview-table__player-name {
-          display: block;
-        }
-        &.preview-table__team-name {
-          font-size: .75rem;
-        }
+      a {
+        display: block;
+        color: black;
+        text-decoration: none;
+      }
+      .preview-table__team-name {
+        font-size: .75rem;
       }
     }
   }

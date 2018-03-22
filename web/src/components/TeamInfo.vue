@@ -104,7 +104,6 @@ export default {
   },
   data() {
     return {
-      logoUrl: `images/team${this.$route.params.id}.svg`,
       selectedChart: CHART_POINTS,
       chartList: [
         {name: this.$t('teamInfo.chartPickerTeam'), value: 0, disabled: true},
@@ -131,6 +130,10 @@ export default {
     this.requestTeamInfo();
   },
   computed: {
+    logoUrl() {
+      return `images/team${this.$route.params.id}.svg`;
+    },
+
     teamName() {
       let teamInfo = this.getTeamInfo();
       if (teamInfo === null) {
@@ -238,6 +241,9 @@ export default {
       }, {
         name: this.$t('statNames.faceOffWinsPercentage'),
         value: new NumValue(teamInfo.faceOffWinsPercentage)
+      }, {
+        name: this.$t('statNames.shootoutWinPercentage'),
+        value: new NumValue(teamInfo.shootoutWinPercentage)
       }];
     },
 
@@ -295,6 +301,9 @@ export default {
       }, {
         name: this.$t('statNames.shutouts'),
         value: new NumValue(teamInfo.shutouts, 0)
+      }, {
+        name: this.$t('statNames.oppShutouts'),
+        value: new NumValue(teamInfo.oppShutouts, 0)
       }];
     },
 
@@ -321,6 +330,9 @@ export default {
       }, {
         name: this.$t('statNames.pkPercentage'),
         value: new NumValue(teamInfo.homePKPercentage)
+      }, {
+        name: this.$t('statNames.homeWinPercentage'),
+        value: new NumValue(teamInfo.homeWinPercentage)
       }];
     },
 
@@ -347,6 +359,9 @@ export default {
       }, {
         name: this.$t('statNames.pkPercentage'),
         value: new NumValue(teamInfo.awayPKPercentage)
+      }, {
+        name: this.$t('statNames.awayWinPercentage'),
+        value: new NumValue(teamInfo.awayWinPercentage)
       }];
     },
 
