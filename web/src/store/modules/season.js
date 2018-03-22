@@ -1,6 +1,9 @@
 import seasonApi from 'Api/season';
 import {logger} from 'Root/logger';
 import StoreUtils from 'Store/utils';
+import UserSettings from 'Root/userSettings';
+
+const settings = new UserSettings();
 
 const state = {
   currentSeason: {},
@@ -9,6 +12,13 @@ const state = {
 };
 
 const getters = {
+  getSelectedSeason(state) {
+    let season = state.selectedSeason;
+    if (season.id === undefined) {
+      season = settings.selectedSeason;
+    }
+    return season;
+  }
 };
 
 const actions = {
@@ -63,6 +73,7 @@ const mutations = {
   setSelectedSeason(state, season) {
     logger.debug('mutation: setSelectedSeason');
     state.selectedSeason = season;
+    settings.selectedSeason = season;
   }
 };
 

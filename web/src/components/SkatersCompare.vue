@@ -64,7 +64,7 @@ export default {
   },
   computed: {
     seasonName() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       if (season.id !== undefined) {
         return CompUtils.seasonToStr(season);
       }
@@ -273,7 +273,7 @@ export default {
       if (data === null) {
         return {};
       }
-      let selSeason = this.$store.state.season.selectedSeason;
+      let selSeason = this.$store.getters.getSelectedSeason;
        let getRange = this.$store.getters.getSkaterStatRange;
        let axises = [
          CompUtils.getAxis('goals', this.$t('statNames.goals'), getRange, selSeason.current),
@@ -301,7 +301,7 @@ export default {
   },
   methods: {
     requestSkatersCompare() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       if (season.id !== undefined) {
         this.$store.dispatch('getSkatersComparison', {
           id1: this.pid1,
@@ -312,7 +312,7 @@ export default {
     },
 
     getSkatersCompare() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       let data = this.$store.getters.getSkatersComparison(season, this.pid1, this.pid2);
       if (data === null) {
         this.requestSkatersCompare();

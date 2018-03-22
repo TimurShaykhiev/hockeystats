@@ -84,7 +84,7 @@ export default {
   },
   computed: {
     seasonName() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       if (season.id !== undefined) {
         return CompUtils.seasonToStr(season);
       }
@@ -376,7 +376,7 @@ export default {
       if (data === null) {
         return {};
       }
-      let selSeason = this.$store.state.season.selectedSeason;
+      let selSeason = this.$store.getters.getSelectedSeason;
       let getRange = this.$store.getters.getTeamStatRange;
       let axises = [
         CompUtils.getAxis('goalsFor', this.$t('statNames.goalsFor'), getRange, selSeason.current),
@@ -405,7 +405,7 @@ export default {
   },
   methods: {
     requestTeamsCompare() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       if (season.id !== undefined) {
         this.$store.dispatch('getTeamsComparison', {
           id1: this.tid1,
@@ -416,7 +416,7 @@ export default {
     },
 
     getTeamsCompare() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       let data = this.$store.getters.getTeamsComparison(season, this.tid1, this.tid2);
       if (data === null) {
         this.requestTeamsCompare();

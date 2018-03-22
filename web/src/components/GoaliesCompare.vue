@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     seasonName() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       if (season.id !== undefined) {
         return CompUtils.seasonToStr(season);
       }
@@ -210,7 +210,7 @@ export default {
   },
   methods: {
     requestGoaliesCompare() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       if (season.id !== undefined) {
         this.$store.dispatch('getGoaliesComparison', {
           id1: this.pid1,
@@ -221,7 +221,7 @@ export default {
     },
 
     getGoaliesCompare() {
-      let season = this.$store.state.season.selectedSeason;
+      let season = this.$store.getters.getSelectedSeason;
       let data = this.$store.getters.getGoaliesComparison(season, this.pid1, this.pid2);
       if (data === null) {
         this.requestGoaliesCompare();

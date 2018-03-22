@@ -11,7 +11,8 @@ function isLocalStorageAvailable() {
 }
 
 const DEFAULT_SETTINGS = {
-  locale: 'en'
+  locale: 'en',
+  selectedSeason: {}
 };
 
 export default class UserSettings {
@@ -19,17 +20,23 @@ export default class UserSettings {
     this._storage = isLocalStorageAvailable ? localStorage : null;
   }
 
-  _getSetting(name) {
+  _getValue(name, parse=false) {
     let value = null;
     if (this._storage) {
       value = this._storage.getItem(name);
+      if (parse && value) {
+        value = JSON.parse(value);
+      }
     }
     return value !== null ? value : DEFAULT_SETTINGS[name];
   }
 
-  _setSetting(name, value) {
+  _setValue(name, value) {
     if (this._storage) {
       try {
+        if (typeof value === 'object') {
+          value = JSON.stringify(value);
+        }
         this._storage.setItem(name, value);
         return true;
       } catch (e) {
@@ -40,10 +47,18 @@ export default class UserSettings {
   }
 
   get locale() {
-    return this._getSetting('locale');
+    return this._getValue('locale');
   }
 
   set locale(value) {
-    return this._setSetting('locale', value);
+    return this._setValue('locale', value);
+  }
+
+  get selectedSeason() {
+    return this._getValue('selectedSeason', true);
+  }
+
+  set selectedSeason(value) {
+    return this._setValue('selectedSeason', value);
   }
 };
