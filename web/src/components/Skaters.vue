@@ -1,5 +1,6 @@
 <template>
   <div class="">
+    <h1 class="skaters__title">{{$t('title')}}</h1>
     <div class="skaters__season-picker container-row">
       <season-picker type="all"/>
     </div>
@@ -33,6 +34,16 @@ const CHART_PLAYER_LIMIT = 50;
 
 export default {
   name: 'skaters',
+  i18n: {
+    messages: {
+      en: {
+        title: 'Skaters'
+      },
+      ru: {
+        title: 'Игроки'
+      }
+    }
+  },
   data() {
     return {
       selectedChart: CHART_POINTS,
@@ -233,6 +244,10 @@ export default {
 </script>
 
 <style lang="less">
+  .skaters__title {
+    text-align: center;
+    margin: 1rem 0;
+  }
   .skaters__season-picker {
     justify-content: flex-end;
     padding: 0 2rem;

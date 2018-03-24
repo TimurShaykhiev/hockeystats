@@ -208,8 +208,10 @@ export default {
       color: @header-text-color;
       background: @header-color;
       line-height: 2em;
+      font-size: 1.3rem;
     }
     tr {
+      line-height: 1.5rem;
       border-bottom: 1px solid @border-color;
       border-collapse: collapse;
       &:last-of-type {

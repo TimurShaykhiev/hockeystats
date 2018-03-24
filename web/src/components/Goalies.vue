@@ -1,5 +1,6 @@
 <template>
   <div class="">
+    <h1 class="goalies__title">{{$t('title')}}</h1>
     <div class="goalies__season-picker container-row">
       <season-picker type="all"/>
     </div>
@@ -24,17 +25,29 @@ const CHART_SP = 2;
 const CHART_WINS = 3;
 const CHART_SHUTOUTS = 4;
 const CHART_TOI = 5;
+const CHART_GAMES = 6;
 
 const CHART_PLAYER_LIMIT = 50;
 
 export default {
   name: 'goalies',
+  i18n: {
+    messages: {
+      en: {
+        title: 'Goaltenders'
+      },
+      ru: {
+        title: 'Вратари'
+      }
+    }
+  },
   data() {
     return {
       selectedChart: CHART_GAA,
       chartList: [
         {name: this.$t('charts.goalsAgainstAverage'), value: CHART_GAA},
         {name: this.$t('charts.savePercentage'), value: CHART_SP},
+        {name: this.$t('charts.games'), value: CHART_GAMES},
         {name: this.$t('charts.wins'), value: CHART_WINS},
         {name: this.$t('charts.shutouts'), value: CHART_SHUTOUTS},
         {name: this.$t('charts.toi'), value: CHART_TOI}
@@ -91,7 +104,7 @@ export default {
           }
         };
       }
-      if (this.selectedChart === CHART_WINS) {
+      if (this.selectedChart === CHART_GAMES) {
         let data = CompUtils.statsToChartData(goalieStats, [
           {from: 'wins', to: 'wins'},
           {from: 'losses', to: 'losses'}
@@ -108,6 +121,17 @@ export default {
               {key: 'wins', name: this.$t('statNames.wins')},
               {key: 'losses', name: this.$t('statNames.losses')}
             ]
+          }
+        };
+      }
+      if (this.selectedChart === CHART_WINS) {
+        return {
+          barChart: true,
+          chartData: {
+            rotateXLabels: true,
+            sorting: 'desc',
+            limit: CHART_PLAYER_LIMIT,
+            dataSet: CompUtils.statsToChartData(goalieStats, [{from: 'wins', to: 'y'}])
           }
         };
       }
@@ -131,7 +155,7 @@ export default {
             limit: CHART_PLAYER_LIMIT,
             yCaption: this.$t('charts.toiCaptionY'),
             dataSet: CompUtils.statsToChartData(goalieStats, [{from: 'toi', to: 'y', convert: (t) => t / 60}]),
-            tooltipFormat: (t) => toiToStr(t * 60)
+            tooltipFormat: (t) => CompUtils.toiToStr(t * 60)
           }
         };
       }
@@ -153,6 +177,10 @@ export default {
 </script>
 
 <style lang="less">
+  .goalies__title {
+    text-align: center;
+    margin: 1rem 0;
+  }
   .goalies__season-picker {
     justify-content: flex-end;
     padding: 0 2rem;

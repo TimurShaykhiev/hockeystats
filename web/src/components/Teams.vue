@@ -1,5 +1,6 @@
 <template>
   <div class="teams">
+    <h1 class="teams__title">{{$t('title')}}</h1>
     <div class="teams__season-picker container-row">
       <season-picker type="all"/>
     </div>
@@ -30,6 +31,16 @@ const CHART_GOALS_DIFF = 8;
 
 export default {
   name: 'teams',
+  i18n: {
+    messages: {
+      en: {
+        title: 'Teams'
+      },
+      ru: {
+        title: 'Команды'
+      }
+    }
+  },
   data() {
     return {
       selectedChart: CHART_POINTS,
@@ -200,6 +211,10 @@ export default {
 </script>
 
 <style lang="less">
+  .teams__title {
+    text-align: center;
+    margin: 1rem 0;
+  }
   .teams__season-picker {
     justify-content: flex-end;
     padding: 0 2rem;

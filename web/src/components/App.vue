@@ -1,14 +1,12 @@
 <template>
   <div class="wrapper container-col">
-    <page-header></page-header>
-    <div class="top-banner"></div>
+    <page-header/>
     <div class="main-area container-row">
       <div class="main-content">
-        <router-view></router-view>
+        <router-view/>
       </div>
-      <div class="side-banner"></div>
     </div>
-    <page-footer></page-footer>
+    <page-footer/>
   </div>
 </template>
 
@@ -24,23 +22,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .top-banner {
-    height: 5px;
-    background: lightgrey;
-    margin: 5px;
-  }
   .main-area {
     flex: 1;
   }
   .main-content {
-    flex: 5 5 0;
-    margin: 10px;
-  }
-  .side-banner {
-    background: lightgrey;
-    max-width: 120px;
-    min-width: 120px;
-    flex: 1 1 0;
-    margin: 5px;
+    width: 100%;
+    margin: 1rem 3rem;
   }
 </style>

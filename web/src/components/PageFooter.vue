@@ -1,29 +1,31 @@
 <template>
   <footer class="footer">
-    <div>{{$t("copyright")}}</div>
+    <p>&copy; {{copyrightYears}} hockstats</p>
   </footer>
 </template>
 
 <script>
 export default {
   name: 'page-footer',
-  i18n: {
-    messages: {
-      en: {
-        copyright: 'Created by Timur.'
-      },
-      ru: {
-        copyright: 'Сделано Тимуром.'
-      }
-    }
+  data() {
+    let year = (new Date()).getFullYear();
+    return {
+      copyrightYears: `2017-${year}`
+    };
   }
 };
 
 </script>
 
 <style lang="less">
+  @import '../../styles/vars.less';
+
   .footer {
-    height: 6rem;
+    height: 3rem;
     background: green;
+    color: @header-text-color;
+    p {
+      margin: 1rem 2rem;
+    }
   }
 </style>

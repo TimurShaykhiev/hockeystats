@@ -41,7 +41,7 @@ export default {
   i18n: {
     messages: {
       en: {
-        caption: 'Hockey statistics',
+        caption: 'NHL Hockey Statistics',
         navBar: {
           home: 'Home',
           teams: 'Teams',
@@ -55,7 +55,7 @@ export default {
         }
       },
       ru: {
-        caption: 'Хоккейная статистика',
+        caption: 'Хоккейная статистика НХЛ',
         navBar: {
           home: 'Главная',
           teams: 'Команды',
