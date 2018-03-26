@@ -1,7 +1,10 @@
 <template>
   <header class="header">
     <div class="container-row">
-      <div class="header__logo" @click="goHome">Logo</div>
+      <div class="header__logo container-row" @click="goHome">
+        <img src="images/logo.svg" class="header__logo-image">
+        <h1 class="header__logo-text">Hockstat</h1>
+      </div>
       <div class="header__caption" @click="goHome"><h1>{{$t("caption")}}</h1></div>
       <div class="header__change-lang">
         <ul>
@@ -95,18 +98,27 @@ export default {
     background: @header-color;
   }
   .header__logo {
-    width: 8rem;
+    width: 16rem;
     height: 4rem;
-    margin: .5rem .5rem .5rem 1.5rem;
-    background: darkblue;
-    color: @header-text-color;
+    margin: .5rem .5rem .5rem 2.5rem;
     cursor: pointer;
+  }
+  .header__logo-image {
+    width: 6rem;
+    height: 4rem;
+  }
+  .header__logo-text {
+    align-self: center;
+    font-size: 2.5rem;
+    color: @header-text-color;
   }
   .header__caption {
     margin: .5rem 4rem;
-    font-size: 1.7rem;
-    color: @header-text-color;
     cursor: pointer;
+    h1 {
+      font-size: 3rem;
+      color: @header-text-color;
+    }
   }
   .header__nav-bar {
     justify-content: center;
