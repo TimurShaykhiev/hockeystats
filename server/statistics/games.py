@@ -1,3 +1,4 @@
+import itertools
 from collections import namedtuple
 
 import numpy as np
@@ -59,7 +60,7 @@ TeamHomeAwayStats = namedtuple('TeamHomeAwayStats',
 
 GameTeams = namedtuple('GameTeams', ['home_tid', 'away_tid'])
 
-GameStats = namedtuple('GameScore', ['date', 'stats'])
+GameStats = namedtuple('GameStats', ['date', 'stats'])
 
 
 def get_team_home_away_stats(team_id, games):
@@ -120,6 +121,69 @@ def get_team_vs_team_stats(games, team1_id, team2_id, start_date, end_date):
     team2_ppp = percentage(team2_stats.pp_goals, team2_stats.pp_opportunities)
     return [team1_stats.goals, team1_stats.shots, team1_stats.pim, team1_ppp, 100 - team2_ppp,
             team2_stats.goals, team2_stats.shots, team2_stats.pim, team2_ppp, 100 - team1_ppp]
+
+
+def get_tie_breaking_info(games, teams_ids):
+    GameInfo = namedtuple('GameInfo', ['home_tid', 'away_tid', 'home_points', 'away_points'])
+
+    class TeamInfo:
+        def __init__(self):
+            self.games = 0
+            self.home_games = 0
+
+    g_info = []
+    t_info = dict((x, TeamInfo()) for x in itertools.chain.from_iterable(teams_ids))
+    for g in games:
+        home_tid = g[COL_HOME_TEAM_ID]
+        away_tid = g[COL_AWAY_TEAM_ID]
+        if g[COL_HOME_GOALS] > g[COL_AWAY_GOALS]:
+            home_points = 2
+            away_points = 0 if g[COL_WIN_TYPE] == Game.WIN_TYPE_REGULAR else 1
+        else:
+            home_points = 0 if g[COL_WIN_TYPE] == Game.WIN_TYPE_REGULAR else 1
+            away_points = 2
+        g_info.append(GameInfo(home_tid, away_tid, home_points, away_points))
+        t_info[home_tid].games += 1
+        t_info[home_tid].home_games += 1
+        t_info[away_tid].games += 1
+
+    result = dict((x, 0) for x in itertools.chain.from_iterable(teams_ids))
+    for ids in teams_ids:
+        is_pair = len(ids) == 2
+        # find min number of games to take into account (ignore "odd" games)
+        if is_pair:
+            games_number = min([t_info[k].home_games for k in t_info if k in ids])
+        else:
+            games_number = min([t_info[k].games for k in t_info if k in ids])
+        if games_number == 0:
+            continue
+
+        # set games counter to minimum value
+        for t in t_info:
+            if t in ids:
+                if is_pair:
+                    t_info[t].home_games = games_number
+                else:
+                    t_info[t].games = games_number
+
+        # count point in the right games only
+        for g in g_info:
+            if is_pair:
+                if g.home_tid in ids and t_info[g.home_tid].home_games > 0:
+                    result[g.home_tid] += g.home_points
+                    result[g.away_tid] += g.away_points
+                    t_info[g.home_tid].home_games -= 1
+            else:
+                if g.home_tid in ids and t_info[g.home_tid].games > 0 and t_info[g.away_tid].games > 0:
+                    result[g.home_tid] += g.home_points
+                    result[g.away_tid] += g.away_points
+                    t_info[g.home_tid].games -= 1
+                    t_info[g.away_tid].games -= 1
+        if not is_pair:
+            for r in result:
+                if r in ids:
+                    result[r] = result[r] / (games_number * 2)
+    return result
 
 
 def get_points_progress(team_id, games, start_date, interval):

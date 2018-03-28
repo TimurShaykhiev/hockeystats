@@ -132,16 +132,31 @@ class Game(Model):
     @classmethod
     def get_team_games(cls, db_conn, team_id, from_date, to_date, regular):
         q = cls._create_query().select()
-        q.where('date >= %s AND date < %s AND is_regular = %s AND (home_team_id = %s OR away_team_id = %s)')
+        q.where('(home_team_id = %s OR away_team_id = %s) AND date >= %s AND date < %s AND is_regular = %s')
         q.order_by(['date'])
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
 
     @classmethod
     def get_team_vs_team_games(cls, db_conn, team1_id, team2_id, regular, limit=10):
         q = cls._create_query().select()
-        q.where('is_regular = %s AND ((home_team_id=%s AND away_team_id=%s) OR (home_team_id=%s AND away_team_id=%s))')
+        q.where('home_team_id IN (%s,%s) AND away_team_id IN (%s,%s) AND is_regular = %s')
         q.order_by(['-date']).limit(limit)
-        return cls._get_columns_from_db(db_conn, q.query, (regular, team1_id, team2_id, team2_id, team1_id))
+        return cls._get_columns_from_db(db_conn, q.query, (regular, team1_id, team2_id, team1_id, team2_id))
+
+    @classmethod
+    def get_head_to_head_games(cls, db_conn, ids, from_date, to_date):
+        q = cls._create_query().select()
+        query_params = []
+        where_str = ''
+        for team_ids in ids:
+            in_part = 'IN ({})'.format(','.join(['%s'] * len(team_ids)))
+            where_str += ' OR (home_team_id {} AND away_team_id {})'.format(in_part, in_part)
+            query_params += team_ids * 2
+        q.where('({}) AND date >= %s AND date < %s AND is_regular=1'.format(where_str[4:]))
+        q.order_by(['date'])
+        query_params.append(from_date)
+        query_params.append(to_date)
+        return cls._get_columns_from_db(db_conn, q.query, query_params)
 
     @classmethod
     def get_season_games(cls, db_conn, from_date, to_date, regular):

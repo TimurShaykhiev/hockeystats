@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import numpy as np
 
 from .games import get_team_home_away_stats
@@ -33,8 +35,12 @@ COL_LOSE_REGULAR = 19
 COL_LOSE_OVERTIME = 20
 COL_LOSE_SHOOTOUT = 21
 COL_POINTS = 22
+COL_GOALS_DIFF = 23
+COL_RO_WINS = 24
 
 TEAM_STATS_INT_ARRAY_LEN = 23
+
+STANDINGS_STATS_INT_ARRAY_LEN = 25
 
 # Floating-point values
 COL_POINT_PERCENTAGE = 0
@@ -56,6 +62,10 @@ INT_ARRAY_RESULT_COLUMNS = [COL_TEAM_ID, COL_SEASON_ID, COL_IS_REGULAR, COL_GOAL
                             COL_LOSE_SHOOTOUT, COL_POINTS]
 
 EXT_INT_ARRAY_RESULT_COLUMNS = [COL_GOALS_FOR, COL_GOALS_AGAINST, COL_PP_GOALS, COL_SH_GOALS_AGAINST, COL_POINTS]
+
+STANDINGS_INT_ARRAY_RESULT_COLUMNS = [COL_TEAM_ID, COL_POINTS, COL_GAMES, COL_RO_WINS, COL_GOALS_DIFF]
+
+StandingsStats = namedtuple('StandingsStats', ['tid', 'points', 'games', 'wins', 'diff', 'cid', 'did'])
 
 
 def get_teams_stats(team_stats):
@@ -82,6 +92,20 @@ def get_team_ext_stats(team_id, team_stats, games):
     results = stat_arr_int[team_row_idx, EXT_INT_ARRAY_RESULT_COLUMNS].tolist() +\
         stat_arr_fp[team_row_idx, :].tolist() +\
         ext_stats + ratings
+    return results
+
+
+def get_standings_stats(team_stats, team_info):
+    arr = stats_to_array(team_stats, STANDINGS_STATS_INT_ARRAY_LEN)
+
+    _set_team_points(arr)
+    arr[:, COL_RO_WINS] = arr[:, COL_WIN_REGULAR] + arr[:, COL_WIN_OVERTIME]
+    arr[:, COL_GOALS_DIFF] = arr[:, COL_GOALS_FOR] - arr[:, COL_GOALS_AGAINST]
+
+    results = []
+    for i in range(0, len(team_stats)):
+        stats = arr[i, STANDINGS_INT_ARRAY_RESULT_COLUMNS].tolist() + team_info[arr[i, COL_TEAM_ID]]
+        results.append(StandingsStats._make(stats))
     return results
 
 
