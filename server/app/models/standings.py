@@ -96,12 +96,17 @@ class Standings:
             res.append(_WcStandings(cid, div1, div2, _get_ids(wc)))
         return res
 
+    def get_all_standings(self, db):
+        if self._stats is None:
+            self._prepare_data(db)
+        self._stats.sort(key=self._team_key_fn)
+        return _get_ids(self._stats)
+
     def get_data(self):
         db = get_db()
         self._prepare_data(db)
 
-        self._stats.sort(key=self._team_key_fn)
-        self.league = _get_ids(self._stats)
+        self.league = self.get_all_standings(db)
 
         for cid in self._conferences:
             st = _filter_conf(self._stats, cid)

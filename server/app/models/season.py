@@ -78,6 +78,7 @@ class SeasonSchema(ModelSchema):
     regular = fields.Boolean()
     start = fields.Date()
     end = fields.Date()
+    poStart = fields.Date(attribute='po_start')
 
 
 class SeasonCollection:
