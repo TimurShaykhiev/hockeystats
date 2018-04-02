@@ -93,6 +93,7 @@ export default {
   convertSeason(season) {
     let s = season;
     s.start = this.parseDate(s.start);
+    s.poStart = this.parseDate(s.poStart);
     s.end = this.parseDate(s.end);
     return s;
   },

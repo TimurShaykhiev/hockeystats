@@ -31,8 +31,10 @@ const state = {
   teamSeasons: {},
   teamPlayersStats: {},
   teamAllStats: {},
-  conferences: [],
-  divisions: [],
+  standings: {},
+  playOff: {},
+  conferences: {},
+  divisions: {},
   teamStatRanges: teamStatRanges,
   teamsComparison: {},
   teamPointsProgress: {}
@@ -42,15 +44,19 @@ function isCorrectTeam(teamId, stats) {
   return stats.team && stats.team.id === teamId;
 }
 
+function checkSeasonAndReturnData(state, stateName) {
+  return (season) => {
+    let stats = state[stateName];
+    if (StoreUtils.isCorrectSeason(season, stats)) {
+      return stats;
+    }
+    return null;
+  };
+}
+
 const getters = {
   getAllTeams(state) {
-    return (season) => {
-      let stats = state.allTeams;
-      if (StoreUtils.isCorrectSeason(season, stats)) {
-        return stats;
-      }
-      return null;
-    };
+    return checkSeasonAndReturnData(state, 'allTeams');
   },
 
   getTeamStatRange(state) {
@@ -58,13 +64,7 @@ const getters = {
   },
 
   getTeamStats(state) {
-    return (season) => {
-      let stats = state.teamStats;
-      if (StoreUtils.isCorrectSeason(season, stats)) {
-        return stats;
-      }
-      return null;
-    };
+    return checkSeasonAndReturnData(state, 'teamStats');
   },
 
   getTeamSeasonInfo(state) {
@@ -114,6 +114,31 @@ const getters = {
         return stats;
       }
       return null;
+    };
+  },
+
+  getStandings(state) {
+    return checkSeasonAndReturnData(state, 'standings');
+  },
+
+  getPlayOff(state) {
+    return checkSeasonAndReturnData(state, 'playOff');
+  },
+
+  getConferenceBySerialNumber(state) {
+    return (serialNum) => {
+      let conferences = Object.keys(state.conferences).map((k) => Number(k));
+      if (conferences.length < 2) {
+        return null;
+      }
+      // We know there can be only 2 conferences
+      let id = 0;
+      if (serialNum === 1) {
+        id = Math.min(conferences[0], conferences[1]);
+      } else {
+        id = Math.max(conferences[0], conferences[1]);
+      }
+      return {id: id, name: state.conferences[id]};
     };
   }
 };
@@ -191,6 +216,14 @@ const actions = {
   getTeamPlayersStats({commit, state}, {teamId, reqParams}) {
     return getTeamDataByIdAndSeason('getTeamPlayersStats', 'setTeamPlayersStats', 'teamPlayersStats',
       commit, state, teamId, reqParams);
+  },
+
+  getTeamsStandings({commit, state}, {reqParams}) {
+    return getTeamsDataBySeason('getTeamsStandings', 'setStandings', 'standings', commit, state, reqParams);
+  },
+
+  getTeamsPlayOff({commit, state}, {reqParams}) {
+    return getTeamsDataBySeason('getTeamsPlayOff', 'setPlayOff', 'playOff', commit, state, reqParams);
   },
 
   getTeamsComparison({commit, state}, {id1, id2, reqParams}) {
@@ -296,6 +329,7 @@ function teamInfoArrayToObject(statsArray) {
 
 const mutations = {
   setAllTeams(state, teams) {
+    logger.debug('mutation: setAllTeams');
     let allTeams = {};
     allTeams.timestamp = teams.timestamp;
     allTeams.season = StoreUtils.convertSeason(teams.season);
@@ -382,6 +416,27 @@ const mutations = {
     state.teamPlayersStats = newStat;
   },
 
+  setStandings(state, result) {
+    logger.debug('mutation: setStandings');
+    state.standings = {
+      timestamp: result.timestamp,
+      season: StoreUtils.convertSeason(result.season),
+      league: result.league,
+      conferences: result.conferences,
+      divisions: result.divisions,
+      wildCards: result.wildCards
+    };
+  },
+
+  setPlayOff(state, result) {
+    logger.debug('mutation: setPlayOff');
+    state.playOff = {
+      timestamp: result.timestamp,
+      season: StoreUtils.convertSeason(result.season),
+      rounds: result.rounds
+    };
+  },
+
   setConferences(state, teams) {
     logger.debug('mutation: setConferences');
     let conf = {};
@@ -390,9 +445,7 @@ const mutations = {
         conf[team.cid] = team.conference;
       }
     }
-    state.conferences = Object.keys(conf).map((key) => {
-      return {id: Number(key), name: conf[key]};
-    });
+    state.conferences = conf;
   },
 
   setDivisions(state, teams) {
@@ -403,9 +456,7 @@ const mutations = {
         div[team.did] = {name: team.division, cid: team.cid};
       }
     }
-    state.divisions = Object.keys(div).map((key) => {
-      return {id: Number(key), name: div[key].name, cid: div[key].cid};
-    }).sort((a, b) => a.id - b.id);
+    state.divisions = div;
   },
 
   setTeamsComparison(state, stats) {

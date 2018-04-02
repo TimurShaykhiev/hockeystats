@@ -55,5 +55,21 @@ export default {
       query: reqParams.getQueryParams()
     };
     return makeRequest(reqData);
+  },
+
+  getTeamsStandings(reqParams) {
+    let reqData = {
+      path: ['teams', 'standings'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
+  getTeamsPlayOff(reqParams) {
+    let reqData = {
+      path: ['teams', 'play-off'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };

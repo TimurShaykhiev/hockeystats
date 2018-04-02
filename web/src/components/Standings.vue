@@ -7,20 +7,20 @@
         <th :title="$t('statNames.games')">{{$t('statNames.gamesShort')}}</th>
         <th :title="$t('standingsHeader.wins.hint')">{{$t("standingsHeader.wins.label")}}</th>
         <th :title="$t('standingsHeader.losses.hint')">{{$t("standingsHeader.losses.label")}}</th>
-        <th :title="$t('standingsHeader.lossesOT.hint')">{{$t("standingsHeader.lossesOT.label")}}</th>
         <th :title="$t('statNames.points')">{{$t("statNames.pointsShort")}}</th>
+        <th :title="$t('standingsHeader.roWins.hint')">{{$t("standingsHeader.roWins.label")}}</th>
         <th :title="$t('statNames.pointPercentage')">{{$t("statNames.pointPercentageShort")}}</th>
       </tr>
-      <tr v-for="elem in dataSet">
-        <td class="rank-cell" :class="elem.colorMark">{{elem.rank}}</td>
+      <tr v-for="elem in dataSet" :class="{'standings-table__wc': isWildCardTable}">
+        <td class="rank-cell">{{elem.rank}}</td>
         <td class="name-cell">
           <router-link :to="{name: 'team', params: {id: elem.id}}">{{elem.name}}</router-link>
         </td>
         <td class="number-cell">{{elem.games}}</td>
         <td class="number-cell secondary-cell">{{elem.wins}}</td>
         <td class="number-cell secondary-cell">{{elem.losses}}</td>
-        <td class="number-cell secondary-cell">{{elem.lossesOT}}</td>
         <td class="number-cell">{{elem.points}}</td>
+        <td class="number-cell secondary-cell">{{elem.roWins}}</td>
         <td class="number-cell secondary-cell">{{elem.pointsPercent}}</td>
       </tr>
     </table>
@@ -31,71 +31,51 @@
 import {SeasonRequestParams} from 'Store/types';
 import {format} from 'd3-format';
 
-function compareStandings(a, b) {
-  // Compare points (the more the better)
-  if (a.stats.points > b.stats.points) return -1;
-  if (a.stats.points < b.stats.points) return 1;
-
-  // Compare games played (the fewer the better)
-  if (a.stats.games > b.stats.games) return 1;
-  if (a.stats.games < b.stats.games) return -1;
-
-  // Compare games won (the more the better). Since the 2010–11 NHL season, shootout wins are excluded from the
-  // tie-breaking procedure.
-  if (a.stats.winRegular + a.stats.winOvertime > b.stats.winRegular + b.stats.winOvertime) return -1;
-  if (a.stats.winRegular + a.stats.winOvertime < b.stats.winRegular + b.stats.winOvertime) return 1;
-
-  // Here we should compare the number of points earned in games between the tied clubs. I omit it for now. Team stats
-  // do not have this info. Separate request is needed.
-
-  // Compare differential between goals for and goals against (the more the better).
-  if (a.stats.goalsFor - a.stats.goalsAgainst > b.stats.goalsFor - b.stats.goalsAgainst) return -1;
-  if (a.stats.goalsFor - a.stats.goalsAgainst < b.stats.goalsFor - b.stats.goalsAgainst) return 1;
-  return 0;
-}
-
-function getColorMarkClass(idx) {
-  if (idx >= 1 && idx < 7) return 'division-top';
-  if (idx === 7 || idx === 8) return 'wild-card';
-  return '';
-}
+const TYPE_CONFERENCE = 'conf';
+const TYPE_DIVISION = 'div';
+const TYPE_WILD_CARD = 'wc';
 
 export default {
   name: 'standings',
   props: {
-    num: {type: String, required: true}
+    type: {type: String, required: true},
+    confSerialNum: {type: Number},
+    divSerialNum: {type: Number},
+    currentSeason: {type: Boolean, default: true}
   },
   i18n: {
     messages: {
       en: {
+        wcTitle: 'Wild Cards',
         standingsHeader: {
           wins: {
             label: 'W',
-            hint: 'Wins(2 points)'
+            hint: 'Wins'
           },
           losses: {
             label: 'L',
-            hint: 'Losses(zero points)'
+            hint: 'Losses'
           },
-          lossesOT: {
-            label: 'OT',
-            hint: 'Overtime/shootout losses(1 point)'
+          roWins: {
+            label: 'ROW',
+            hint: 'Regular + Overtime Wins'
           }
         }
       },
       ru: {
+        wcTitle: 'Уайлд карды',
         standingsHeader: {
           wins: {
             label: 'В',
-            hint: 'Победы(2 очка)'
+            hint: 'Победы'
           },
           losses: {
             label: 'П',
-            hint: 'Поражения(0 очков)'
+            hint: 'Поражения'
           },
-          lossesOT: {
-            label: 'ОТ',
-            hint: 'Поражения в овертайме и по буллитам(1 очко)'
+          roWins: {
+            label: 'ПОО',
+            hint: 'Победы в основное время и в овертайме'
           }
         }
       }
@@ -105,89 +85,136 @@ export default {
     return {};
   },
   created() {
-    this.$store.dispatch('getCurrentSeason').then((season) => {
-      this.$store.dispatch('getAllTeams', {
-        reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
-      });
-      this.$store.dispatch('getTeamStats', {
-        reqParams: new SeasonRequestParams(this.$store, season.id, season.regular)
-      });
-    });
+    if (this.currentSeason) {
+      this.$store.dispatch('getCurrentSeason').then(this.requestData);
+    } else {
+      let season = this.$store.state.season.selectedSeason;
+      if (season.id !== undefined) {
+        this.requestData(season);
+      }
+    }
   },
   computed: {
-    conferenceId() {
-      let allTeams = this.$store.state.teams.allTeams.teams;
-      let teamStats = this.$store.state.teams.teamStats.teams;
-      if (!allTeams || !teamStats) {
-        return '';
+    confId() {
+      let conf = this.$store.getters.getConferenceBySerialNumber(this.confSerialNum);
+      return conf !== null ? conf.id : null;
+    },
+
+    divId() {
+      if (this.confId === null) {
+        return null;
       }
-      let conferences = [];
-      for (let st of teamStats) {
-        // We know there can be only 2 conferences
-        if (conferences.length === 0) {
-          conferences.push(allTeams[st.id].cid);
-        } else if (allTeams[st.id].cid !== conferences[0]) {
-          conferences.push(allTeams[st.id].cid);
-          break;
+      let divisions = [];
+      let divMap = this.$store.state.teams.divisions;
+      for (let k of Object.keys(divMap)) {
+        if (divMap[k].cid === this.confId) {
+          divisions.push(Number(k));
         }
       }
-      if (this.num === '1') {
-        return Math.min(conferences[0], conferences[1]);
+      if (divisions.length < 2) {
+        return null;
       }
-      return Math.max(conferences[0], conferences[1]);
+      // We know there can be only 2 divisions in conference
+      if (this.divSerialNum === 1) {
+        return Math.min(divisions[0], divisions[1]);
+      }
+      return Math.max(divisions[0], divisions[1]);
     },
+
     caption() {
-      let cid = this.conferenceId;
-      if (cid) {
-        let conferences = this.$store.state.teams.conferences;
-        for (let c of conferences) {
-          if (c.id === cid) {
-            return c.name;
-          }
-        }
+      if (this.type === TYPE_CONFERENCE && this.confId !== null) {
+        return this.$store.state.teams.conferences[this.confId];
       }
-      return '';
+      if (this.type === TYPE_DIVISION && this.divId !== null) {
+        return this.$store.state.teams.divisions[this.divId].name;
+      }
+      if (this.type === TYPE_WILD_CARD && this.divId !== null) {
+        if (this.divSerialNum === undefined) {
+          return this.$t('wcTitle');
+        }
+        return this.$store.state.teams.divisions[this.divId].name;
+      }
+      return '\xa0\xa0\xa0';
     },
+
     dataSet() {
-      let allTeams = this.$store.state.teams.allTeams.teams;
-      let teamStats = this.$store.state.teams.teamStats.teams;
-      let cid = this.conferenceId;
-      if (!allTeams || !teamStats || !cid) {
+      let season = this.currentSeason ?
+        this.$store.state.season.currentSeason :
+        this.$store.state.season.selectedSeason;
+      if (season.id === undefined) {
         return [];
       }
+      let allTeams = this.$store.getters.getAllTeams(season);
+      let teamStats = this.$store.getters.getTeamStats(season);
+      let standings = this.$store.getters.getStandings(season);
+      if (allTeams === null || teamStats === null || standings === null) {
+        this.requestData(season);
+        return [];
+      }
+      allTeams = allTeams.teams;
+      let teamsStatsMap = {};
+      for (let t of teamStats.teams) {
+        teamsStatsMap[t.id] = t;
+      }
 
-      let confStats = teamStats.filter((el) => allTeams[el.id].cid === cid);
-      let did1 = allTeams[confStats[0].id].did;
-      let div1 = confStats.filter((el) => allTeams[el.id].did === did1).sort(compareStandings);
-      let div2 = confStats.filter((el) => allTeams[el.id].did !== did1).sort(compareStandings);
-      // Put together 3 top teams from each division and sort them
-      let result = div1.slice(0, 3).concat(div2.slice(0, 3));
-      result.sort(compareStandings);
-      // Put together the rest teams and sort them
-      let others = div1.slice(3).concat(div2.slice(3));
-      others.sort(compareStandings);
-      // Put sorted arrays together
-      result = result.concat(others);
+      if (this.type === TYPE_CONFERENCE && this.confId !== null) {
+        for (let el of standings.conferences) {
+          if (el.cid === this.confId) {
+            standings = el.teams;
+            break;
+          }
+        }
+      } else if (this.type === TYPE_DIVISION && this.divId !== null) {
+        for (let el of standings.divisions) {
+          if (el.did === this.divId) {
+            standings = el.teams;
+            break;
+          }
+        }
+      } else if (this.type === TYPE_WILD_CARD && this.divId !== null) {
+        for (let el of standings.wildCards) {
+          if (el.cid === this.confId) {
+            if (this.divSerialNum === undefined) {
+              standings = el.wc;
+            } else {
+              standings = el.div1.did === this.divId ? el.div1.teams : el.div2.teams;
+            }
+            break;
+          }
+        }
+      } else {
+        standings = standings.league;
+      }
 
       let i = 0;
       let f = format('.1f');
+      let result = standings.map((s) => teamsStatsMap[s]);
       return result.map((t) => {
         return {
           rank: ++i,
-          colorMark: getColorMarkClass(i),
           id: t.id,
           name: allTeams[t.id].name,
           games: t.stats.games,
           wins: t.stats.winRegular + t.stats.winOvertime + t.stats.winShootout,
-          losses: t.stats.loseRegular,
-          lossesOT: t.stats.loseOvertime + t.stats.loseShootout,
+          losses: t.stats.loseRegular + t.stats.loseOvertime + t.stats.loseShootout,
+          roWins: t.stats.winRegular + t.stats.winOvertime,
           points: t.stats.points,
           pointsPercent: f(t.stats.pointPercentage)
         };
       });
+    },
+
+    isWildCardTable() {
+      return this.type === TYPE_WILD_CARD && this.divSerialNum === undefined;
     }
   },
   methods: {
+    requestData(season) {
+      let reqParams = new SeasonRequestParams(this.$store, season.id, season.regular);
+      this.$store.dispatch('getAllTeams', {reqParams: reqParams});
+      this.$store.dispatch('getTeamStats', {reqParams: reqParams});
+      this.$store.dispatch('getTeamsStandings', {reqParams: reqParams});
+    }
   }
 };
 
@@ -218,6 +245,9 @@ export default {
         border-bottom: none;
       }
     }
+    tr.standings-table__wc:nth-of-type(3) {
+      border-bottom: 6px solid @border-color;
+    }
     th {
       border: none;
       text-align: center;
@@ -229,12 +259,6 @@ export default {
       &.rank-cell {
         width: 2rem;
         background-color: #FFF;
-        &.division-top {
-          background-color: #008000;
-        }
-        &.wild-card {
-          background-color: #FFA500;
-        }
       }
       &.number-cell {
         width: 2.5rem;
