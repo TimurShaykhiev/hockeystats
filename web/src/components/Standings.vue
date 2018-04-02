@@ -81,9 +81,6 @@ export default {
       }
     }
   },
-  data() {
-    return {};
-  },
   created() {
     if (this.currentSeason) {
       this.$store.dispatch('getCurrentSeason').then(this.requestData);
