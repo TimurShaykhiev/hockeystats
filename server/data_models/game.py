@@ -132,7 +132,7 @@ class Game(Model):
     @classmethod
     def get_team_games(cls, db_conn, team_id, from_date, to_date, regular):
         q = cls._create_query().select()
-        q.where('(home_team_id = %s OR away_team_id = %s) AND date >= %s AND date < %s AND is_regular = %s')
+        q.where('date >= %s AND date < %s AND is_regular = %s AND (home_team_id = %s OR away_team_id = %s)')
         q.order_by(['date'])
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
 
@@ -141,7 +141,7 @@ class Game(Model):
         q = cls._create_query().select()
         q.where('home_team_id IN (%s,%s) AND away_team_id IN (%s,%s) AND is_regular = %s')
         q.order_by(['-date']).limit(limit)
-        return cls._get_columns_from_db(db_conn, q.query, (regular, team1_id, team2_id, team1_id, team2_id))
+        return cls._get_columns_from_db(db_conn, q.query, (team1_id, team2_id, team1_id, team2_id, regular))
 
     @classmethod
     def get_head_to_head_games(cls, db_conn, ids, from_date, to_date):

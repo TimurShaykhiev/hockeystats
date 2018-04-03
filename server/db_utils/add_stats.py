@@ -5,21 +5,32 @@ from data_models.team_sum_stat import TeamSumStat
 
 
 def add_games(db_cur, games):
-    num = db_cur.executemany('INSERT INTO games VALUES '
-                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+    num = db_cur.executemany('INSERT INTO games (id, date, is_regular, win_type, home_team_id, away_team_id, '
+                             'home_goals, home_goals_period1, home_goals_period2, home_goals_period3, home_shots, '
+                             'home_pp_goals, home_pp_opportunities, home_face_off_wins, home_blocked, home_hits, '
+                             'home_penalty_minutes, away_goals, away_goals_period1, away_goals_period2, '
+                             'away_goals_period3, away_shots, away_pp_goals, away_pp_opportunities, '
+                             'away_face_off_wins, away_blocked, away_hits, away_penalty_minutes, face_off_taken) '
+                             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                              '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                              [g.to_tuple() for g in games])
     return num
 
 
 def add_skater_stats(db_cur, skater_stats):
-    num = db_cur.executemany('INSERT INTO skater_stats VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+    num = db_cur.executemany('INSERT INTO skater_stats (player_id, team_id, game_id, date, assists, goals, shots, '
+                             'hits, pp_goals, pp_assists, penalty_minutes, face_off_wins, face_off_taken, takeaways, '
+                             'giveaways, sh_goals, sh_assists, blocked, plus_minus, toi, even_toi, pp_toi, sh_toi) '
+                             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                              '%s, %s, %s, %s, %s, %s, %s, %s, %s)', [sk.to_tuple() for sk in skater_stats])
     return num
 
 
 def add_goalie_stats(db_cur, goalie_stats):
-    num = db_cur.executemany('INSERT INTO goalie_stats VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+    num = db_cur.executemany('INSERT INTO goalie_stats (player_id, team_id, game_id, date, toi, assists, goals, '
+                             'penalty_minutes, shots, saves, pp_saves, sh_saves, even_saves, sh_shots_against, '
+                             'even_shots_against, pp_shots_against, decision) '
+                             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                              '%s, %s, %s)', [gl.to_tuple() for gl in goalie_stats])
     return num
 
