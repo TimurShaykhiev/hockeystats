@@ -223,7 +223,6 @@ export default {
         return [];
       }
 
-      allTeams = allTeams.teams;
       let goalieStats;
       if (this.type === TYPE_PLAYER) {
         let stats = this.$store.getters.getGoalieAllStats(parseInt(this.$route.params.id));
@@ -259,9 +258,9 @@ export default {
           rowData.name = t.player.name;
         }
         if (this.type === TYPE_ALL) {
-          rowData.team = allTeams[t.player.tid].abbr;
+          rowData.team = CompUtils.getTeamName(allTeams, t.player.tid, true);
         } else if (this.type === TYPE_PLAYER) {
-          rowData.team = allTeams[t.teamId].abbr;
+          rowData.team = CompUtils.getTeamName(allTeams, t.teamId, true);
         }
         if (this.type === TYPE_PLAYER) {
           rowData.seasonName = CompUtils.seasonToStr(t.season);

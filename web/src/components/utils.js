@@ -166,5 +166,13 @@ export default {
         sortOrder: el.order || 'desc'
       }))
     };
+  },
+
+  getTeamName(allTeams, tid, short=false) {
+    const team = allTeams.teams[tid];
+    if (team === undefined) {
+      return '';
+    }
+    return short ? team.abbr : team.name;
   }
 };

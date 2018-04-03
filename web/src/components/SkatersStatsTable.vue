@@ -239,7 +239,6 @@ export default {
         return [];
       }
 
-      allTeams = allTeams.teams;
       let skaterStats;
       if (this.type === TYPE_PLAYER) {
         let stats = this.$store.getters.getSkaterAllStats(parseInt(this.$route.params.id));
@@ -276,9 +275,9 @@ export default {
           rowData.position = this.$t(`playerPosition.${t.player.pos}`);
         }
         if (this.type === TYPE_ALL) {
-          rowData.team = allTeams[t.player.tid].abbr;
+          rowData.team = CompUtils.getTeamName(allTeams, t.player.tid, true);
         } else if (this.type === TYPE_PLAYER) {
-          rowData.team = allTeams[t.teamId].abbr;
+          rowData.team = CompUtils.getTeamName(allTeams, t.teamId, true);
         }
         if (this.type === TYPE_PLAYER) {
           rowData.seasonName = CompUtils.seasonToStr(t.season);

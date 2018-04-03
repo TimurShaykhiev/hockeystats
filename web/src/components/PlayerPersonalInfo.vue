@@ -26,6 +26,7 @@
 
 <script>
 import {SeasonRequestParams} from 'Store/types';
+import CompUtils from 'Components/utils';
 
 export default {
   name: 'player-personal-info',
@@ -105,7 +106,7 @@ export default {
         this.requestAllTeams();
         return '';
       }
-      return allTeams.teams[this.playerInfo.tid].name;
+      return CompUtils.getTeamName(allTeams, this.playerInfo.tid);
     },
 
     routeName() {

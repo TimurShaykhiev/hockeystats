@@ -116,9 +116,9 @@ export default {
   },
   computed: {
     dataSet() {
-      let allTeams = this.$store.state.teams.allTeams.teams;
+      let allTeams = this.$store.state.teams.allTeams;
       let allStats = this[typesMap[this.type].getStats]();
-      if (!allTeams || !allStats) {
+      if (!allTeams.teams || !allStats) {
         return [];
       }
       this[typesMap[this.type].setLimits]();
@@ -147,7 +147,7 @@ export default {
           pid: x.player.id,
           name: x.player.name,
           routeName: routeName,
-          team: allTeams[x.player.tid].name,
+          team: CompUtils.getTeamName(allTeams, x.player.tid),
           value: showValueFunc ? showValueFunc(getValueFunc(x)) : getValueFunc(x)
         };
       });

@@ -5,7 +5,7 @@
       <div v-for="round in dataSet" class="play-off__round container-col">
         <div v-for="pair in round" :class="pair.blockClass">
           <table v-if="pair.notEmpty">
-            <tr v-for="team in pair.teams">
+            <tr v-for="team in pair.teams" :class="team.teamClass">
               <td class="play-off__team-name-cell">
                 <router-link :to="{name: 'team', params: {id: team.id}}">{{team.name}}</router-link>
               </td>
@@ -22,6 +22,7 @@
 import {SeasonRequestParams} from 'Store/types';
 
 const ROUND_MAX = 4;
+const WINS_MAX = 4;
 
 export default {
   name: 'play-off',
@@ -103,7 +104,7 @@ export default {
           return {
             notEmpty: true,
             blockClass: 'play-off__pair',
-            teams: [{id: 0, name: '', wins: ''}, {id: 0, name: '', wins: ''}]
+            teams: [{id: 0, name: '', wins: '', teamClass: ''}, {id: 0, name: '', wins: '', teamClass: ''}]
           };
         }
         const complete = pair.tid1 !== 0 && pair.tid2 !== 0;
@@ -113,11 +114,13 @@ export default {
           teams: [{
             id: pair.tid1,
             name: pair.tid1 !== 0 ? allTeams[pair.tid1].name : '',
-            wins: complete ? pair.wins1 : ''
+            wins: complete ? pair.wins1 : '',
+            teamClass: pair.wins1 === WINS_MAX ? 'play-off__pair-winner' : ''
           }, {
             id: pair.tid2,
             name: pair.tid2 !== 0 ? allTeams[pair.tid2].name : '',
-            wins: complete ? pair.wins2 : ''
+            wins: complete ? pair.wins2 : '',
+            teamClass: pair.wins2 === WINS_MAX ? 'play-off__pair-winner' : ''
           }]
         };
       };
@@ -210,6 +213,7 @@ export default {
     });
     table {
       border: none;
+      border-collapse: collapse;
       width: 100%;
       height: 100%;
     }
@@ -225,6 +229,10 @@ export default {
   .play-off__score-cell {
     width: 10%;
     text-align: center;
+  }
+  .play-off__pair-winner {
+    font-weight: bold;
+    background-color: #b2f5b8;
   }
   .play-off__link-block {
     border-top: @border;
