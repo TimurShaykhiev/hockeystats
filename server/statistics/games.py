@@ -186,22 +186,6 @@ def get_tie_breaking_info(games, teams_ids):
     return result
 
 
-def get_play_off_scores(games):
-    result = {}
-    for g in games:
-        tid1 = g[COL_HOME_TEAM_ID]
-        tid2 = g[COL_AWAY_TEAM_ID]
-        key = min(tid1, tid2), max(tid1, tid2)
-        if key not in result:
-            result[key] = {tid1: 0, tid2: 0}
-        score = result[key]
-        if g[COL_HOME_GOALS] > g[COL_AWAY_GOALS]:
-            score[tid1] += 1
-        else:
-            score[tid2] += 1
-    return result
-
-
 def get_points_progress(team_id, games, start_date, interval):
     # interval is timedelta
     res = [0]

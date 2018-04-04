@@ -41,3 +41,11 @@ class Query:
     def limit(self, row_number):
         self.query += ' LIMIT {}'.format(row_number)
         return self
+
+    @staticmethod
+    def get_col_list(columns, table_alias=None):
+        if columns is None:
+            return '*'
+        if table_alias is None:
+            return ', '.join(columns)
+        return ', '.join(['{}.{}'.format(table_alias, c) for c in columns])

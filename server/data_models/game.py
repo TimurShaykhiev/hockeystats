@@ -164,6 +164,18 @@ class Game(Model):
         q.where('date >= %s AND date < %s AND is_regular = %s')
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular))
 
+    @classmethod
+    def get_play_off_scores(cls, db_conn, from_date, to_date):
+        query = ('SELECT LEAST(home_team_id, away_team_id) AS t1, GREATEST(home_team_id, away_team_id) AS t2, '
+                 'SUM(CASE WHEN home_team_id < away_team_id AND home_goals > away_goals OR '
+                 'home_team_id > away_team_id AND home_goals < away_goals THEN 1 ELSE 0 END) AS w1, '
+                 'SUM(CASE WHEN home_team_id < away_team_id AND home_goals < away_goals OR '
+                 'home_team_id > away_team_id AND home_goals > away_goals THEN 1 ELSE 0 END) AS w2 '
+                 'FROM games WHERE date >= %s AND date < %s AND is_regular=0 '
+                 'GROUP BY LEAST(home_team_id, away_team_id), GREATEST(home_team_id, away_team_id)')
+        scores = cls._get_columns_from_db(db_conn, query, (from_date, to_date))
+        return dict(((t1, t2), {t1: w1, t2: w2}) for t1, t2, w1, w2 in scores)
+
     def to_tuple(self):
         return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,
                 self.home.goals, self.home.goals_period1, self.home.goals_period2, self.home.goals_period3,

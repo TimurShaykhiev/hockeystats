@@ -4,7 +4,6 @@ from marshmallow import fields
 
 from app.database import get_db
 from data_models.game import Game
-from statistics.games import get_play_off_scores
 from .season import SeasonSchema
 from .standings import Standings
 from . import ModelSchema
@@ -57,9 +56,8 @@ class PlayOff:
         current_round = 0
         self._create_round0(db)
         if self.season.po_start < today:
-            po_games = Game.get_season_games(db, self.season.start, self.season.end, False)
-            if len(po_games) > 0:
-                scores = get_play_off_scores(po_games)
+            scores = Game.get_play_off_scores(db, self.season.start, self.season.end)
+            if len(scores) > 0:
                 while self._set_round_scores(current_round, scores):
                     current_round += 1
                     self._create_next_round(current_round)

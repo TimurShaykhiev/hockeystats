@@ -1,6 +1,7 @@
 from logger import get_loader_logger
 from data_models.entity_model import EntityModel
 from data_models.team import Team
+from data_models.query import Query
 from data_models import convert_attr_if_none, convert_str_to_date
 
 LOG = get_loader_logger()
@@ -140,11 +141,12 @@ class Player(EntityModel):
 
     @classmethod
     def _get_players_for_season(cls, db_conn, season_id, regular, columns, named_tuple_cls, sum_stat_table):
-        q = cls._create_query().select(columns)
-        q.where('id IN (SELECT player_id FROM {} WHERE season_id = %s AND is_regular = %s)'.format(sum_stat_table))
+        col_list = Query.get_col_list(columns, 'p')
+        query = 'SELECT {} FROM players p JOIN {} s ON p.id = s.player_id ' \
+                'WHERE s.season_id = %s AND s.is_regular = %s'.format(col_list, sum_stat_table)
         if columns is None:
-            return cls._get_all_from_db(db_conn, q.query, (season_id, regular))
-        return cls._get_columns_from_db(db_conn, q.query, (season_id, regular), named_tuple_cls=named_tuple_cls)
+            return cls._get_all_from_db(db_conn, query, (season_id, regular))
+        return cls._get_columns_from_db(db_conn, query, (season_id, regular), named_tuple_cls=named_tuple_cls)
 
     @classmethod
     def get_by_ids(cls, db_conn, id_array, columns=None, named_tuple_cls=None):

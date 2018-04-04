@@ -71,8 +71,10 @@ def update_skater_summary_stats(db_cur, skater_sum_stats):
                 'WHERE player_id = %s AND season_id = %s AND is_regular = %s', fields)
         else:
             num += db_cur.execute(
-                'INSERT INTO skater_sum_stats VALUES '
-                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                'INSERT INTO skater_sum_stats (player_id, season_id, is_regular, assists, goals, shots, hits, '
+                'pp_goals, pp_assists, penalty_minutes, face_off_wins, face_off_taken, takeaways, giveaways, '
+                'sh_goals, sh_assists, blocked, plus_minus, toi, even_toi, pp_toi, sh_toi, games) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                 skater_sum_stats[(pl_id, season_id, regular)].to_tuple())
     return num
 
@@ -96,8 +98,9 @@ def update_goalie_summary_stats(db_cur, goalie_sum_stats):
                 'WHERE player_id = %s AND season_id = %s AND is_regular = %s', fields)
         else:
             num += db_cur.execute(
-                'INSERT INTO goalie_sum_stats VALUES '
-                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                'INSERT INTO goalie_sum_stats (player_id, season_id, is_regular, toi, assists, goals, penalty_minutes, '
+                'shots, saves, pp_saves, sh_saves, even_saves, sh_shots_against, even_shots_against, pp_shots_against, '
+                'games, wins, shutout) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                 goalie_sum_stats[(pl_id, season_id, regular)].to_tuple())
     return num
 
@@ -123,7 +126,10 @@ def update_team_summary_stats(db_cur, team_sum_stats):
                 'WHERE team_id = %s AND season_id = %s AND is_regular = %s', fields)
         else:
             num += db_cur.execute(
-                'INSERT INTO team_sum_stats VALUES '
-                '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                'INSERT INTO team_sum_stats (team_id, season_id, is_regular, goals_for, goals_against, shots, '
+                'pp_goals, pp_opportunities, sh_goals_against, sh_opportunities, face_off_wins, face_off_taken, '
+                'blocked, hits, penalty_minutes, games, win_regular, win_overtime, win_shootout, lose_regular, '
+                'lose_overtime, lose_shootout) '
+                'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                 team_sum_stats[(team_id, season_id, regular)].to_tuple())
     return num
