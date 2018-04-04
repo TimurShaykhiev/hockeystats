@@ -93,12 +93,14 @@ class PlayerFullInfoSchema(ModelSchema):
     tid = fields.Integer(attribute='team_id')
     shoots = fields.String()
     height = fields.String()
-    weight = fields.Integer()
+    weight = fields.String()
     age = fields.Integer()
 
 
 def _convert_height(h, metric):
     # height is stored in inches
+    if h == 0:
+        return ''
     if metric:
         return str(int(h * 2.54))
     return '{}\' {}"'.format(h // 12, h % 12)
@@ -106,9 +108,11 @@ def _convert_height(h, metric):
 
 def _convert_weight(w, metric):
     # weight is stored in pounds
+    if w == 0:
+        return ''
     if metric:
-        return int(w * 0.45359237)
-    return w
+        return str(int(w * 0.45359237))
+    return str(w)
 
 
 def _calculate_age(birth_date):
