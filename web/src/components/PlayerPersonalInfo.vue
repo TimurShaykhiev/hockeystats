@@ -114,11 +114,13 @@ export default {
     },
 
     vitals() {
+      const h = this.playerInfo.height;
+      const w = this.playerInfo.weight;
       return [
         {name: this.$t('playerPersonalInfo.position'), value: this.$t(`position.${this.playerInfo.pos}`)},
         {name: this.$t('playerPersonalInfo.shoots'), value: this.$t(`shootsType.${this.playerInfo.shoots}`)},
-        {name: this.$t('playerPersonalInfo.height'), value: this.playerInfo.height},
-        {name: this.$t('playerPersonalInfo.weight'), value: this.playerInfo.weight},
+        {name: this.$t('playerPersonalInfo.height'), value: h ? h : '\xa0\xa0\xa0'},
+        {name: this.$t('playerPersonalInfo.weight'), value: w ? w : '\xa0\xa0\xa0'},
         {name: this.$t('playerPersonalInfo.age'), value: this.playerInfo.age}
       ];
     }
