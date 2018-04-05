@@ -310,6 +310,17 @@ CREATE TABLE IF NOT EXISTS player_trades
   CONSTRAINT player_trades_to_team_id_fk FOREIGN KEY (to_team_id) REFERENCES teams (id) ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS player_team_season
+(
+  player_id BIGINT(20) UNSIGNED NOT NULL,
+  season_id BIGINT(20) UNSIGNED NOT NULL,
+  team_id BIGINT(20) UNSIGNED NOT NULL,
+  CONSTRAINT player_team_season_pk PRIMARY KEY (player_id, season_id, team_id),
+  CONSTRAINT player_team_season_pid_fk FOREIGN KEY (player_id) REFERENCES players (id) ON UPDATE CASCADE,
+  CONSTRAINT player_team_season_sid_fk FOREIGN KEY (season_id) REFERENCES seasons (id) ON UPDATE CASCADE,
+  CONSTRAINT player_team_season_tid_fk FOREIGN KEY (team_id) REFERENCES teams (id) ON UPDATE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS translations
 (
   resource_type ENUM('conf_name', 'div_name', 'team_name', 'team_abbr', 'team_venue_name', 'player_name') NOT NULL,

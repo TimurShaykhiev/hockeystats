@@ -140,6 +140,17 @@ class Player(EntityModel):
         return cls._get_players_for_season(db_conn, season_id, regular, columns, named_tuple_cls, 'goalie_sum_stats')
 
     @classmethod
+    def get_all_players_for_season(cls, db_conn, season_id, columns=None, named_tuple_cls=None):
+        col_list = Query.get_col_list(columns, 'p')
+        query = ('SELECT {} FROM players p JOIN skater_sum_stats s ON p.id = s.player_id '
+                 'WHERE s.season_id = %s GROUP BY p.id UNION '
+                 'SELECT {} FROM players p JOIN goalie_sum_stats g ON p.id = g.player_id '
+                 'WHERE g.season_id = %s GROUP BY p.id').format(col_list, col_list)
+        if columns is None:
+            return cls._get_all_from_db(db_conn, query, (season_id, season_id))
+        return cls._get_columns_from_db(db_conn, query, (season_id, season_id), named_tuple_cls=named_tuple_cls)
+
+    @classmethod
     def _get_players_for_season(cls, db_conn, season_id, regular, columns, named_tuple_cls, sum_stat_table):
         col_list = Query.get_col_list(columns, 'p')
         query = 'SELECT {} FROM players p JOIN {} s ON p.id = s.player_id ' \
