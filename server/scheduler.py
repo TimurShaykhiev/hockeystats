@@ -49,6 +49,7 @@ def main():
         load_result = load(new_date, db_conn)
         if load_result != LOAD_RESULT_TRY_AGAIN:
             set_last_stat_update(db_conn, new_date, new_date, load_result == LOAD_RESULT_SUCCESS)
+        if load_result == LOAD_RESULT_SUCCESS:
             check_season(db_conn, new_date)
             fix_sum_stats(db_conn, new_date)
     finally:
