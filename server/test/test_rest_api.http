@@ -1,0 +1,150 @@
+
+GET http://localhost:5000/api/season/all
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/season/current
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/stats/skaters?sid=4&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/stats/goalies?sid=4&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/stats/teams?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/team/13/stats?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/teams?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/team/13/all-stats
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/team/13/seasons
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/team/13/players/stats?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/team/13/charts/points-progress?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skater/8478402/stats?sid=4&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skaters?sid=4&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skater/8478402/all-stats
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skater/8474149/seasons
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skater/8474149/charts/points-progress?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/goalie/8469608/stats?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/goalies?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+GET http://localhost:5000/api/goalie/8469608/all-stats
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/goalie/8469608/seasons
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/team/53/compare/20?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skater/8478402/compare/8471490?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/goalie/8476945/compare/8471679?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/teams/standings?sid=3&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/teams/play-off?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+

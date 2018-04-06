@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from logger import get_loader_logger
 from data_models.entity_model import EntityModel
 from data_models.team import Team
@@ -20,6 +22,10 @@ PLAYER_SHOOTS = {
   'R': 'right',
   'L': 'left'
 }
+
+
+PlayerName = namedtuple('PlayerName', ['id', 'name'])
+PlayerShortInfo = namedtuple('PlayerShortInfo', ['id', 'name', 'pos', 'tid'])
 
 
 # convert height from string <6' 2"> to inches
@@ -121,23 +127,38 @@ class Player(EntityModel):
             convert_attr_if_none(self.current_team, 'id'))
 
     @classmethod
-    def get_skaters(cls, db_conn, columns=None, named_tuple_cls=None):
-        q = cls._create_query().select(columns).where('primary_pos != \'goalie\'')
-        if columns is None:
-            return cls._get_all_from_db(db_conn, q.query)
-        return cls._get_columns_from_db(db_conn, q.query, named_tuple_cls=named_tuple_cls)
+    def get_skaters_for_season(cls, db_conn, season_id, regular, current, names_only):
+        return cls._get_players_for_season(db_conn, season_id, regular, current, names_only, 'skater_sum_stats')
 
     @classmethod
-    def get_goalies(cls, db_conn, columns=None, named_tuple_cls=None):
-        return cls.get_filtered(db_conn, ['primary_pos'], ['goalie'], columns, named_tuple_cls)
+    def get_goalies_for_season(cls, db_conn, season_id, regular, current, names_only):
+        return cls._get_players_for_season(db_conn, season_id, regular,  current, names_only, 'goalie_sum_stats')
 
     @classmethod
-    def get_skaters_for_season(cls, db_conn, season_id, regular, columns=None, named_tuple_cls=None):
-        return cls._get_players_for_season(db_conn, season_id, regular, columns, named_tuple_cls, 'skater_sum_stats')
+    def _get_players_for_season(cls, db_conn, season_id, regular, current, names_only, sum_stat_table):
+        named_tuple_cls = PlayerName if names_only else PlayerShortInfo
+        if names_only or current:
+            col_list = 'p.id, p.name' if names_only else 'p.id, p.name, p.primary_pos, p.current_team_id'
+            query = ('SELECT {} FROM players p JOIN {} s ON p.id = s.player_id '
+                     'WHERE s.season_id = %s AND s.is_regular = %s').format(col_list, sum_stat_table)
+            query_params = (season_id, regular)
+        else:
+            query = ('SELECT p.id, p.name, p.primary_pos, pts.team_id '
+                     'FROM players p JOIN {} s ON p.id = s.player_id '
+                     'JOIN player_team_season pts ON p.id = pts.player_id '
+                     'WHERE s.season_id = %s AND s.is_regular = %s AND pts.season_id = %s').format(sum_stat_table)
+            query_params = (season_id, regular, season_id)
+        return cls._get_columns_from_db(db_conn, query, query_params, named_tuple_cls=named_tuple_cls)
 
     @classmethod
-    def get_goalies_for_season(cls, db_conn, season_id, regular, columns=None, named_tuple_cls=None):
-        return cls._get_players_for_season(db_conn, season_id, regular, columns, named_tuple_cls, 'goalie_sum_stats')
+    def get_player_for_season(cls, db_conn, player_id, season_id, current):
+        if current:
+            return cls.from_db(db_conn, player_id)
+
+        query = ('SELECT p.id, p.name, p.birth_date, p.birth_city, p.birth_state, p.birth_country, p.nationality, '
+                 'p.height, p.weight, p.shoots_catches, p.primary_pos, pts.team_id FROM players p '
+                 'JOIN player_team_season pts ON p.id = pts.player_id WHERE pts.season_id = %s AND p.id = %s')
+        return cls._get_one_from_db(db_conn, query, (season_id, player_id))
 
     @classmethod
     def get_all_players_for_season(cls, db_conn, season_id, columns=None, named_tuple_cls=None):
@@ -151,27 +172,30 @@ class Player(EntityModel):
         return cls._get_columns_from_db(db_conn, query, (season_id, season_id), named_tuple_cls=named_tuple_cls)
 
     @classmethod
-    def _get_players_for_season(cls, db_conn, season_id, regular, columns, named_tuple_cls, sum_stat_table):
+    def get_team_players(cls, db_conn, team_id, season_id, current, columns=None, named_tuple_cls=None):
+        if current:
+            return cls.get_filtered(db_conn, ['current_team_id'], (team_id,), columns=columns,
+                                    named_tuple_cls=named_tuple_cls)
+
         col_list = Query.get_col_list(columns, 'p')
-        query = 'SELECT {} FROM players p JOIN {} s ON p.id = s.player_id ' \
-                'WHERE s.season_id = %s AND s.is_regular = %s'.format(col_list, sum_stat_table)
+        query = ('SELECT {} FROM players p JOIN player_team_season pts ON p.id = pts.player_id '
+                 'WHERE pts.season_id = %s AND pts.team_id = %s').format(col_list)
         if columns is None:
-            return cls._get_all_from_db(db_conn, query, (season_id, regular))
-        return cls._get_columns_from_db(db_conn, query, (season_id, regular), named_tuple_cls=named_tuple_cls)
+            return cls._get_all_from_db(db_conn, query, (season_id, team_id))
+        return cls._get_columns_from_db(db_conn, query, (season_id, team_id), named_tuple_cls=named_tuple_cls)
 
     @classmethod
-    def get_by_ids(cls, db_conn, id_array, columns=None, named_tuple_cls=None):
-        q = cls._create_query().select(columns)
-        q.where('id IN ({})'.format(','.join(['%s'] * len(id_array))))
-        if columns is None:
-            return cls._get_all_from_db(db_conn, q.query, id_array)
-        return cls._get_columns_from_db(db_conn, q.query, id_array, named_tuple_cls)
+    def get_player_season_team_map(cls, db_conn, player_id, all_seasons):
+        # return dictionary (season_id : team_id) for player
+        query = ('SELECT pts.season_id, pts.team_id, p.current_team_id FROM players p '
+                 'JOIN player_team_season pts ON p.id = pts.player_id WHERE p.id = %s')
+        season_team = cls._get_columns_from_db(db_conn, query, (player_id,))
+        result = dict((sid, tid) for sid, tid, cur_tid in season_team)
+        current_tid = 0
+        if len(season_team) > 0:
+            current_tid = season_team[0][2]
 
-    @classmethod
-    def get_ever_played_in_team(cls, db_conn, team_id, traded_players, columns=None):
-        q = cls._create_query().select(columns)
-        q.where('current_team_id = %s OR id IN ({})'.format(','.join(['%s'] * len(traded_players))))
-        traded_players.insert(0, team_id)  # just to avoid list copy
-        if columns is None:
-            return cls._get_all_from_db(db_conn, q.query, traded_players)
-        return cls._get_columns_from_db(db_conn, q.query, traded_players)
+        for season in all_seasons:
+            if season.id not in result:
+                result[season.id] = current_tid
+        return result

@@ -1,13 +1,9 @@
-from collections import namedtuple
-
 from marshmallow import fields
 
 from app.database import get_db
 from data_models.player import Player
 from .season import SeasonSchema
 from . import ModelSchema
-
-PlayerShortInfo = namedtuple('PlayerShortInfo', ['id', 'name'])
 
 
 class _AllPlayersCollection:
@@ -18,8 +14,7 @@ class _AllPlayersCollection:
 
     def get_collection(self):
         db = get_db()
-        self.players = self._get_players_func(db, self.season.id, self.season.regular,
-                                              columns=['id', 'name'], named_tuple_cls=PlayerShortInfo)
+        self.players = self._get_players_func(db, self.season.id, self.season.regular, self.season.current, True)
         schema = _AllPlayersCollectionSchema()
         return schema.dumps(self)
 

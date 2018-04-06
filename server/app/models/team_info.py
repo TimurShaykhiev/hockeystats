@@ -3,7 +3,7 @@ from marshmallow import fields
 from app.database import get_db
 from data_models.team_sum_stat import TeamSumStat
 from data_models.game import Game
-from data_models.player import Player as PlayerDm
+from data_models.player import PlayerShortInfo, Player as PlayerDm
 from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from statistics.skater_season import get_skaters_stats
@@ -13,8 +13,7 @@ from statistics.games import get_game_stats, get_team_vs_team_stats
 from .team import Team, TeamSchema
 from .season import Season, SeasonSchema, get_all_seasons
 from .season_stats import SeasonStats, SeasonStatsSchema, PlayerSeasonStats, PlayerSeasonStatsSchema
-from .player import Player, PlayerInfo
-from .utils import get_team_players
+from .player import Player
 from . import ModelSchema, StatValue
 
 
@@ -75,20 +74,21 @@ class TeamPlayersSeasonStatsCollection:
 
     def get_collection(self):
         db = get_db()
-        pl_ids = get_team_players(db, self.team.id, self.season)
-        pl_list = PlayerDm.get_by_ids(db, pl_ids, ['id', 'name', 'primary_pos'])
-        pl_info = dict((pid, PlayerInfo(name, self.team.id, pos, [])) for pid, name, pos in pl_list)
+        pl_list = PlayerDm.get_team_players(db, self.team.id, self.season.id, self.season.current,
+                                            columns=['id', 'name', 'primary_pos'])
+        pl_info = dict((pid, PlayerShortInfo(pid, name, pos, self.team.id)) for pid, name, pos in pl_list)
+        pl_ids = [pid for pid, name, pos in pl_list]
 
         sk_stats_from_db = SkaterSumStat.get_group_stat_tuples(db, pl_ids, self.season.id, self.season.regular)
         sk_stats = get_skaters_stats(sk_stats_from_db)
         for st in sk_stats:
-            pl = Player.create(st[0], self.season, pl_info)
+            pl = Player.create(st[0], season=self.season, players=pl_info)
             self.skaters.append(PlayerSeasonStats(pl, st[3:]))
 
         g_stats_from_db = GoalieSumStat.get_group_stat_tuples(db, pl_ids, self.season.id, self.season.regular)
         g_stats = get_goalies_stats(g_stats_from_db)
         for st in g_stats:
-            pl = Player.create(st[0], self.season, pl_info)
+            pl = Player.create(st[0], season=self.season, players=pl_info)
             self.goalies.append(PlayerSeasonStats(pl, st[3:]))
 
         schema = _TeamPlayersSeasonStatsCollectionSchema()
