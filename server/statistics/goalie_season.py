@@ -63,13 +63,13 @@ def get_goalies_stats(goalie_stats):
     return results
 
 
-def get_goalie_ext_stats(player_id, goalie_sum_stats, goalie_stats, games):
+def get_goalie_ext_stats(player_id, goalie_sum_stats, home_stats, away_stats):
     stat_arr_int = stats_to_array(goalie_sum_stats, GOALIE_STATS_INT_ARRAY_LEN)
     stat_arr_fp = np.zeros([len(goalie_sum_stats), GOALIE_STATS_EXT_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
     goalie_row_idx = find_index(stat_arr_int[:, COL_PLAYER_ID], player_id)
 
     _calc_goalies_stats(stat_arr_int, stat_arr_fp)
-    ha_stats = get_goalie_home_away_stats(goalie_stats, games)
+    ha_stats = get_goalie_home_away_stats(home_stats, away_stats)
     ext_stats, ratings = _calc_goalie_ext_stats(stat_arr_int, stat_arr_fp, goalie_row_idx, ha_stats)
 
     results = stat_arr_int[goalie_row_idx, EXT_INT_ARRAY_RESULT_COLUMNS].tolist() +\

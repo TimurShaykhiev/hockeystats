@@ -1,7 +1,6 @@
 from collections import namedtuple
 
 from data_models.goalie_stat import GoalieStat
-from .games import get_home_away_dict
 from . import fraction, percentage
 
 COL_PLAYER_ID = 0
@@ -27,15 +26,13 @@ GoalieHomeAwayStats = namedtuple('GoalieHomeAwayStats',
                                   'home_win_percentage', 'away_win_percentage', 'home_wins', 'away_wins'])
 
 
-def get_goalie_home_away_stats(stats, games):
-    games_ha = get_home_away_dict(games)
+def get_goalie_home_away_stats(goalie_home_stats, goalie_away_stats):
     home_stats = _GoalieStats()
     away_stats = _GoalieStats()
-    for s in stats:
-        if s[COL_TEAM_ID] == games_ha[s[COL_GAME_ID]].home_tid:
-            home_stats.add(s)
-        elif s[COL_TEAM_ID] == games_ha[s[COL_GAME_ID]].away_tid:
-            away_stats.add(s)
+    for s in goalie_home_stats:
+        home_stats.add(s)
+    for s in goalie_away_stats:
+        away_stats.add(s)
     home_stats.complete()
     away_stats.complete()
     return GoalieHomeAwayStats(home_stats.gaa, away_stats.gaa, home_stats.svp, away_stats.svp,

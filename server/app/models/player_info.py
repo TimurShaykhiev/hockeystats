@@ -1,7 +1,6 @@
 from marshmallow import fields
 
 from app.database import get_db
-from data_models.game import Game
 from data_models.player import Player as PlayerDm
 from data_models.skater_stat import SkaterStat
 from data_models.goalie_stat import GoalieStat
@@ -17,18 +16,18 @@ from . import ModelSchema, StatValue
 def _get_skater_full_stats(db, season, pid, tid):
     start, end = season.get_dates()
     sum_stats = SkaterSumStat.get_stat_tuples(db, season.id, season.regular)
-    stats = SkaterStat.get_player_stats_by_date(db, pid, start, end)
-    games = Game.get_season_games(db, start, end, season.regular)
+    home_stats = SkaterStat.get_player_home_stats_by_date(db, pid, start, end)
+    away_stats = SkaterStat.get_player_away_stats_by_date(db, pid, start, end)
     team_players = [p[0] for p in PlayerDm.get_team_players(db, tid, season.id, season.current, columns=['id'])]
-    return get_skater_ext_stats(pid, sum_stats, team_players, stats, games)
+    return get_skater_ext_stats(pid, sum_stats, team_players, home_stats, away_stats)
 
 
 def _get_goalie_full_stats(db, season, pid):
     start, end = season.get_dates()
     sum_stats = GoalieSumStat.get_stat_tuples(db, season.id, season.regular)
-    stats = GoalieStat.get_player_stats_by_date(db, pid, start, end)
-    games = Game.get_season_games(db, start, end, season.regular)
-    return get_goalie_ext_stats(pid, sum_stats, stats, games)
+    home_stats = GoalieStat.get_player_home_stats_by_date(db, pid, start, end)
+    away_stats = GoalieStat.get_player_away_stats_by_date(db, pid, start, end)
+    return get_goalie_ext_stats(pid, sum_stats, home_stats, away_stats)
 
 
 class _PlayerInfo:

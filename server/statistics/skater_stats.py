@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-from .games import get_home_away_dict
 from . import fraction
 
 COL_PLAYER_ID = 0
@@ -34,15 +33,13 @@ SkaterHomeAwayStats = namedtuple('SkaterHomeAwayStats',
                                   'home_points_per_game', 'away_points_per_game', 'home_pim', 'away_pim'])
 
 
-def get_skater_home_away_stats(stats, games):
-    games_ha = get_home_away_dict(games)
+def get_skater_home_away_stats(skater_home_stats, skater_away_stats):
     home_stats = _SkaterStats()
     away_stats = _SkaterStats()
-    for s in stats:
-        if s[COL_TEAM_ID] == games_ha[s[COL_GAME_ID]].home_tid:
-            home_stats.add(s)
-        elif s[COL_TEAM_ID] == games_ha[s[COL_GAME_ID]].away_tid:
-            away_stats.add(s)
+    for s in skater_home_stats:
+        home_stats.add(s)
+    for s in skater_away_stats:
+        away_stats.add(s)
     home_stats.complete()
     away_stats.complete()
     return SkaterHomeAwayStats(home_stats.goals, away_stats.goals, home_stats.assists, away_stats.assists,

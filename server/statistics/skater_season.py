@@ -72,13 +72,13 @@ def get_skaters_stats(skater_stats):
     return results
 
 
-def get_skater_ext_stats(player_id, skater_sum_stats, team_player_list, skater_stats, games):
+def get_skater_ext_stats(player_id, skater_sum_stats, team_player_list, home_stats, away_stats):
     stat_arr_int = stats_to_array(skater_sum_stats, SKATER_STATS_EXT_INT_ARRAY_LEN)
     stat_arr_fp = np.zeros([len(skater_sum_stats), SKATER_STATS_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
     skater_row_idx = find_index(stat_arr_int[:, COL_PLAYER_ID], player_id)
 
     _calc_skaters_stats(stat_arr_int, stat_arr_fp)
-    ha_stats = get_skater_home_away_stats(skater_stats, games)
+    ha_stats = get_skater_home_away_stats(home_stats, away_stats)
     ext_stats, ratings = _calc_skater_ext_stats(stat_arr_int, skater_row_idx, ha_stats)
     team_ratings = _calc_team_ratings(stat_arr_int, player_id, team_player_list)
 

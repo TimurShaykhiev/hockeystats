@@ -94,10 +94,6 @@ def get_team_home_away_stats(team_id, games):
                              percentage(away_wins, away_games_arr.shape[0]))
 
 
-def get_home_away_dict(games):
-    return dict((g[COL_GAME_ID], GameTeams(g[COL_HOME_TEAM_ID], g[COL_AWAY_TEAM_ID])) for g in games)
-
-
 def get_game_stats(games):
     return [_create_game_stats(g) for g in games]
 
