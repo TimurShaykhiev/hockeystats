@@ -41,11 +41,19 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      selectedChart: CHART_POINTS,
-      chartList: [
-        {name: this.$t('charts.points'), value: CHART_POINTS},
+  created() {
+    this.requestAllTeams();
+    this.requestTeamStats();
+  },
+  computed: {
+    selectedChart() {
+      let selSeason = this.$store.state.season.selectedSeason;
+      return selSeason.regular ? CHART_POINTS : CHART_WINS;
+    },
+
+    chartList() {
+      let selSeason = this.$store.state.season.selectedSeason;
+      let chartList = [
         {name: this.$t('charts.wins'), value: CHART_WINS},
         {name: this.$t('charts.losses'), value: CHART_LOSSES},
         {name: this.$t('charts.ppPercentage'), value: CHART_PPP},
@@ -53,14 +61,13 @@ export default {
         {name: this.$t('charts.goalsFor'), value: CHART_GOALS_FOR},
         {name: this.$t('charts.goalsAgainst'), value: CHART_GOALS_AGAINST},
         {name: this.$t('charts.goalsDiff'), value: CHART_GOALS_DIFF}
-      ]
-    };
-  },
-  created() {
-    this.requestAllTeams();
-    this.requestTeamStats();
-  },
-  computed: {
+      ];
+      if (selSeason.regular) {
+        chartList.unshift({name: this.$t('charts.points'), value: CHART_POINTS});
+      }
+      return chartList;
+    },
+
     chartData() {
       let selSeason = this.$store.state.season.selectedSeason;
       let stats = this.$store.getters.getTeamStats(selSeason);

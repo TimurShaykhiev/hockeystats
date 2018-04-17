@@ -32,6 +32,7 @@ const state = {
   teamPlayersStats: {},
   teamAllStats: {},
   standings: {},
+  standingsStats: {},
   playOff: {},
   conferences: {},
   divisions: {},
@@ -54,9 +55,19 @@ function checkSeasonAndReturnData(state, stateName) {
   };
 }
 
+function checkSeasonIdAndReturnData(state, stateName) {
+  return (season) => {
+    let stats = state[stateName];
+    if (stats.season && season.id && season.id === stats.season.id) {
+      return stats;
+    }
+    return null;
+  };
+}
+
 const getters = {
   getAllTeams(state) {
-    return checkSeasonAndReturnData(state, 'allTeams');
+    return checkSeasonIdAndReturnData(state, 'allTeams');
   },
 
   getTeamStatRange(state) {
@@ -65,6 +76,10 @@ const getters = {
 
   getTeamStats(state) {
     return checkSeasonAndReturnData(state, 'teamStats');
+  },
+
+  getStandingsStats(state) {
+    return checkSeasonIdAndReturnData(state, 'standingsStats');
   },
 
   getTeamSeasonInfo(state) {
@@ -118,7 +133,7 @@ const getters = {
   },
 
   getStandings(state) {
-    return checkSeasonAndReturnData(state, 'standings');
+    return checkSeasonIdAndReturnData(state, 'standings');
   },
 
   getPlayOff(state) {
@@ -198,6 +213,10 @@ const actions = {
 
   getTeamStats({commit, state}, {reqParams}) {
     return getTeamsDataBySeason('getTeamStats', 'setTeamStats', 'teamStats', commit, state, reqParams);
+  },
+
+  getStandingsStats({commit, state}, {reqParams}) {
+    return getTeamsDataBySeason('getTeamStats', 'setStandingsStats', 'standingsStats', commit, state, reqParams);
   },
 
   getTeamSeasonInfo({commit, state}, {teamId, reqParams}) {
@@ -327,6 +346,21 @@ function teamInfoArrayToObject(statsArray) {
   };
 }
 
+function createTeamStats(stats) {
+  let newStat = {};
+  newStat.timestamp = stats.timestamp;
+  newStat.season = StoreUtils.convertSeason(stats.season);
+  newStat.teams = [];
+  for (let s of stats.results) {
+    let team = {
+      id: s.id,
+      stats: teamStatsArrayToObject(s.stats)
+    };
+    newStat.teams.push(team);
+  }
+  return newStat;
+}
+
 const mutations = {
   setAllTeams(state, teams) {
     logger.debug('mutation: setAllTeams');
@@ -342,18 +376,12 @@ const mutations = {
 
   setTeamStats(state, stats) {
     logger.debug('mutation: setTeamStats');
-    let newStat = {};
-    newStat.timestamp = stats.timestamp;
-    newStat.season = StoreUtils.convertSeason(stats.season);
-    newStat.teams = [];
-    for (let s of stats.results) {
-      let team = {
-        id: s.id,
-        stats: teamStatsArrayToObject(s.stats)
-      };
-      newStat.teams.push(team);
-    }
-    state.teamStats = newStat;
+    state.teamStats = createTeamStats(stats);
+  },
+
+  setStandingsStats(state, stats) {
+    logger.debug('mutation: setStandingsStats');
+    state.standingsStats = createTeamStats(stats);
   },
 
   setTeamSeasonInfo(state, info) {

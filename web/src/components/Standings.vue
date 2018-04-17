@@ -142,7 +142,7 @@ export default {
         return [];
       }
       let allTeams = this.$store.getters.getAllTeams(season);
-      let teamStats = this.$store.getters.getTeamStats(season);
+      let teamStats = this.$store.getters.getStandingsStats(season);
       let standings = this.$store.getters.getStandings(season);
       if (allTeams === null || teamStats === null || standings === null) {
         this.requestData(season);
@@ -207,9 +207,9 @@ export default {
   },
   methods: {
     requestData(season) {
-      let reqParams = new SeasonRequestParams(this.$store, season.id, season.regular);
+      let reqParams = new SeasonRequestParams(this.$store, season.id, true);
       this.$store.dispatch('getAllTeams', {reqParams: reqParams});
-      this.$store.dispatch('getTeamStats', {reqParams: reqParams});
+      this.$store.dispatch('getStandingsStats', {reqParams: reqParams});
       this.$store.dispatch('getTeamsStandings', {reqParams: reqParams});
     }
   }
