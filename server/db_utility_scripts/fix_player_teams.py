@@ -29,7 +29,7 @@ def main(db):
 
 
 if __name__ == '__main__':
-    db_conn = Db.connect('localhost', 'hockstats', 'hockstats', 'NHL_STATS', charset='utf8')
+    db_conn = Db.connect(host='localhost', user='hockstats', password='hockstats', database='NHL_STATS', charset='utf8')
     try:
         main(db_conn)
     finally:

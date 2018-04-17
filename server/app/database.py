@@ -13,8 +13,9 @@ def configure_db(app):
 def connect_db():
     """Connects to the specific database."""
     # todo: Think of using DB connection pool
-    db_conn = Db.connect(current_app.config['DB_URL'], current_app.config['DB_USER'],
-                         current_app.config['DB_PASSWORD'], current_app.config['DB_NAME'], charset='utf8')
+    db_conn = Db.connect(host=current_app.config['DB_URL'], user=current_app.config['DB_USER'],
+                         password=current_app.config['DB_PASSWORD'], database=current_app.config['DB_NAME'],
+                         charset='utf8')
     return db_conn
 
 

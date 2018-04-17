@@ -35,7 +35,8 @@ def _is_in_future(end_date):
 
 
 def main():
-    db_conn = Db.connect(config.DB_URL, config.DB_USER, config.DB_PASSWORD, config.DB_NAME, charset='utf8')
+    db_conn = Db.connect(host=config.DB_URL, user=config.DB_USER, password=config.DB_PASSWORD, database=config.DB_NAME,
+                         charset='utf8')
     try:
         LOG.info('Scheduler start.')
         update = get_last_stat_update(db_conn)
