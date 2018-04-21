@@ -18,7 +18,7 @@ def create_app():
 
 def _configure_app(app):
     app.config.from_object('config')
-    app.config.from_envvar('HOCKEYSTATS_CONFIG', silent=True)
+    app.config.from_envvar('HOCKEYSTATS_APP_CONFIG', silent=True)
 
 
 def _configure_logging(app):
