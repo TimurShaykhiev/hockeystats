@@ -1,0 +1,64 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Create user "{{ project_user }}"
+      user:
+        name: "{{ project_user }}"
+        password: "{{ project_user_pass | password_hash('sha512', password_salt) }}"
+        shell: /bin/bash
+        update_password: on_create
+        state: present
+
+    - name: Import secret variable file
+      include_vars: "files/secret_key.yml"
+      no_log: true
+
+    - name: Add .ssh folder
+      file:
+        path: "/home/{{ project_user }}/.ssh"
+        state: directory
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0700
+
+    - name: Copy deployment private key
+      copy:
+        content: "{{ private_key_content }}"
+        dest: "/home/{{ project_user }}/.ssh/id_rsa"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0600
+      no_log: true
+
+    - name: Copy deployment public key
+      copy:
+        src: files/id_rsa.pub
+        dest: "/home/{{ project_user }}/.ssh/id_rsa.pub"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0644
+
+    - name: Copy ssh config
+      copy:
+        src: files/ssh_config
+        dest: "/home/{{ project_user }}/.ssh/config"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0644
+
+    - name: Create DB user "{{ updater_db_user }}" with ALL privileges
+      mysql_user:
+        name: "{{ updater_db_user }}"
+        password: "{{ updater_db_user_pass }}"
+        priv: 'NHL_STATS.*:ALL'
+        update_password: on_create
+        state: present
+
+    - name: Create DB user "{{ app_db_user }}" with SELECT privileges
+      mysql_user:
+        name: "{{ app_db_user }}"
+        password: "{{ app_db_user_pass }}"
+        priv: 'NHL_STATS.*:SELECT'
+        update_password: on_create
+        state: present

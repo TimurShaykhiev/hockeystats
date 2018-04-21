@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  become_user: "{{ project_user }}"
+
+  vars:
+    src_path: "/home/{{ project_user }}/sources"
+    server_src_path: "/home/{{ project_user }}/sources/server"
+
+  tasks:
+    - name: Clone repository
+      hg:
+        repo: ssh://hg@bitbucket.org/tshaykhiev/hockeystats
+        dest: "{{ src_path }}"
+        clone: yes
+
+    - name: Install virtual env
+      pip:
+        requirements: "{{ server_src_path }}/requirements/base.txt"
+        virtualenv: "{{ server_src_path }}/venv"
+        virtualenv_command: /usr/bin/python3 -m venv

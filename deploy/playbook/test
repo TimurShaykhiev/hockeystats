@@ -1,0 +1,2 @@
+[web_servers]
+vb_deb ansible_ssh_host=10.10.10.10
