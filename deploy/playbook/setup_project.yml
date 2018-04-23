@@ -6,6 +6,9 @@
   vars:
     src_path: "/home/{{ project_user }}/sources"
     server_src_path: "/home/{{ project_user }}/sources/server"
+    config_path: "/home/{{ project_user }}/config"
+    db_backup_path: "/home/{{ project_user }}/db_backup"
+    db_backup_file: hockeystats_db.sql.gz # if compressed, use gzip format
 
   tasks:
     - name: Clone repository
@@ -19,3 +22,65 @@
         requirements: "{{ server_src_path }}/requirements/base.txt"
         virtualenv: "{{ server_src_path }}/venv"
         virtualenv_command: /usr/bin/python3 -m venv
+
+    - name: Add config folder
+      file:
+        path: "{{ config_path }}"
+        state: directory
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0700
+
+    - name: Add config files
+      template:
+        src: "{{ item.path }}"
+        dest: "{{ config_path }}/{{ item.name }}"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0700
+      loop:
+        - { path: templates/app_config.cfg, name: app_config.cfg }
+        - { path: templates/updater_config.cfg, name: updater_config.cfg }
+
+    - name: Add environment variables
+      lineinfile:
+        path: "/home/{{ project_user }}/.profile"
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "# project variables"
+        - "export HOCKEYSTATS_ROOT=\"{{ src_path }}\""
+        - "export HOCKEYSTATS_CONFIG=\"{{ config_path }}/updater_config.cfg\""
+        - "export HOCKEYSTATS_APP_CONFIG=\"{{ config_path }}/app_config.cfg\""
+
+    - name: Add DB backup folder
+      file:
+        path: "{{ db_backup_path }}"
+        state: directory
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0700
+
+    - name: Copy DB backup
+      copy:
+        src: "db_backup/{{ db_backup_file }}"
+        dest: "{{ db_backup_path }}/{{ db_backup_file }}"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0700
+
+    - name: Import DB
+      mysql_db:
+        state: import
+        name: NHL_STATS
+        target: "{{ db_backup_path }}/{{ db_backup_file }}"
+        login_user: "{{ updater_db_user }}"
+        login_password: "{{ updater_db_user_pass }}"
+
+    - name: Add scheduler to cron
+      cron:
+        name: "hockeystats scheduler"
+        minute: "0"
+        hour: "12"
+        job: "{{ server_src_path }}/scheduler.sh"
+        state: present

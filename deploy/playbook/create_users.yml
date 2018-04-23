@@ -62,3 +62,11 @@
         priv: 'NHL_STATS.*:SELECT'
         update_password: on_create
         state: present
+
+    - name: Add log folder
+      file:
+        path: "{{ log_path }}"
+        state: directory
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0755

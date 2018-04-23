@@ -11,3 +11,4 @@ venv
 .vagrant
 vaultpass
 *.retry
+db_backup
