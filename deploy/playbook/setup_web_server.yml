@@ -1,0 +1,34 @@
+---
+- name: Deploy static
+  import_playbook: deploy_static.yml
+
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Add link to site-enabled
+      file:
+        src: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: "/etc/nginx/sites-enabled/{{ domain_name }}"
+        owner: root
+        group: root
+        state: link
+      notify:
+        - reload nginx
+
+    - name: Create Nginx Unit config
+      template:
+        src: templates/unit_config.j2
+        dest: "/home/{{ project_user }}/unit_config.json"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0644
+
+    - name: Apply Unit config
+      command: curl -X PUT -d @unit_config.json --unix-socket /var/run/control.unit.sock http://localhost/
+      args:
+        chdir: "/home/{{ project_user }}/"
+        warn: False
+
+  handlers:
+    - import_tasks: handlers.yml

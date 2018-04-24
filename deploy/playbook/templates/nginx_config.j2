@@ -1,0 +1,37 @@
+upstream hockeystats_unit {
+    server {{ hockeystats_unit_addr }}:{{ hockeystats_unit_port }};
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    root {{ static_files_path }}/static_{{ timestamp.stdout }};
+
+    server_name  {{ domain_name }} www.{{ domain_name }};
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Static files cache control
+    location ~* \.(?:html|js|css|jpg|jpeg|gif|png|ico|cur|gz|svgz|eot|svg|ttf|woff|woff2)$ {
+      expires 14d;
+      access_log off;
+      add_header Cache-Control "public";
+    }
+
+    location /api {
+        proxy_cache all;
+        proxy_cache_bypass  $http_cache_control;
+        add_header X-Proxy-Cache $upstream_cache_status;
+
+        proxy_pass http://hockeystats_unit;
+        proxy_set_header Host $host;
+    }
+
+    error_log  /var/log/nginx/{{ domain_name }}.error.log error;
+    access_log  /var/log/nginx/{{ domain_name }}.access.log combined buffer=16k flush=2m if=$loggable;
+
+    error_page  404  /404.html;
+}

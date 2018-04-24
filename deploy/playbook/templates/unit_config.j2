@@ -1,0 +1,19 @@
+{
+  "listeners": {
+    "{{ hockeystats_unit_addr }}:{{ hockeystats_unit_port }}": {
+      "application": "hockeystats"
+    }
+  },
+  "applications": {
+    "hockeystats": {
+      "type": "python 3",
+      "processes": 4,
+      "user": "{{ project_user }}",
+      "group": "{{ project_user }}",
+      "working_directory": "/home/{{ project_user }}/sources/server",
+      "path": ".",
+      "home": "venv",
+      "module": "run"
+    }
+  }
+}

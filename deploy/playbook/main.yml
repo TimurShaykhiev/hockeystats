@@ -2,3 +2,5 @@
 - import_playbook: create_users.yml
 
 - import_playbook: setup_project.yml
+
+- import_playbook: setup_web_server.yml
