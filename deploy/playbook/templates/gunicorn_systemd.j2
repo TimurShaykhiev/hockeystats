@@ -1,0 +1,19 @@
+[Unit]
+Description=hockeystats gunicorn daemon
+After=network.target
+
+[Service]
+PIDFile=/run/{{ gunicorn_runtime_dir }}/pid
+User={{ project_user }}
+Group={{ nginx_user }}
+RuntimeDirectory={{ gunicorn_runtime_dir }}
+WorkingDirectory={{ app_path }}
+Environment="HOCKEYSTATS_APP_CONFIG={{ config_path }}/app_config.cfg"
+ExecStart={{ app_path }}/venv/bin/gunicorn -c {{ gunicorn_config }} run:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

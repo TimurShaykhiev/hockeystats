@@ -6,6 +6,9 @@
     static_files_path: "/var/www/{{ domain_name }}"
 
   tasks:
+    - name: Include variables
+      include_vars: variables.yml
+
     - name: Get time
       shell: "date +%Y%m%d%H%M"
       register: timestamp
@@ -29,11 +32,11 @@
         - reload nginx
 
     - name: Tidy up to last 3 releases
-      # shell: rm -rf `ls -t | awk 'NR>3'`
-      shell: echo `ls -t | awk 'NR>3'`
+      shell: rm -rf `ls -t | awk 'NR>3'`
       args:
         chdir: "{{ static_files_path }}/"
         executable: /bin/bash
+      warn: False
 
   handlers:
     - import_tasks: handlers.yml

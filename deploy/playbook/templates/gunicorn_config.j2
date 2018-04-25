@@ -1,0 +1,16 @@
+bind = 'unix:/run/{{ gunicorn_runtime_dir }}/socket'
+backlog = 2048
+
+workers = {{ ansible_processor_vcpus | default(ansible_processor_count) }}
+timeout = 30
+keepalive = 2
+
+daemon = False
+pidfile = '/run/{{ gunicorn_runtime_dir }}/pid'
+
+errorlog = None
+loglevel = 'error'
+accesslog = None
+access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+
+proc_name = 'hockeystats'

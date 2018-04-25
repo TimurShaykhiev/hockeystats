@@ -7,6 +7,3 @@ log_path: /var/log/hockeystats
 
 domain_name: hockeystats.com
 nginx_user: "www-data"
-
-hockeystats_unit_addr: 127.0.0.1
-hockeystats_unit_port: 8500

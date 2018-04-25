@@ -1,0 +1,7 @@
+---
+src_path: "/home/{{ project_user }}/sources"
+server_src_path: "/home/{{ project_user }}/sources/server"
+config_path: "/home/{{ project_user }}/config"
+
+gunicorn_runtime_dir: "hockeystats_gunicorn"
+gunicorn_config: "/home/{{ project_user }}/gunicorn_config.py"

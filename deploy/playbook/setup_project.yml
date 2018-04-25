@@ -4,13 +4,13 @@
   become_user: "{{ project_user }}"
 
   vars:
-    src_path: "/home/{{ project_user }}/sources"
-    server_src_path: "/home/{{ project_user }}/sources/server"
-    config_path: "/home/{{ project_user }}/config"
     db_backup_path: "/home/{{ project_user }}/db_backup"
     db_backup_file: hockeystats_db.sql.gz # if compressed, use gzip format
 
   tasks:
+    - name: Include variables
+      include_vars: variables.yml
+
     - name: Clone repository
       hg:
         repo: ssh://hg@bitbucket.org/tshaykhiev/hockeystats
@@ -19,7 +19,7 @@
 
     - name: Install virtual env
       pip:
-        requirements: "{{ server_src_path }}/requirements/base.txt"
+        requirements: "{{ server_src_path }}/requirements/production.txt"
         virtualenv: "{{ server_src_path }}/venv"
         virtualenv_command: /usr/bin/python3 -m venv
 

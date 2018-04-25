@@ -5,7 +5,14 @@
 - hosts: all
   become: yes
 
+  vars:
+    app_path: "/home/{{ project_user }}/sources/server"
+    gunicorn_service: "hockeystats-gunicorn"
+
   tasks:
+    - name: Include variables
+      include_vars: variables.yml
+
     - name: Add link to site-enabled
       file:
         src: "/etc/nginx/sites-available/{{ domain_name }}"
@@ -13,22 +20,30 @@
         owner: root
         group: root
         state: link
-      notify:
-        - reload nginx
+      notify: reload nginx
 
-    - name: Create Nginx Unit config
+    - name: Create Gunicorn config
       template:
-        src: templates/unit_config.j2
-        dest: "/home/{{ project_user }}/unit_config.json"
+        src: templates/gunicorn_config.j2
+        dest: "{{ gunicorn_config }}"
         owner: "{{ project_user }}"
         group: "{{ project_user }}"
         mode: 0644
 
-    - name: Apply Unit config
-      command: curl -X PUT -d @unit_config.json --unix-socket /var/run/control.unit.sock http://localhost/
-      args:
-        chdir: "/home/{{ project_user }}/"
-        warn: False
+    - name: Create Gunicorn systemd service
+      template:
+        src: templates/gunicorn_systemd.j2
+        dest: "/etc/systemd/system/{{ gunicorn_service }}.service"
+        owner: root
+        group: root
+        mode: 0644
+      notify: reload systemctl
+
+    - name: Ensure Gunicorn is started and enabled to start at boot.
+      service:
+        name: "{{ gunicorn_service }}"
+        state: started
+        enabled: yes
 
   handlers:
     - import_tasks: handlers.yml
