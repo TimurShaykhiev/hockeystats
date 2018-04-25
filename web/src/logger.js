@@ -1,3 +1,5 @@
+import Config from 'Root/config';
+
 export const DEBUG = 0;
 export const INFO = 1;
 export const WARN = 2;
@@ -9,8 +11,7 @@ function printLog(logLevel, message) {
 
 class Logger {
   constructor() {
-    // todo: change to INFO for production
-    this.logLevel = DEBUG;
+    this.logLevel = Config.logLevel;
   }
   setLogLevel(level) {
     this.logLevel = level;

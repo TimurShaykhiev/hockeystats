@@ -1,9 +1,9 @@
 import 'whatwg-fetch';
 import ApiErrors from 'Api/apiErrors';
 import {logger} from 'Root/logger';
+import Config from 'Root/config';
 
-// const API_URL = 'http://localhost:9000/api/';
-const API_URL = 'http://hockeystats.com/api/';
+const API_URL = Config.apiEndPoint;
 
 // URL data has format:
 // - path - array of path elements.

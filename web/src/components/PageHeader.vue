@@ -2,7 +2,7 @@
   <header class="header">
     <div class="container-row">
       <div class="header__logo container-row" @click="goHome">
-        <img src="images/logo.svg" class="header__logo-image">
+        <img src="../../assets/images/logo.svg" class="header__logo-image">
         <h1 class="header__logo-text">Hockstat</h1>
       </div>
       <div class="header__caption" @click="goHome"><h1>{{$t("caption")}}</h1></div>

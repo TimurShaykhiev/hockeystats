@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -14,6 +15,10 @@ const extractLess = new ExtractTextPlugin({
 const DIST_DIR = path.resolve(__dirname, 'dist');
 const SRC_DIR = path.resolve(__dirname, 'src');
 const ASSETS_DIR = path.resolve(__dirname, 'assets');
+const CONFIG_DIR = path.resolve(__dirname, 'config');
+
+const appConfigDev = require(CONFIG_DIR + '/devConfig.js');
+const appConfigProduction = require(CONFIG_DIR + '/prodConfig.js');
 
 const config = {
   entry: SRC_DIR + '/main.js',
@@ -28,7 +33,7 @@ const config = {
           use: ['css-loader']
         }),
         include: path.resolve(__dirname, 'node_modules')
-      },{
+      }, {
         test: /\.less$/,
         use: extractLess.extract({
           use: ['css-loader', 'postcss-loader', 'less-loader']
@@ -83,7 +88,10 @@ const config = {
     new HtmlWebpackPlugin({
       template: 'index.template'
     }),
-    new CopyWebpackPlugin([{from: ASSETS_DIR + '/images/team*.svg', to: 'images', flatten: true}])
+    new CopyWebpackPlugin([{from: ASSETS_DIR + '/images/team*.svg', to: 'images', flatten: true}]),
+    new webpack.DefinePlugin({
+      __APP_CONFIG__: JSON.stringify(devBuild ? appConfigDev : appConfigProduction)
+    })
   ],
   devServer: {
     contentBase: DIST_DIR,
