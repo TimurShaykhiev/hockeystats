@@ -1,24 +1,65 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const devBuild = process.env.NODE_ENV === 'development';
+const deployBuild = process.env.NODE_ENV === 'deploy';
 
 const extractLess = new ExtractTextPlugin({
   filename: devBuild ? 'all.css' : '[hash].css'
 });
 
-const DIST_DIR = path.resolve(__dirname, 'dist');
+function getDistDirPath() {
+  let base = path.resolve(__dirname, 'dist');
+  if (deployBuild) {
+    return base + '/deploy';
+  }
+  if (devBuild) {
+    return base + '/dev';
+  }
+  return base + '/prod';
+}
+
+function getDevTool() {
+  if (deployBuild) {
+    return '';
+  }
+  if (devBuild) {
+    return 'eval-source-map';
+  }
+  return 'source-map';
+}
+
+function makeDir(dirPath) {
+  let exists = true;
+  try {
+    exists = fs.statSync(dirPath).isDirectory();
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      exists = false;
+    } else {
+      throw e;
+    }
+  }
+  if (!exists) {
+    fs.mkdirSync(dirPath);
+  }
+}
+
+const DIST_DIR = getDistDirPath();
 const SRC_DIR = path.resolve(__dirname, 'src');
 const ASSETS_DIR = path.resolve(__dirname, 'assets');
 const CONFIG_DIR = path.resolve(__dirname, 'config');
 
 const appConfigDev = require(CONFIG_DIR + '/devConfig.js');
 const appConfigProduction = require(CONFIG_DIR + '/prodConfig.js');
+
+makeDir(DIST_DIR);
 
 const config = {
   entry: SRC_DIR + '/main.js',
@@ -90,7 +131,10 @@ const config = {
     }),
     new CopyWebpackPlugin([{from: ASSETS_DIR + '/images/team*.svg', to: 'images', flatten: true}]),
     new webpack.DefinePlugin({
-      __APP_CONFIG__: JSON.stringify(devBuild ? appConfigDev : appConfigProduction)
+      '__APP_CONFIG__': JSON.stringify(devBuild ? appConfigDev : appConfigProduction),
+      'process.env': {
+        NODE_ENV: devBuild ? '"development"' : '"production"'
+      }
     })
   ],
   devServer: {
@@ -104,7 +148,7 @@ const config = {
       }
     }
   },
-  devtool: devBuild ? 'eval-source-map' : 'source-map'
+  devtool: getDevTool()
 };
 
 module.exports = config;

@@ -15,7 +15,7 @@
 
     - name: Copy static files
       copy:
-        src: ../../web/dist/
+        src: ../../web/dist/deploy/
         dest: "{{ static_files_path }}/static_{{ timestamp.stdout }}/"
         owner: "{{ nginx_user }}"
         group: "{{ nginx_user }}"
@@ -36,7 +36,7 @@
       args:
         chdir: "{{ static_files_path }}/"
         executable: /bin/bash
-      warn: False
+        warn: False
 
   handlers:
     - import_tasks: handlers.yml
