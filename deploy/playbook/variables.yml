@@ -5,3 +5,5 @@ config_path: "/home/{{ project_user }}/config"
 
 gunicorn_runtime_dir: "hockeystats_gunicorn"
 gunicorn_config: "/home/{{ project_user }}/gunicorn_config.py"
+gunicorn_log_dir: /var/log/gunicorn
+gunicorn_service: "hockeystats-gunicorn"

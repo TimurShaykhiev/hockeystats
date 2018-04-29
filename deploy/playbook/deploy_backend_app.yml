@@ -1,0 +1,43 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Include variables
+      include_vars: variables.yml
+
+    - name: Stop Gunicorn service
+      service:
+        name: "{{ gunicorn_service }}"
+        state: stopped
+
+    - name: Update repository
+      hg:
+        repo: ssh://hg@bitbucket.org/tshaykhiev/hockeystats
+        dest: "{{ src_path }}"
+        update: yes
+      become_user: "{{ project_user }}"
+
+    - name: Install virtual env
+      pip:
+        requirements: "{{ server_src_path }}/requirements/production.txt"
+        virtualenv: "{{ server_src_path }}/venv"
+        virtualenv_command: /usr/bin/python3 -m venv
+      become_user: "{{ project_user }}"
+
+    - name: Add config files
+      template:
+        src: "{{ item.path }}"
+        dest: "{{ config_path }}/{{ item.name }}"
+        owner: "{{ project_user }}"
+        group: "{{ project_user }}"
+        mode: 0700
+      loop:
+        - { path: templates/app_config.cfg, name: app_config.cfg }
+        - { path: templates/updater_config.cfg, name: updater_config.cfg }
+      become_user: "{{ project_user }}"
+
+    - name: Start Gunicorn service
+      service:
+        name: "{{ gunicorn_service }}"
+        state: started
