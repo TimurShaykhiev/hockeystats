@@ -26,6 +26,7 @@ const teamStatRanges = {
 
 const state = {
   allTeams: {},
+  allTeamsForSeason: {},
   teamStats: {},
   teamSeasonInfo: {},
   teamSeasons: {},
@@ -68,6 +69,10 @@ function checkSeasonIdAndReturnData(state, stateName) {
 const getters = {
   getAllTeams(state) {
     return checkSeasonIdAndReturnData(state, 'allTeams');
+  },
+
+  getAllTeamsForSeason(state) {
+    return checkSeasonAndReturnData(state, 'allTeamsForSeason');
   },
 
   getTeamStatRange(state) {
@@ -209,6 +214,10 @@ const actions = {
           logger.error(`action: getAllTeams error: ${error.message}`);
         }
       );
+  },
+
+  getAllTeamsForSeason({commit, state}, {reqParams}) {
+    return getTeamsDataBySeason('getAllTeams', 'setAllTeamsForSeason', 'allTeamsForSeason', commit, state, reqParams);
   },
 
   getTeamStats({commit, state}, {reqParams}) {
@@ -361,17 +370,26 @@ function createTeamStats(stats) {
   return newStat;
 }
 
+function createAllTeams(teams) {
+  let allTeams = {};
+  allTeams.timestamp = teams.timestamp;
+  allTeams.season = StoreUtils.convertSeason(teams.season);
+  allTeams.teams = {};
+  for (let t of teams.teams) {
+    allTeams.teams[t.id] = t;
+  }
+  return allTeams;
+}
+
 const mutations = {
   setAllTeams(state, teams) {
     logger.debug('mutation: setAllTeams');
-    let allTeams = {};
-    allTeams.timestamp = teams.timestamp;
-    allTeams.season = StoreUtils.convertSeason(teams.season);
-    allTeams.teams = {};
-    for (let t of teams.teams) {
-      allTeams.teams[t.id] = t;
-    }
-    state.allTeams = allTeams;
+    state.allTeams = createAllTeams(teams);
+  },
+
+  setAllTeamsForSeason(state, teams) {
+    logger.debug('mutation: setAllTeamsForSeason');
+    state.allTeamsForSeason = createAllTeams(teams);
   },
 
   setTeamStats(state, stats) {
@@ -496,18 +514,20 @@ const mutations = {
     tc.team2 = stats.team2;
     tc.stats1 = teamInfoArrayToObject(stats.stats1);
     tc.stats2 = teamInfoArrayToObject(stats.stats2);
-    tc.vs = {
-      goals1: stats.vs[0],
-      shots1: stats.vs[1],
-      pim1: stats.vs[2],
-      ppp1: stats.vs[3],
-      pkp1: stats.vs[4],
-      goals2: stats.vs[5],
-      shots2: stats.vs[6],
-      pim2: stats.vs[7],
-      ppp2: stats.vs[8],
-      pkp2: stats.vs[9]
-    };
+    if (stats.vs.length > 0) {
+      tc.vs = {
+        goals1: stats.vs[0],
+        shots1: stats.vs[1],
+        pim1: stats.vs[2],
+        ppp1: stats.vs[3],
+        pkp1: stats.vs[4],
+        goals2: stats.vs[5],
+        shots2: stats.vs[6],
+        pim2: stats.vs[7],
+        ppp2: stats.vs[8],
+        pkp2: stats.vs[9]
+      };
+    }
     tc.games = [];
     for (let s of stats.games) {
       let score = {

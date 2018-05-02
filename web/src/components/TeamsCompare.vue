@@ -324,7 +324,7 @@ export default {
 
     vsStats() {
       let data = this.getTeamsCompare();
-      if (data === null) {
+      if (data === null || data.vs === undefined) {
         return undefined;
       }
 

@@ -63,7 +63,7 @@ export default {
 
     itemList() {
       let season = this.$store.state.season.selectedSeason;
-      let getterName = 'getAllTeams';
+      let getterName = 'getAllTeamsForSeason';
       if (this.type === TYPE_SKATER) {
         getterName = 'getAllSkaters';
       } else if (this.type === TYPE_GOALIE) {
@@ -114,7 +114,7 @@ export default {
       if (season.id === undefined) {
         return;
       }
-      let action = 'getAllTeams';
+      let action = 'getAllTeamsForSeason';
       if (this.type === TYPE_SKATER) {
         action = 'getAllSkaters';
       } else if (this.type === TYPE_GOALIE) {
