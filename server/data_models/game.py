@@ -137,11 +137,11 @@ class Game(Model):
         return cls._get_columns_from_db(db_conn, q.query, (from_date, to_date, regular, team_id, team_id))
 
     @classmethod
-    def get_team_vs_team_games(cls, db_conn, team1_id, team2_id, regular, limit=10):
+    def get_team_vs_team_games(cls, db_conn, team1_id, team2_id, limit=10):
         q = cls._create_query().select()
-        q.where('home_team_id IN (%s,%s) AND away_team_id IN (%s,%s) AND is_regular = %s')
+        q.where('home_team_id IN (%s,%s) AND away_team_id IN (%s,%s)')
         q.order_by(['-date']).limit(limit)
-        return cls._get_columns_from_db(db_conn, q.query, (team1_id, team2_id, team1_id, team2_id, regular))
+        return cls._get_columns_from_db(db_conn, q.query, (team1_id, team2_id, team1_id, team2_id))
 
     @classmethod
     def get_head_to_head_games(cls, db_conn, ids, from_date, to_date):

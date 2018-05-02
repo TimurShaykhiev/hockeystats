@@ -103,6 +103,8 @@ def get_team_vs_team_stats(games, team1_id, team2_id, start_date, end_date):
     end = date_to_int(end_date)
     games_arr = _games_to_array(games)
     games_arr = games_arr[np.logical_and(start <= games_arr[:, COL_GAME_DATE], games_arr[:, COL_GAME_DATE] < end), :]
+    if len(games_arr) == 0:
+        return []
 
     home1 = games_arr[games_arr[:, COL_HOME_TEAM_ID] == team1_id, COL_HOME_GOALS:COL_AWAY_GOALS]
     away1 = games_arr[games_arr[:, COL_AWAY_TEAM_ID] == team1_id, COL_AWAY_GOALS:COL_FACE_OFF_TAKEN]

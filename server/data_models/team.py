@@ -56,13 +56,13 @@ class Team(EntityModel):
         return team
 
     @classmethod
-    def get_for_season(cls, db_conn, season_id, columns=None, named_tuple_cls=None):
+    def get_for_season(cls, db_conn, season_id, regular, columns=None, named_tuple_cls=None):
         col_list = Query.get_col_list(columns, 't')
         query = 'SELECT {} FROM teams t JOIN team_sum_stats s ON t.id = s.team_id ' \
-                'WHERE s.season_id = %s AND s.is_regular = 1'.format(col_list)
+                'WHERE s.season_id = %s AND s.is_regular = %s'.format(col_list)
         if columns is None:
-            return cls._get_all_from_db(db_conn, query, (season_id,))
-        return cls._get_columns_from_db(db_conn, query, (season_id,), named_tuple_cls=named_tuple_cls)
+            return cls._get_all_from_db(db_conn, query, (season_id, regular))
+        return cls._get_columns_from_db(db_conn, query, (season_id, regular), named_tuple_cls=named_tuple_cls)
 
     def to_tuple(self):
         return (self.id, self.name, self.abbreviation, self.location,

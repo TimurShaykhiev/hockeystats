@@ -117,9 +117,11 @@ class TeamCompare:
         self.stats1 = _get_team_full_stats(db, self.season, self.team1.id)
         self.stats2 = _get_team_full_stats(db, self.season, self.team2.id)
 
-        games = Game.get_team_vs_team_games(db, self.team1.id, self.team2.id, self.season.regular)
-        self.vs = get_team_vs_team_stats(games, self.team1.id, self.team2.id, self.season.start, self.season.end)
-        self.games = get_game_stats(games)
+        games = Game.get_team_vs_team_games(db, self.team1.id, self.team2.id)
+        if len(games) > 0:
+            start, end = self.season.get_dates()
+            self.vs = get_team_vs_team_stats(games, self.team1.id, self.team2.id, start, end)
+            self.games = get_game_stats(games)
 
         schema = _TeamCompareSchema()
         return schema.dumps(self)

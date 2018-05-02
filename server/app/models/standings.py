@@ -63,7 +63,7 @@ class Standings:
 
     def _prepare_data(self, db):
         div_map = dict((el.id, el) for el in Division.get_all(db))
-        teams = TeamDm.get_for_season(db, self.season.id, columns=['id', 'division_id'])
+        teams = TeamDm.get_for_season(db, self.season.id, True, columns=['id', 'division_id'])
         team_info = dict((tid, [div_map[did].conference.id, did]) for tid, did in teams)
         stats_from_db = TeamSumStat.get_stat_tuples(db, self.season.id, True)
         self._stats = get_standings_stats(stats_from_db, team_info)

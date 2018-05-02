@@ -7,7 +7,7 @@
     "build": "NODE_ENV=development $(npm bin)/webpack",
     "build:prod": "NODE_ENV=production $(npm bin)/webpack --optimize-minimize",
     "build:deploy": "NODE_ENV=deploy $(npm bin)/webpack --optimize-minimize",
-    "start": "$(npm bin)/webpack-dev-server"
+    "start": "NODE_ENV=development $(npm bin)/webpack-dev-server"
   },
   "keywords": [],
   "author": "Timur Shaykhiev",

@@ -19,7 +19,7 @@ class AllTeamsCollection:
         db = get_db()
         divisions = dict((el.id, el) for el in Division.get_all(db))
         conferences = dict((el.id, el) for el in Conference.get_all(db))
-        teams = dict((el.id, el) for el in TeamDm.get_for_season(db, self.season.id))
+        teams = dict((el.id, el) for el in TeamDm.get_for_season(db, self.season.id, self.season.regular))
         team_strings = None
 
         locale = get_locale()
