@@ -5,9 +5,12 @@ DB_USER = 'hockstats'
 DB_PASSWORD = 'hockstats'
 
 # Logger settings
-LOADER_LOG_FILE = '/home/timur/hockeystats/log/loader.log'
-HOCKEY_STATS_LOG_FILE = '/home/timur/hockeystats/log/hockeystats.log'
+LOG_DIR = '/home/timur/hockeystats/log/'
 HOCKEY_STATS_LOG_LEVEL = 'DEBUG'
+
+# Backup settings
+BACKUP_DIR = '/home/timur/backup'
+YANDEX_API_TOKEN = ''
 
 # Flask
 DEBUG = True

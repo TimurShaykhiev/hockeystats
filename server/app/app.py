@@ -4,6 +4,8 @@ from flask import Flask, current_app, request
 
 from .database import configure_db
 
+HOCKEY_STATS_LOG_FILE = 'webapp.log'
+
 
 def create_app():
     """Create Flask application."""
@@ -25,9 +27,10 @@ def _configure_logging(app):
     log_size_limit = 50 * 1024 * 1024
     backup_count = 5
     log_level = getattr(logging, app.config['HOCKEY_STATS_LOG_LEVEL'])
+    log_file_path = app.config['LOG_DIR'] + HOCKEY_STATS_LOG_FILE
 
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s [%(module)s:%(lineno)d]')
-    rfh = RotatingFileHandler(app.config['HOCKEY_STATS_LOG_FILE'], maxBytes=log_size_limit, backupCount=backup_count)
+    rfh = RotatingFileHandler(log_file_path, maxBytes=log_size_limit, backupCount=backup_count)
     rfh.setLevel(log_level)
     rfh.setFormatter(formatter)
 

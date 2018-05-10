@@ -1,9 +1,8 @@
 import sys
-import os
 import MySQLdb as Db
 from datetime import timedelta, datetime
 
-import config
+from config.config import get_custom_config
 from logger import create_loader_logger
 from load import load, LOAD_RESULT_SUCCESS, LOAD_RESULT_TRY_AGAIN
 from check_season import check_season
@@ -11,17 +10,8 @@ from correct_sum_stats import fix_sum_stats
 from db_utils.updates import get_last_stat_update, set_last_stat_update
 
 LOG = None
-
-
-def _get_custom_config():
-    """Read custom settings from file and update config variables in the config module."""
-    config_path = os.environ.get('HOCKEYSTATS_CONFIG')
-    if config_path is not None:
-        try:
-            with open(config_path, mode='rb') as config_file:
-                exec(compile(config_file.read(), config_path, 'exec'), config.__dict__)
-        except Exception:
-            pass
+LOADER_LOG_FILE = 'loader.log'
+config = None
 
 
 # I don't want to do real timezone-aware calculations. Just make sure we don't download game info before
@@ -60,6 +50,6 @@ def main():
 
 
 if __name__ == '__main__':
-    _get_custom_config()
-    LOG = create_loader_logger(config.LOADER_LOG_FILE)
+    config = get_custom_config()
+    LOG = create_loader_logger(config.LOG_DIR + LOADER_LOG_FILE)
     main()
