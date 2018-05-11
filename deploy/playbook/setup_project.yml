@@ -67,7 +67,7 @@
         dest: "{{ db_backup_path }}/{{ db_backup_file }}"
         owner: "{{ project_user }}"
         group: "{{ project_user }}"
-        mode: 0700
+        mode: 0600
 
     - name: Import DB
       mysql_db:
@@ -77,10 +77,24 @@
         login_user: "{{ updater_db_user }}"
         login_password: "{{ updater_db_user_pass }}"
 
+    - name: Remove DB backup file
+      file:
+        path: "{{ db_backup_path }}/{{ db_backup_file }}"
+        state: absent
+
     - name: Add scheduler to cron
       cron:
-        name: "hockeystats scheduler"
-        minute: "0"
-        hour: "12"
+        name: "scheduler"
+        minute: 0
+        hour: 12
         job: "{{ server_src_path }}/scheduler.sh"
+        state: present
+
+    - name: Add backup to cron
+      cron:
+        name: "db backup"
+        weekday: 0
+        minute: 0
+        hour: 3
+        job: "{{ server_src_path }}/backup.sh"
         state: present
