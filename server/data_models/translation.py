@@ -26,6 +26,10 @@ def _prepare_result(translations):
     return result
 
 
+def prepare_player_name_translations(players):
+    return [(RESOURCE_TYPE_PLAYER_NAME, p.id, p.name) for p in players]
+
+
 class Translation(Model):
     _table_name = 'translations'
 

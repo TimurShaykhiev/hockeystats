@@ -7,8 +7,11 @@ from data_loaders import NHL_STATS_DOMAIN
 LOG = get_loader_logger()
 
 
-def create_player_link(player_id):
-    return '/api/v1/people/' + str(player_id)
+def create_player_link(player_id, lang=None):
+    link = '/api/v1/people/' + str(player_id)
+    if lang is not None:
+        link += '?site={}_nhl'.format(lang)
+    return link
 
 
 def get_players(links):

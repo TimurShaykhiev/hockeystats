@@ -8,6 +8,14 @@ def add_players(db, players):
     return num
 
 
+def add_translations(db, translations):
+    with db as cur:
+        num = cur.executemany('INSERT INTO translations (resource_type, resource_id, ru) '
+                              'VALUES (%s, %s, %s)', translations)
+    cur.close()
+    return num
+
+
 def update_player_teams(db, player_info):
     with db as cur:
         num = cur.executemany('UPDATE players SET current_team_id = %s WHERE id = %s', player_info)

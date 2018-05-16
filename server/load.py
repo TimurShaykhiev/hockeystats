@@ -6,9 +6,10 @@ from data_models.skater_sum_stat import SkaterSumStat
 from data_models.goalie_sum_stat import GoalieSumStat
 from data_models.team_sum_stat import TeamSumStat
 from data_models.player_trade import PlayerTrade
+from data_models.translation import prepare_player_name_translations
 from data_loaders.game_loader import get_games_list, get_game_info
 from data_loaders.player_loader import get_players, create_player_link
-from db_utils.players import add_players, update_player_teams
+from db_utils.players import add_players, update_player_teams, add_translations
 from db_utils.seasons import get_season_by_date
 from db_utils.player_trades import add_player_trades
 import db_utils.add_stats as add_stats
@@ -87,6 +88,12 @@ def _update_players(db_conn):
     LOG.info('%s players updated', num if num else 0)
     num = add_player_trades(db_conn, player_trades)
     LOG.info('%s player trades added', num if num else 0)
+
+    # get player name translations
+    links = [create_player_link(pid, 'ru') for pid in player_ids_to_add]
+    pl_name_translations = prepare_player_name_translations(get_players(links))
+    num = add_translations(db_conn, pl_name_translations)
+    LOG.info('%s new player name translations added', num if num else 0)
 
 
 def _update_db(db_conn):

@@ -2,4 +2,5 @@
 Manual actions between seasons
 =======================================
 1. Add new season to 'seasons' table.
-2. Start 'server/db_utility_scripts/update_player_team_season.py' to add new records to 'player_team_season'.
+2. Check for new teams, changes in conferences and divisions.
+3. Start 'server/db_utility_scripts/update_player_team_season.py' to add new records to 'player_team_season'.
