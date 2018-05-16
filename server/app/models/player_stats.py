@@ -9,11 +9,11 @@ from statistics.goalie_season import get_goalies_stats
 from .player import Player
 from .season import SeasonSchema
 from .season_stats import PlayerSeasonStats, PlayerSeasonStatsSchema
-from . import ModelSchema
+from . import ModelSchema, get_locale, DEFAULT_LOCALE
 
 
-def _get_all_players_info(db, data_getter_func, season):
-    pl_list = data_getter_func(db, season.id, season.regular, season.current, False)
+def _get_all_players_info(db, data_getter_func, season, lang):
+    pl_list = data_getter_func(db, season.id, season.regular, season.current, False, lang)
     # Convert to dict for quick search
     return dict((p.id, p) for p in pl_list)
 
@@ -27,8 +27,12 @@ class _PlayerSeasonStatsCollection:
         self.calc_stats_func = None
 
     def get_collection(self):
+        locale = get_locale()
+        if locale == DEFAULT_LOCALE:
+            locale = None
+
         db = get_db()
-        players = _get_all_players_info(db, self.get_players_func, self.season)
+        players = _get_all_players_info(db, self.get_players_func, self.season, locale)
         stats_from_db = self.get_stats_func(db, self.season.id, self.season.regular)
         stats = self.calc_stats_func(stats_from_db)
         for st in stats:

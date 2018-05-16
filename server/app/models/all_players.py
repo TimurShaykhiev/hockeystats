@@ -3,7 +3,7 @@ from marshmallow import fields
 from app.database import get_db
 from data_models.player import Player
 from .season import SeasonSchema
-from . import ModelSchema
+from . import ModelSchema, get_locale, DEFAULT_LOCALE
 
 
 class _AllPlayersCollection:
@@ -13,8 +13,13 @@ class _AllPlayersCollection:
         self._get_players_func = None
 
     def get_collection(self):
+        locale = get_locale()
+        if locale == DEFAULT_LOCALE:
+            locale = None
+
         db = get_db()
-        self.players = self._get_players_func(db, self.season.id, self.season.regular, self.season.current, True)
+        self.players = self._get_players_func(db, self.season.id, self.season.regular, self.season.current,
+                                              True, locale)
         schema = _AllPlayersCollectionSchema()
         return schema.dumps(self)
 

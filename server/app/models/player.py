@@ -6,7 +6,7 @@ from flask import current_app
 from app.api.response_utils import ApiError
 from app.database import get_db
 from data_models.player import Player as PlayerDm
-from . import ModelSchema, get_locale
+from . import ModelSchema, get_locale, DEFAULT_LOCALE
 
 
 class Player:
@@ -35,10 +35,13 @@ class Player:
         return pl
 
     def _get_from_db(self, db):
+        locale = get_locale()
+        if locale == DEFAULT_LOCALE:
+            locale = None
         if self._season is None:
-            pl_dm = PlayerDm.from_db(db, self.id)
+            pl_dm = PlayerDm.get_player(db, self.id, locale)
         else:
-            pl_dm = PlayerDm.get_player_for_season(db, self.id, self._season.id, self._season.current)
+            pl_dm = PlayerDm.get_player_for_season(db, self.id, self._season.id, self._season.current, locale)
         if pl_dm is None:
             current_app.logger.error('Player id %s not found.', self.id)
             raise ApiError(404, 'PLAYER_NOT_FOUND')

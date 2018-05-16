@@ -36,8 +36,16 @@ def _convert_height(value):
     return feet * 12 + inches
 
 
+def _get_name_col(lang):
+    if lang is None:
+        return 'p.name'
+    return 'tr.{}'.format(lang)
+
+
 class Player(EntityModel):
     _table_name = 'players'
+    _translate_join = 'JOIN translations tr ON p.id = tr.resource_id '
+    _translate_where = ' AND tr.resource_type = "player_name"'
 
     CENTER = 'center'
     RIGHT_WING = 'right wing'
@@ -127,38 +135,67 @@ class Player(EntityModel):
             convert_attr_if_none(self.current_team, 'id'))
 
     @classmethod
-    def get_skaters_for_season(cls, db_conn, season_id, regular, current, names_only):
-        return cls._get_players_for_season(db_conn, season_id, regular, current, names_only, 'skater_sum_stats')
+    def get_player(cls, db_conn, player_id, lang=None):
+        if lang is None:
+            return cls.from_db(db_conn, player_id)
+
+        query = ('SELECT p.id, {}, p.birth_date, p.birth_city, p.birth_state, p.birth_country, p.nationality, '
+                 'p.height, p.weight, p.shoots_catches, p.primary_pos, p.current_team_id '
+                 'FROM players p ').format(_get_name_col(lang))
+        query += cls._translate_join + 'WHERE p.id = %s' + cls._translate_where
+        return cls._get_one_from_db(db_conn, query, (player_id,))
 
     @classmethod
-    def get_goalies_for_season(cls, db_conn, season_id, regular, current, names_only):
-        return cls._get_players_for_season(db_conn, season_id, regular,  current, names_only, 'goalie_sum_stats')
+    def get_skaters_for_season(cls, db_conn, season_id, regular, current, names_only, lang=None):
+        return cls._get_players_for_season(db_conn, season_id, regular, current, names_only, 'skater_sum_stats', lang)
 
     @classmethod
-    def _get_players_for_season(cls, db_conn, season_id, regular, current, names_only, sum_stat_table):
+    def get_goalies_for_season(cls, db_conn, season_id, regular, current, names_only, lang=None):
+        return cls._get_players_for_season(db_conn, season_id, regular,  current, names_only, 'goalie_sum_stats', lang)
+
+    @classmethod
+    def _get_players_for_season(cls, db_conn, season_id, regular, current, names_only, sum_stat_table, lang):
         named_tuple_cls = PlayerName if names_only else PlayerShortInfo
         if names_only or current:
-            col_list = 'p.id, p.name' if names_only else 'p.id, p.name, p.primary_pos, p.current_team_id'
-            query = ('SELECT {} FROM players p JOIN {} s ON p.id = s.player_id '
-                     'WHERE s.season_id = %s AND s.is_regular = %s').format(col_list, sum_stat_table)
+            col_list = ('p.id, {}' if names_only else
+                        'p.id, {}, p.primary_pos, p.current_team_id').format(_get_name_col(lang))
+            query = 'SELECT {} FROM players p JOIN {} s ON p.id = s.player_id '.format(col_list, sum_stat_table)
+            if lang is not None:
+                query += cls._translate_join
+            query += 'WHERE s.season_id = %s AND s.is_regular = %s'
             query_params = (season_id, regular)
         else:
-            query = ('SELECT p.id, p.name, p.primary_pos, pts.team_id '
+            query = ('SELECT p.id, {}, p.primary_pos, pts.team_id '
                      'FROM players p JOIN {} s ON p.id = s.player_id '
-                     'JOIN player_team_season pts ON p.id = pts.player_id '
-                     'WHERE s.season_id = %s AND s.is_regular = %s AND pts.season_id = %s').format(sum_stat_table)
+                     'JOIN player_team_season pts ON p.id = pts.player_id ').format(_get_name_col(lang), sum_stat_table)
+            if lang is not None:
+                query += cls._translate_join
+            query += 'WHERE s.season_id = %s AND s.is_regular = %s AND pts.season_id = %s'
             query_params = (season_id, regular, season_id)
+        if lang is not None:
+            query += cls._translate_where
         return cls._get_columns_from_db(db_conn, query, query_params, named_tuple_cls=named_tuple_cls)
 
     @classmethod
-    def get_player_for_season(cls, db_conn, player_id, season_id, current):
-        if current:
-            return cls.from_db(db_conn, player_id)
+    def get_player_for_season(cls, db_conn, player_id, season_id, current, lang=None):
+        tid_col = 'p.current_team_id' if current else 'pts.team_id'
+        query = ('SELECT p.id, {}, p.birth_date, p.birth_city, p.birth_state, p.birth_country, p.nationality, '
+                 'p.height, p.weight, p.shoots_catches, p.primary_pos, {} '
+                 'FROM players p ').format(_get_name_col(lang), tid_col)
+        if not current:
+            query += 'JOIN player_team_season pts ON p.id = pts.player_id '
+        if lang is not None:
+            query += cls._translate_join
 
-        query = ('SELECT p.id, p.name, p.birth_date, p.birth_city, p.birth_state, p.birth_country, p.nationality, '
-                 'p.height, p.weight, p.shoots_catches, p.primary_pos, pts.team_id FROM players p '
-                 'JOIN player_team_season pts ON p.id = pts.player_id WHERE pts.season_id = %s AND p.id = %s')
-        return cls._get_one_from_db(db_conn, query, (season_id, player_id))
+        if current:
+            query += 'WHERE p.id = %s'
+            query_params = (player_id,)
+        else:
+            query += 'WHERE pts.season_id = %s AND p.id = %s'
+            query_params = (season_id, player_id)
+        if lang is not None:
+            query += cls._translate_where
+        return cls._get_one_from_db(db_conn, query, query_params)
 
     @classmethod
     def get_all_players_for_season(cls, db_conn, season_id, columns=None, named_tuple_cls=None):
@@ -172,17 +209,25 @@ class Player(EntityModel):
         return cls._get_columns_from_db(db_conn, query, (season_id, season_id), named_tuple_cls=named_tuple_cls)
 
     @classmethod
-    def get_team_players(cls, db_conn, team_id, season_id, current, columns=None, named_tuple_cls=None):
-        if current:
-            return cls.get_filtered(db_conn, ['current_team_id'], (team_id,), columns=columns,
-                                    named_tuple_cls=named_tuple_cls)
-
+    def get_team_players(cls, db_conn, team_id, season_id, current, columns, named_tuple_cls=None, lang=None):
         col_list = Query.get_col_list(columns, 'p')
-        query = ('SELECT {} FROM players p JOIN player_team_season pts ON p.id = pts.player_id '
-                 'WHERE pts.season_id = %s AND pts.team_id = %s').format(col_list)
-        if columns is None:
-            return cls._get_all_from_db(db_conn, query, (season_id, team_id))
-        return cls._get_columns_from_db(db_conn, query, (season_id, team_id), named_tuple_cls=named_tuple_cls)
+        if lang is not None:
+            col_list = col_list.replace('p.name', 'tr.{}'.format(lang))
+        query = 'SELECT {} FROM players p '.format(col_list)
+        if not current:
+            query += 'JOIN player_team_season pts ON p.id = pts.player_id '
+        if lang is not None:
+            query += cls._translate_join
+
+        if current:
+            query += 'WHERE current_team_id = %s'
+            query_params = (team_id,)
+        else:
+            query += 'WHERE pts.season_id = %s AND pts.team_id = %s'
+            query_params = (season_id, team_id)
+        if lang is not None:
+            query += cls._translate_where
+        return cls._get_columns_from_db(db_conn, query, query_params, named_tuple_cls=named_tuple_cls)
 
     @classmethod
     def get_player_season_team_map(cls, db_conn, player_id, all_seasons):

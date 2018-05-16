@@ -14,7 +14,7 @@ from .team import Team, TeamSchema
 from .season import Season, SeasonSchema, get_all_seasons
 from .season_stats import SeasonStats, SeasonStatsSchema, PlayerSeasonStats, PlayerSeasonStatsSchema
 from .player import Player
-from . import ModelSchema, StatValue
+from . import ModelSchema, StatValue, get_locale, DEFAULT_LOCALE
 
 
 def _get_team_full_stats(db, season, tid):
@@ -73,9 +73,13 @@ class TeamPlayersSeasonStatsCollection:
         self.goalies = []
 
     def get_collection(self):
+        locale = get_locale()
+        if locale == DEFAULT_LOCALE:
+            locale = None
+
         db = get_db()
         pl_list = PlayerDm.get_team_players(db, self.team.id, self.season.id, self.season.current,
-                                            columns=['id', 'name', 'primary_pos'])
+                                            columns=['id', 'name', 'primary_pos'], lang=locale)
         pl_info = dict((pid, PlayerShortInfo(pid, name, pos, self.team.id)) for pid, name, pos in pl_list)
         pl_ids = [pid for pid, name, pos in pl_list]
 
