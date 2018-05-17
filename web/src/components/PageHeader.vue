@@ -3,7 +3,7 @@
     <div class="container-row">
       <div class="header__logo container-row" @click="goHome">
         <img src="../../assets/images/logo.svg" class="header__logo-image">
-        <h1 class="header__logo-text">Hockstat</h1>
+        <h1 class="header__logo-text">Hockstats</h1>
       </div>
       <div class="header__caption" @click="goHome"><h1>{{$t("caption")}}</h1></div>
       <div class="header__change-lang">

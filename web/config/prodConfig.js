@@ -1,5 +1,5 @@
 const prodConfig = {
-  apiEndPoint: 'http://hockeystats.com/api/',
+  apiEndPoint: 'http://hockstats.ru/api/',
   logLevel: 1
 };
 

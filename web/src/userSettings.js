@@ -11,7 +11,7 @@ function isLocalStorageAvailable() {
 }
 
 const DEFAULT_SETTINGS = {
-  locale: 'en',
+  locale: 'ru',
   selectedSeason: {}
 };
 

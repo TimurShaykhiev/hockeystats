@@ -5,8 +5,8 @@ import UserSettings from 'Root/userSettings';
 Vue.use(VueI18n);
 
 let locales = {
-  locale: 'en',
-  fallbackLocale: 'en',
+  locale: 'ru',
+  fallbackLocale: 'ru',
   silentTranslationWarn: true,
   messages: {
     en: {
