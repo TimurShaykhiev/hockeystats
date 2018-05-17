@@ -6,5 +6,5 @@ updater_db_user: hockeystats_updater
 
 log_path: /var/log/hockeystats
 
-domain_name: hockeystats.com
+domain_name: hockstats.ru
 nginx_user: "www-data"
