@@ -5,7 +5,7 @@ from datetime import date
 import requests
 
 from config.config import get_custom_config
-from logger import create_loader_logger
+from logger import create_logger, BACKUP_LOGGER_NAME, create_smtp_handler
 
 LOG = None
 BACKUP_LOG_FILE = 'backup.log'
@@ -135,5 +135,6 @@ def main():
 
 if __name__ == '__main__':
     config = get_custom_config()
-    LOG = create_loader_logger(config.LOG_DIR + BACKUP_LOG_FILE)
+    email_handler = create_smtp_handler(config, 'Backup:Error')
+    LOG = create_logger(BACKUP_LOGGER_NAME, config.LOG_DIR + BACKUP_LOG_FILE, email_handler=email_handler)
     main()

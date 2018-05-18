@@ -3,7 +3,7 @@ import MySQLdb as Db
 from datetime import timedelta, datetime
 
 from config.config import get_custom_config
-from logger import create_loader_logger
+from logger import create_logger, LOADER_LOGGER_NAME, create_smtp_handler
 from load import load, LOAD_RESULT_SUCCESS, LOAD_RESULT_TRY_AGAIN
 from check_season import check_season
 from correct_sum_stats import fix_sum_stats
@@ -51,5 +51,6 @@ def main():
 
 if __name__ == '__main__':
     config = get_custom_config()
-    LOG = create_loader_logger(config.LOG_DIR + LOADER_LOG_FILE)
+    email_handler = create_smtp_handler(config, 'Loader:Error')
+    LOG = create_logger(LOADER_LOGGER_NAME, config.LOG_DIR + LOADER_LOG_FILE, email_handler=email_handler)
     main()

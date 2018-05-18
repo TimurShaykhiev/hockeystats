@@ -1,7 +1,7 @@
 import logging
-from logging.handlers import RotatingFileHandler
 from flask import Flask, current_app, request
 
+from logger import create_rotating_file_handler, create_smtp_handler
 from .database import configure_db
 
 HOCKEY_STATS_LOG_FILE = 'webapp.log'
@@ -24,18 +24,20 @@ def _configure_app(app):
 
 
 def _configure_logging(app):
-    log_size_limit = 50 * 1024 * 1024
-    backup_count = 5
     log_level = getattr(logging, app.config['HOCKEY_STATS_LOG_LEVEL'])
     log_file_path = app.config['LOG_DIR'] + HOCKEY_STATS_LOG_FILE
 
+    app.logger.setLevel(log_level)
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s [%(module)s:%(lineno)d]')
-    rfh = RotatingFileHandler(log_file_path, maxBytes=log_size_limit, backupCount=backup_count)
+
+    rfh = create_rotating_file_handler(log_file_path)
     rfh.setLevel(log_level)
     rfh.setFormatter(formatter)
-
     app.logger.addHandler(rfh)
-    app.logger.setLevel(log_level)
+
+    email_handler = create_smtp_handler(app.config, 'WebApp:Error')
+    email_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(email_handler)
 
     @app.before_request
     def log_request():
