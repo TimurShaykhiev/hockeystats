@@ -1,10 +1,10 @@
 ansible_user: admin
 ansible_port: 20022
-project_user: hockeystats
-app_db_user: hockeystats_app
-updater_db_user: hockeystats_updater
+project_user: hockstats
+app_db_user: hockstats_app
+updater_db_user: hockstats_updater
 
-log_path: /var/log/hockeystats
+log_path: /var/log/hockstats
 
 domain_name: hockstats.ru
 nginx_user: "www-data"
