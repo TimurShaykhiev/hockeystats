@@ -202,6 +202,26 @@ let locales = {
         team: 'Select a team',
         skater: 'Select a skater',
         goalie: 'Select a goaltender'
+      },
+      navBar: {
+        home: 'Home',
+        teams: 'Teams',
+        skaters: 'Skaters',
+        goalies: 'Goaltenders',
+        compare: 'Compare'
+      },
+      pageTitle: {
+        teamInfo: 'Team statistics',
+        skaterInfo: 'Skater statistics',
+        goalieInfo: 'Goaltender statistics',
+        teams: 'Teams statistics',
+        skaters: 'Skaters statistics',
+        goalies: 'Goaltenders statistics',
+        compare: 'Compare',
+        teamsCompare: 'Compare teams',
+        skatersCompare: 'Compare skaters',
+        goaliesCompare: 'Compare goaltenders',
+        home: 'NHL statistics'
       }
     },
     ru: {
@@ -397,6 +417,26 @@ let locales = {
         team: 'Выбери команду',
         skater: 'Выбери игрока',
         goalie: 'Выбери вратаря'
+      },
+      navBar: {
+        home: 'Главная',
+        teams: 'Команды',
+        skaters: 'Игроки',
+        goalies: 'Вратари',
+        compare: 'Сравнить'
+      },
+      pageTitle: {
+        teamInfo: 'Статистика команды',
+        skaterInfo: 'Статистика игрока',
+        goalieInfo: 'Статистика вратаря',
+        teams: 'Статистика команд',
+        skaters: 'Статистика игроков',
+        goalies: 'Статистика вратарей',
+        compare: 'Сравнение',
+        teamsCompare: 'Сравнение команд',
+        skatersCompare: 'Сравнение игроков',
+        goaliesCompare: 'Сравнение вратарей',
+        home: 'Статистика НХЛ'
       }
     }
   }

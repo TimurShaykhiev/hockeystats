@@ -45,13 +45,6 @@ export default {
     messages: {
       en: {
         caption: 'NHL Hockey Statistics',
-        navBar: {
-          home: 'Home',
-          teams: 'Teams',
-          skaters: 'Skaters',
-          goalies: 'Goaltenders',
-          compare: 'Compare'
-        },
         chooseLang: {
           rus: 'Русский',
           eng: 'English'
@@ -59,13 +52,6 @@ export default {
       },
       ru: {
         caption: 'Хоккейная статистика НХЛ',
-        navBar: {
-          home: 'Главная',
-          teams: 'Команды',
-          skaters: 'Игроки',
-          goalies: 'Вратари',
-          compare: 'Сравнить'
-        },
         chooseLang: {
           rus: 'Русский',
           eng: 'English'
