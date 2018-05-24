@@ -130,6 +130,7 @@ const config = {
       template: 'index.template'
     }),
     new CopyWebpackPlugin([{from: ASSETS_DIR + '/images/team*.svg', to: 'images', flatten: true}]),
+    new CopyWebpackPlugin([{from: ASSETS_DIR + '/favicons/*', to: '', flatten: true}]),
     new webpack.DefinePlugin({
       '__APP_CONFIG__': JSON.stringify(devBuild ? appConfigDev : appConfigProduction),
       'process.env': {
