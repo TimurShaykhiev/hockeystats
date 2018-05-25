@@ -1,0 +1,2 @@
+[web_servers]
+aruba_vps ansible_ssh_host=80.211.244.237
