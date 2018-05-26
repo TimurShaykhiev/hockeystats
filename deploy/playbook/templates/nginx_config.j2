@@ -2,16 +2,24 @@ server {
     listen 80;
     listen [::]:80;
 
+    server_name  www.{{ domain_name }};
+    return  301 http://{{ domain_name }}$request_uri;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
     root {{ static_files_path }}/static_{{ timestamp.stdout }};
 
-    server_name  {{ domain_name }} www.{{ domain_name }};
+    server_name  {{ domain_name }};
 
     location / {
         try_files $uri $uri/ =404;
     }
 
     # Static files cache control
-    location ~* \.(?:html|js|css|jpg|jpeg|gif|png|ico|cur|gz|svgz|eot|svg|ttf|woff|woff2)$ {
+    location ~* \.(?:html|js|css|jpg|jpeg|gif|png|ico|cur|gz|svgz|eot|svg|ttf|woff|woff2|xml|webmanifest)$ {
       expires 14d;
       access_log off;
       add_header Cache-Control "public";
