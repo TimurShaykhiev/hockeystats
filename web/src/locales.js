@@ -196,7 +196,7 @@ let locales = {
         goalsAgainst: 'Goals Against',
         goalsDiff: 'Goals Difference',
         pointsProgress: 'Points Progress',
-        faceoffWin: 'Faceoff Win'
+        faceoffWin: 'Faceoff Win Percentage'
       },
       itemSelectorPlaceholder: {
         team: 'Select a team',
@@ -283,7 +283,7 @@ let locales = {
         plusMinus: 'Плюс-минус',
         plusMinusShort: '+/-',
         pointsPerGame: 'В среднем очков за матч',
-        pointsPerGameShort: 'Г/М',
+        pointsPerGameShort: 'О/М',
         powerPlay: 'Большинство',
         powerPlayShort: 'БОЛ',
         ppGoals: 'Голы в большинстве',
@@ -312,7 +312,7 @@ let locales = {
         saves: 'Спасения',
         savesShort: 'Сп',
         savePercentage: 'Процент отраженных бросков',
-        savePercentageShort: '%ОБ',
+        savePercentageShort: '%ОтрБр',
         goalsAgainstAverage: 'Коэффициент надёжности',
         goalsAgainstAverageShort: 'КН',
         shutouts: 'Матчи на ноль',
@@ -411,7 +411,7 @@ let locales = {
         goalsAgainst: 'Пропущенные шайбы',
         goalsDiff: 'Разница шайб',
         pointsProgress: 'Набор очков',
-        faceoffWin: 'Выигранные вбрасывания'
+        faceoffWin: 'Процент выигранных вбрасываний'
       },
       itemSelectorPlaceholder: {
         team: 'Выбери команду',
