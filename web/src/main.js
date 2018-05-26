@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueYandexMetrika from 'vue-yandex-metrika';
 import App from 'Components/App';
 import i18n from 'Root/locales';
 import router from 'Root/router';
@@ -49,6 +50,18 @@ Vue.component('bar-chart', BarChart);
 Vue.component('stacked-bar-chart', StackedBarChart);
 Vue.component('radar-chart', RadarChart);
 Vue.component('line-chart', LineChart);
+
+Vue.use(VueYandexMetrika, {
+  id: 49021346,
+  router: router,
+  env: process.env.NODE_ENV,
+  options: {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true,
+    webvisor: true
+  }
+});
 
 new Vue({
   el: '#app',
