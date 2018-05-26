@@ -13,13 +13,20 @@
       shell: "date +%Y%m%d%H%M"
       register: timestamp
 
-    - name: Copy static files
-      copy:
-        src: ../../web/dist/deploy/
-        dest: "{{ static_files_path }}/static_{{ timestamp.stdout }}/"
+    - name: Add static files folder
+      file:
+        path: "{{ static_files_path }}/static_{{ timestamp.stdout }}"
+        state: directory
         owner: "{{ nginx_user }}"
         group: "{{ nginx_user }}"
         mode: 0755
+
+    - name: Copy static files
+      unarchive:
+        src: ../../web/dist/static.tar.gz
+        dest: "{{ static_files_path }}/static_{{ timestamp.stdout }}"
+        owner: "{{ nginx_user }}"
+        group: "{{ nginx_user }}"
 
     - name: Update Nginx server block
       template:
