@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from app.database import get_db
 
 CHART_POINTS_PROGRESS_INTERVAL = timedelta(days=5)
+CHART_ELEMENTS_LIMIT = 50
 
 
 class ChartData(ABC):

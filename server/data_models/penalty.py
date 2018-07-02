@@ -2,7 +2,7 @@ from data_models.event_model import EventModel
 from data_models.team import Team
 from data_models.player import Player
 from data_models.game import Game
-from data_models import convert_if_none, convert_attr_if_none, convert_time_to_sec, get_coordinates
+from data_models import convert_if_none, convert_attr_if_none, convert_time_to_sec, get_coordinates, NameValue
 
 
 class Penalty(EventModel):
@@ -94,3 +94,17 @@ class Penalty(EventModel):
             self.period_time,
             convert_if_none(self.coord_x),
             convert_if_none(self.coord_y))
+
+    @classmethod
+    def get_drew_by_top(cls, db_conn, start, end, limit, lang=None):
+        if lang is None:
+            query = ('SELECT pl.name, COUNT(pen.id) FROM penalty pen JOIN players pl ON pen.drew_by_id = pl.id '
+                     'WHERE pen.date >= %s AND pen.date < %s AND pen.drew_by_id IS NOT NULL '
+                     'GROUP BY pen.drew_by_id ORDER BY COUNT(pen.id) DESC LIMIT %s')
+        else:
+            query = ('SELECT tr.{}, COUNT(pen.id) FROM penalty pen '
+                     'JOIN translations tr ON pen.drew_by_id = tr.resource_id '
+                     'WHERE pen.date >= %s AND pen.date < %s AND pen.drew_by_id IS NOT NULL AND '
+                     'tr.resource_type = "player_name" '
+                     'GROUP BY pen.drew_by_id ORDER BY COUNT(pen.id) DESC LIMIT %s').format(lang)
+        return cls._get_columns_from_db(db_conn, query, (start, end, limit), named_tuple_cls=NameValue)

@@ -148,3 +148,8 @@ Cache-Control: no-cache
 
 ###
 
+GET http://localhost:5000/api/skaters/charts/penalty-drew-by?sid=4&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###

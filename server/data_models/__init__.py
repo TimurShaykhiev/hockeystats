@@ -1,4 +1,7 @@
+from collections import namedtuple
 from datetime import datetime
+
+NameValue = namedtuple('NameValue', ['name', 'value'])
 
 
 def convert_attr_if_none(obj, attr):
