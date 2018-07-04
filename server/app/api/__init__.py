@@ -6,3 +6,4 @@ from .goalie import goalie_api
 from .teams import teams_api
 from .skaters import skaters_api
 from .goalies import goalies_api
+from .ratings import ratings_api

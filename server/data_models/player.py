@@ -146,6 +146,28 @@ class Player(EntityModel):
         return cls._get_one_from_db(db_conn, query, (player_id,))
 
     @classmethod
+    def get_players(cls, db_conn, player_ids, season_id, current, names_only, lang):
+        named_tuple_cls = PlayerName if names_only else PlayerShortInfo
+        if names_only or current:
+            col_list = ('p.id, {}' if names_only else
+                        'p.id, {}, p.primary_pos, p.current_team_id').format(_get_name_col(lang))
+            query = 'SELECT {} FROM players p '.format(col_list)
+            if lang is not None:
+                query += cls._translate_join
+            query += 'WHERE p.id IN ({})'.format(','.join(['%s'] * len(player_ids)))
+            query_params = player_ids
+        else:
+            query = ('SELECT p.id, {}, p.primary_pos, pts.team_id FROM players p '
+                     'JOIN player_team_season pts ON p.id = pts.player_id ').format(_get_name_col(lang))
+            if lang is not None:
+                query += cls._translate_join
+            query += 'WHERE pts.season_id = %s AND p.id IN ({})'.format(','.join(['%s'] * len(player_ids)))
+            query_params = [season_id] + player_ids
+        if lang is not None:
+            query += cls._translate_where
+        return cls._get_columns_from_db(db_conn, query, query_params, named_tuple_cls=named_tuple_cls)
+
+    @classmethod
     def get_skaters_for_season(cls, db_conn, season_id, regular, current, names_only, lang=None):
         return cls._get_players_for_season(db_conn, season_id, regular, current, names_only, 'skater_sum_stats', lang)
 

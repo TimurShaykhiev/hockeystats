@@ -153,3 +153,9 @@ Accept: */*
 Cache-Control: no-cache
 
 ###
+
+GET http://localhost:5000/api/ratings/scorer-duos?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###

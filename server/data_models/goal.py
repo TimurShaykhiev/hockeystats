@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from logger import get_loader_logger
 from data_models.event_model import EventModel
 from data_models.team import Team
@@ -13,6 +15,8 @@ GAME_STRENGTH = {
   'PPG': 'ppg',
   'SHG': 'shg'
 }
+
+ScorerDuo = namedtuple('ScorerDuo', ['goals', 'pid1', 'pid2'])
 
 
 class Goal(EventModel):
@@ -134,3 +138,11 @@ class Goal(EventModel):
             self.period_time,
             convert_if_none(self.coord_x),
             convert_if_none(self.coord_y))
+
+    @classmethod
+    def get_scorer_duos(cls, db_conn, start, end, limit):
+        query = ('SELECT COUNT(*), tbl.pl1, tbl.pl2 '
+                 'FROM (SELECT LEAST(g.scorer_id, g.assist1_id) AS pl1, GREATEST(g.scorer_id, g.assist1_id) AS pl2 '
+                 'FROM goals g WHERE g.date >= %s AND g.date < %s AND g.assist1_id IS NOT NULL) AS tbl '
+                 'GROUP BY tbl.pl1, tbl.pl2 ORDER BY COUNT(*) DESC LIMIT %s')
+        return cls._get_columns_from_db(db_conn, query, (start, end, limit), named_tuple_cls=ScorerDuo)

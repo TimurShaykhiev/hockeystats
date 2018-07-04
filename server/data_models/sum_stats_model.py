@@ -15,12 +15,11 @@ class SumStatsModel(Model):
         return cls._get_columns_from_db(db_conn, q.query, (season_id, regular))
 
     @classmethod
-    def get_group_stat_tuples(cls, db_conn, id_array, season_id, regular):
-        q = cls._create_query().select()
+    def get_group_stat_tuples(cls, db_conn, id_array, season_id, regular, columns=None):
+        q = cls._create_query().select(columns)
         q.where('{} IN ({}) AND season_id = %s AND is_regular = %s'.format(cls._object_id_field,
                                                                            ','.join(['%s'] * len(id_array))))
-        id_array.extend((season_id, regular))  # just to avoid list copy
-        return cls._get_columns_from_db(db_conn, q.query, id_array)
+        return cls._get_columns_from_db(db_conn, q.query, id_array + [season_id, regular])
 
     @classmethod
     def get_all_seasons_stat_tuples(cls, db_conn, obj_id, regular_only=False):
