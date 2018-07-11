@@ -25,6 +25,7 @@ class Season:
         self.start = None
         self.po_start = None
         self.end = None
+        self.status = None
 
     @classmethod
     def create(cls):
@@ -64,11 +65,15 @@ class Season:
         self.start = dm.start
         self.po_start = dm.po_start
         self.end = dm.end
+        self.status = dm.status
 
     def get_dates(self):
         start = self.start if self.regular else self.po_start
         end = self.po_start if self.regular else self.end
         return start, end
+
+    def is_finished(self):
+        return self.status == SeasonDm.STATUS_FINISHED or (self.regular and self.status == SeasonDm.STATUS_PLAY_OFF)
 
 
 class SeasonSchema(ModelSchema):

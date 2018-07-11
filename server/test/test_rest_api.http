@@ -11,6 +11,12 @@ Cache-Control: no-cache
 
 ###
 
+GET http://localhost:5000/api/season/stats?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
 GET http://localhost:5000/api/stats/skaters?sid=4&stype=reg
 Accept: */*
 Cache-Control: no-cache

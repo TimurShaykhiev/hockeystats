@@ -1,7 +1,10 @@
+from collections import namedtuple
+
 import numpy as np
 
 from .skater_stats import get_skater_home_away_stats
-from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, find_rate
+from . import FP_ARRAY_DATA_TYPE, SkaterSeasonTopResult, fraction, percentage, stats_to_array, find_index, find_rate,\
+    get_indexes_max_results, get_indexes_min_results
 
 '''
 Numpy arrays contain stats for all skaters only. These are the stats calculated in _calc_skaters_stats and the ones
@@ -40,8 +43,9 @@ COL_SH_POINTS = 25
 SKATER_STATS_INT_ARRAY_LEN = 26
 
 COL_TURNOVER = 26
+COL_PIM_FILTERED = 27
 
-SKATER_STATS_EXT_INT_ARRAY_LEN = 27
+SKATER_STATS_EXT_INT_ARRAY_LEN = 28
 
 # Floating-point values
 COL_POINTS_PER_GAME = 0
@@ -51,6 +55,15 @@ COL_FACE_OFF_WIN_PERCENTAGE = 3
 
 SKATER_STATS_FP_ARRAY_LEN = 4
 
+COL_HITS_PER_GAME = 4
+COL_BLOCKS_PER_GAME = 5
+COL_TAKEAWAYS_PER_GAME = 6
+COL_GIVEAWAYS_PER_GAME = 7
+COL_PP_TOI_PER_GAME = 8
+COL_SH_TOI_PER_GAME = 9
+
+SEASON_STATS_FP_ARRAY_LEN = 10
+
 INT_ARRAY_RESULT_COLUMNS = [COL_PLAYER_ID, COL_SEASON_ID, COL_IS_REGULAR, COL_ASSISTS, COL_GOALS, COL_SHOTS,
                             COL_PP_GOALS, COL_PENALTY_MINUTES, COL_SH_GOALS, COL_PLUS_MINUS, COL_GAMES, COL_POINTS,
                             COL_PP_POINTS, COL_SH_POINTS, COL_FACE_OFF_TAKEN]
@@ -58,6 +71,8 @@ INT_ARRAY_RESULT_COLUMNS = [COL_PLAYER_ID, COL_SEASON_ID, COL_IS_REGULAR, COL_AS
 EXT_INT_ARRAY_RESULT_COLUMNS = [COL_ASSISTS, COL_GOALS, COL_SHOTS, COL_HITS, COL_PENALTY_MINUTES, COL_TAKEAWAYS,
                                 COL_GIVEAWAYS, COL_BLOCKED, COL_PLUS_MINUS, COL_POINTS, COL_PP_POINTS, COL_SH_POINTS,
                                 COL_TURNOVER]
+
+FP_ARRAY_RESULT_COLUMNS = [COL_POINTS_PER_GAME, COL_TOI_PER_GAME, COL_SHOOTING_PERCENTAGE, COL_FACE_OFF_WIN_PERCENTAGE]
 
 
 def get_skaters_stats(skater_stats):
@@ -68,7 +83,8 @@ def get_skaters_stats(skater_stats):
 
     results = []
     for i in range(0, len(skater_stats)):
-        results.append(stat_arr_int[i, INT_ARRAY_RESULT_COLUMNS].tolist() + stat_arr_fp[i, :].tolist())
+        results.append(stat_arr_int[i, INT_ARRAY_RESULT_COLUMNS].tolist() +
+                       stat_arr_fp[i, FP_ARRAY_RESULT_COLUMNS].tolist())
     return results
 
 
@@ -83,9 +99,51 @@ def get_skater_ext_stats(player_id, skater_sum_stats, team_player_list, home_sta
     team_ratings = _calc_team_ratings(stat_arr_int, player_id, team_player_list)
 
     results = stat_arr_int[skater_row_idx, EXT_INT_ARRAY_RESULT_COLUMNS].tolist() +\
-        stat_arr_fp[skater_row_idx, :].tolist() +\
+        stat_arr_fp[skater_row_idx, FP_ARRAY_RESULT_COLUMNS].tolist() +\
         ext_stats + ratings + team_ratings
     return results
+
+
+def get_skaters_season_top_results(fwd_stats, def_stats):
+    fwd_arr_int = stats_to_array(fwd_stats, SKATER_STATS_EXT_INT_ARRAY_LEN)
+    fwd_arr_fp = np.zeros([len(fwd_stats), SEASON_STATS_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
+    def_arr_int = stats_to_array(def_stats, SKATER_STATS_EXT_INT_ARRAY_LEN)
+    def_arr_fp = np.zeros([len(def_stats), SEASON_STATS_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
+    _calc_season_stats(fwd_arr_int, fwd_arr_fp, False)
+    _calc_season_stats(def_arr_int, def_arr_fp, True)
+
+    result = \
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_GOALS, _get_res_types('goals')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_ASSISTS, _get_res_types('assists')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_POINTS, _get_res_types('points')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_PP_GOALS, _get_res_types('ppGoals')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_PP_POINTS, _get_res_types('ppPoints')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_PLUS_MINUS, _get_res_types('plusMinus')) +\
+        _get_min_results_for_int_column(fwd_arr_int, def_arr_int, COL_PLUS_MINUS, _get_res_types('plusMinusMin')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_TURNOVER, _get_res_types('turnover')) +\
+        _get_min_results_for_int_column(fwd_arr_int, def_arr_int, COL_TURNOVER, _get_res_types('turnoverMin')) +\
+        _get_max_results_for_int_column(fwd_arr_int, def_arr_int, COL_PENALTY_MINUTES, _get_res_types('pim')) +\
+        _get_min_results_for_int_column(fwd_arr_int, def_arr_int, COL_PIM_FILTERED, _get_res_types('pimMin')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_TOI_PER_GAME,
+                                       _get_res_types('toiPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_PP_TOI_PER_GAME,
+                                       _get_res_types('ppToiPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_SH_TOI_PER_GAME,
+                                       _get_res_types('shToiPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_HITS_PER_GAME,
+                                       _get_res_types('hitsPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_BLOCKS_PER_GAME,
+                                       _get_res_types('blocksPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_TAKEAWAYS_PER_GAME,
+                                       _get_res_types('taPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_GIVEAWAYS_PER_GAME,
+                                       _get_res_types('gaPerGame'))
+
+    res_idx = get_indexes_max_results(fwd_arr_fp, COL_FACE_OFF_WIN_PERCENTAGE)
+    res = _get_top_results_from_fp(fwd_arr_fp, fwd_arr_int, res_idx, COL_FACE_OFF_WIN_PERCENTAGE, 'fow')
+    result.extend(res)
+
+    return result
 
 
 def _calc_skaters_stats(arr_int, arr_fp):
@@ -98,6 +156,43 @@ def _calc_skaters_stats(arr_int, arr_fp):
     arr_fp[:, COL_SHOOTING_PERCENTAGE] = percentage(arr_int[:, COL_GOALS], arr_int[:, COL_SHOTS])
     arr_fp[:, COL_FACE_OFF_WIN_PERCENTAGE] = \
         percentage(arr_int[:, COL_FACE_OFF_WINS], arr_int[:, COL_FACE_OFF_TAKEN])
+
+
+def _calc_season_stats(arr_int, arr_fp, def_only):
+    _calc_skaters_stats(arr_int, arr_fp)
+    arr_int[:, COL_TURNOVER] = arr_int[:, COL_TAKEAWAYS] - arr_int[:, COL_GIVEAWAYS]
+
+    # We remove stats for players who played few games/made few shots etc.
+    games_threshold = np.max(arr_int[:, COL_GAMES]) // 2
+    hits_arr = np.where(arr_int[:, COL_GAMES] > games_threshold, arr_int[:, COL_HITS], 0)
+    arr_fp[:, COL_HITS_PER_GAME] = fraction(hits_arr, arr_int[:, COL_GAMES])
+
+    blocks_arr = np.where(arr_int[:, COL_GAMES] > games_threshold, arr_int[:, COL_BLOCKED], 0)
+    arr_fp[:, COL_BLOCKS_PER_GAME] = fraction(blocks_arr, arr_int[:, COL_GAMES])
+
+    ta_arr = np.where(arr_int[:, COL_GAMES] > games_threshold, arr_int[:, COL_TAKEAWAYS], 0)
+    arr_fp[:, COL_TAKEAWAYS_PER_GAME] = fraction(ta_arr, arr_int[:, COL_GAMES])
+
+    ga_arr = np.where(arr_int[:, COL_GAMES] > games_threshold, arr_int[:, COL_GIVEAWAYS], 0)
+    arr_fp[:, COL_GIVEAWAYS_PER_GAME] = fraction(ga_arr, arr_int[:, COL_GAMES])
+
+    pp_toi_arr = np.where(arr_int[:, COL_GAMES] > games_threshold, arr_int[:, COL_PP_TOI], 0)
+    arr_fp[:, COL_PP_TOI_PER_GAME] = fraction(pp_toi_arr, arr_int[:, COL_GAMES])
+
+    sh_toi_arr = np.where(arr_int[:, COL_GAMES] > games_threshold, arr_int[:, COL_SH_TOI], 0)
+    arr_fp[:, COL_SH_TOI_PER_GAME] = fraction(sh_toi_arr, arr_int[:, COL_GAMES])
+
+    shots_threshold = np.max(arr_int[:, COL_SHOTS]) // 2
+    goals_arr = np.where(arr_int[:, COL_SHOTS] > shots_threshold, arr_int[:, COL_GOALS], 0)
+    arr_fp[:, COL_SHOOTING_PERCENTAGE] = percentage(goals_arr, arr_int[:, COL_SHOTS])
+
+    toi_threshold = np.max(arr_int[:, COL_TOI]) // 2
+    arr_int[:, COL_PIM_FILTERED] = np.where(arr_int[:, COL_TOI] > toi_threshold, arr_int[:, COL_PENALTY_MINUTES], 1000)
+
+    if not def_only:
+        fo_taken_threshold = np.max(arr_int[:, COL_FACE_OFF_TAKEN]) // 2
+        fo_wins_arr = np.where(arr_int[:, COL_FACE_OFF_TAKEN] > fo_taken_threshold, arr_int[:, COL_FACE_OFF_WINS], 0)
+        arr_fp[:, COL_FACE_OFF_WIN_PERCENTAGE] = percentage(fo_wins_arr, arr_int[:, COL_FACE_OFF_TAKEN])
 
 
 def _calc_skater_ext_stats(arr_int, skater_row_idx, ha_stats):
@@ -165,3 +260,61 @@ def _calc_team_ratings(arr_int, player_id, team_player_list):
 
 def _calc_60_min_stat(row, column):
     return fraction(row[column], row[COL_TOI] / 3600)
+
+
+def _get_res_types(res_type):
+    ResTypes = namedtuple('ResTypes', ['total', 'fwd', 'df'])
+    return ResTypes(res_type, 'fwd{}{}'.format(res_type[0].upper(), res_type[1:]),
+                    'def{}{}'.format(res_type[0].upper(), res_type[1:]))
+
+
+def _get_top_results_from_int(arr, indexes, column, res_type):
+    return [SkaterSeasonTopResult(res_type, s[COL_PLAYER_ID], s[column]) for s in arr[indexes, :]]
+
+
+def _get_top_results_from_fp(arr_fp, arr_int, indexes, column, res_type):
+    return [SkaterSeasonTopResult(res_type, arr_int[i, COL_PLAYER_ID], arr_fp[i, column]) for i in indexes]
+
+
+def _get_total_max_results(fwd_results, def_results, res_type):
+    if fwd_results[0].value > def_results[0].value:
+        total_max = fwd_results
+    elif fwd_results[0].value < def_results[0].value:
+        total_max = def_results
+    else:
+        total_max = fwd_results + def_results
+    return [SkaterSeasonTopResult(res_type, res.pid, res.value) for res in total_max]
+
+
+def _get_total_min_results(fwd_results, def_results, res_type):
+    if fwd_results[0].value < def_results[0].value:
+        total_min = fwd_results
+    elif fwd_results[0].value > def_results[0].value:
+        total_min = def_results
+    else:
+        total_min = fwd_results + def_results
+    return [SkaterSeasonTopResult(res_type, res.pid, res.value) for res in total_min]
+
+
+def _get_max_results_for_int_column(fwd_arr, def_arr, column, res_types):
+    fwd_results_idx = get_indexes_max_results(fwd_arr, column)
+    fwd_results = _get_top_results_from_int(fwd_arr, fwd_results_idx, column, res_types.fwd)
+    def_results_idx = get_indexes_max_results(def_arr, column)
+    def_results = _get_top_results_from_int(def_arr, def_results_idx, column, res_types.df)
+    return fwd_results + def_results + _get_total_max_results(fwd_results, def_results, res_types.total)
+
+
+def _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, column, res_types):
+    fwd_results_idx = get_indexes_max_results(fwd_arr_fp, column)
+    fwd_results = _get_top_results_from_fp(fwd_arr_fp, fwd_arr_int, fwd_results_idx, column, res_types.fwd)
+    def_results_idx = get_indexes_max_results(def_arr_fp, column)
+    def_results = _get_top_results_from_fp(def_arr_fp, def_arr_int, def_results_idx, column, res_types.df)
+    return fwd_results + def_results + _get_total_max_results(fwd_results, def_results, res_types.total)
+
+
+def _get_min_results_for_int_column(fwd_arr, def_arr, column, res_types):
+    fwd_results_idx = get_indexes_min_results(fwd_arr, column)
+    fwd_results = _get_top_results_from_int(fwd_arr, fwd_results_idx, column, res_types.fwd)
+    def_results_idx = get_indexes_min_results(def_arr, column)
+    def_results = _get_top_results_from_int(def_arr, def_results_idx, column, res_types.df)
+    return fwd_results + def_results + _get_total_min_results(fwd_results, def_results, res_types.total)

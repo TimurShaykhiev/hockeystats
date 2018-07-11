@@ -1,7 +1,8 @@
 import numpy as np
 
 from .goalie_stats import get_goalie_home_away_stats
-from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, find_rate, find_rate2
+from . import FP_ARRAY_DATA_TYPE, SkaterSeasonTopResult, fraction, percentage, stats_to_array, find_index, find_rate,\
+    find_rate2, get_indexes_max_results, get_indexes_min_results
 
 '''
 Numpy arrays contain stats for all goalies only. These are the stats calculated in _calc_goalies_stats and the ones
@@ -78,6 +79,32 @@ def get_goalie_ext_stats(player_id, goalie_sum_stats, home_stats, away_stats):
     return results
 
 
+def get_goalies_season_top_results(g_stats):
+    arr_int = stats_to_array(g_stats, GOALIE_STATS_INT_ARRAY_LEN)
+
+    # We remove stats for players who played few games etc.
+    games_threshold = np.max(arr_int[:, COL_GAMES]) // 3
+    arr_int_filtered = arr_int[arr_int[:, COL_GAMES] > games_threshold]
+    arr_fp = np.zeros([len(arr_int_filtered), GOALIE_STATS_EXT_FP_ARRAY_LEN], dtype=FP_ARRAY_DATA_TYPE)
+
+    _calc_goalies_stats(arr_int_filtered, arr_fp)
+    arr_fp[:, COL_WIN_PERCENTAGE] = percentage(arr_int_filtered[:, COL_WINS], arr_int_filtered[:, COL_GAMES])
+
+    result = \
+        _get_max_results_for_int_column(arr_int, COL_GAMES, 'glGames') +\
+        _get_max_results_for_int_column(arr_int, COL_WINS, 'glWins') +\
+        _get_max_results_for_int_column(arr_int, COL_SHUTOUT, 'glShutouts') +\
+        _get_max_results_for_int_column(arr_int, COL_TOI, 'glToi') +\
+        _get_min_results_for_fp_column(arr_fp, arr_int_filtered, COL_GOALS_AGAINST_AVERAGE, 'gaa') +\
+        _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_GOALS_AGAINST_AVERAGE, 'gaaMin') +\
+        _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_SAVE_PERCENTAGE, 'sp') +\
+        _get_min_results_for_fp_column(arr_fp, arr_int_filtered, COL_SAVE_PERCENTAGE, 'spMin') +\
+        _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_WIN_PERCENTAGE, 'winPrc') +\
+        _get_min_results_for_fp_column(arr_fp, arr_int_filtered, COL_WIN_PERCENTAGE, 'winPrcMin')
+
+    return result
+
+
 def _calc_goalies_stats(arr_int, arr_fp):
     arr_int[:, COL_POINTS] = arr_int[:, COL_GOALS] + arr_int[:, COL_ASSISTS]
     arr_int[:, COL_LOSSES] = arr_int[:, COL_GAMES] - arr_int[:, COL_WINS]
@@ -121,3 +148,26 @@ def _calc_goalie_ext_stats(arr_int, arr_fp, goalie_row_idx, ha_stats):
 
 def _goals_against_average(arr):
     return fraction(arr[:, COL_GOALS_AGAINST] * 60, np.round(arr[:, COL_TOI] / 60))
+
+
+def _get_top_results_from_int(arr, indexes, column, res_type):
+    return [SkaterSeasonTopResult(res_type, s[COL_PLAYER_ID], s[column]) for s in arr[indexes, :]]
+
+
+def _get_top_results_from_fp(arr_fp, arr_int, indexes, column, res_type):
+    return [SkaterSeasonTopResult(res_type, arr_int[i, COL_PLAYER_ID], arr_fp[i, column]) for i in indexes]
+
+
+def _get_max_results_for_int_column(arr, column, res_type):
+    res_idx = get_indexes_max_results(arr, column)
+    return _get_top_results_from_int(arr, res_idx, column, res_type)
+
+
+def _get_max_results_for_fp_column(arr_fp, arr_int, column, res_type):
+    res_idx = get_indexes_max_results(arr_fp, column)
+    return _get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)
+
+
+def _get_min_results_for_fp_column(arr_fp, arr_int, column, res_type):
+    res_idx = get_indexes_min_results(arr_fp, column)
+    return _get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)

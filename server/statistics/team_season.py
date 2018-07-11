@@ -3,7 +3,8 @@ from collections import namedtuple
 import numpy as np
 
 from .games import get_team_home_away_stats
-from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, get_rate_and_avg
+from . import FP_ARRAY_DATA_TYPE, fraction, percentage, stats_to_array, find_index, get_rate_and_avg,\
+    get_indexes_max_results, get_indexes_min_results
 
 '''
 Numpy arrays contain stats for all teams only. These are the stats calculated in _calc_teams_stats and the ones
@@ -66,6 +67,7 @@ EXT_INT_ARRAY_RESULT_COLUMNS = [COL_GOALS_FOR, COL_GOALS_AGAINST, COL_PP_GOALS, 
 STANDINGS_INT_ARRAY_RESULT_COLUMNS = [COL_TEAM_ID, COL_POINTS, COL_GAMES, COL_RO_WINS, COL_GOALS_DIFF]
 
 StandingsStats = namedtuple('StandingsStats', ['tid', 'points', 'games', 'wins', 'diff', 'cid', 'did'])
+TeamSeasonTopResult = namedtuple('TeamSeasonTopResult', ['type', 'tid', 'value'])
 
 
 def get_teams_stats(team_stats):
@@ -78,6 +80,26 @@ def get_teams_stats(team_stats):
     for i in range(0, len(team_stats)):
         results.append(stat_arr_int[i, INT_ARRAY_RESULT_COLUMNS].tolist() + stat_arr_fp[i, :].tolist())
     return results
+
+
+def get_teams_season_top_results(team_stats):
+    col_ppp = 0
+    col_pkp = 1
+    arr_int = stats_to_array(team_stats, TEAM_STATS_INT_ARRAY_LEN)
+    arr_fp = np.zeros([len(team_stats), 2], dtype=FP_ARRAY_DATA_TYPE)
+    _set_team_points(arr_int)
+
+    arr_fp[:, col_ppp] = percentage(arr_int[:, COL_PP_GOALS], arr_int[:, COL_PP_OPPORTUNITIES])
+    arr_fp[:, col_pkp] = 100 - percentage(arr_int[:, COL_SH_GOALS_AGAINST], arr_int[:, COL_SH_OPPORTUNITIES])
+
+    result = \
+        _get_results_for_int_column(arr_int, COL_POINTS, 'points') +\
+        _get_results_for_int_column(arr_int, COL_GOALS_FOR, 'goals') +\
+        _get_results_for_int_column(arr_int, COL_GOALS_AGAINST, 'goalsAgainst') +\
+        _get_results_for_fp_column(arr_fp, arr_int, col_ppp, 'ppp') +\
+        _get_results_for_fp_column(arr_fp, arr_int, col_pkp, 'pkp')
+
+    return result
 
 
 def get_team_ext_stats(team_id, team_stats, games):
@@ -175,3 +197,27 @@ def _set_team_points(arr):
     if arr[0, COL_IS_REGULAR] == 1:
         arr[:, COL_POINTS] = (arr[:, COL_WIN_REGULAR] + arr[:, COL_WIN_OVERTIME] + arr[:, COL_WIN_SHOOTOUT]) * 2 + \
                              arr[:, COL_LOSE_OVERTIME] + arr[:, COL_LOSE_SHOOTOUT]
+
+
+def _get_top_results_from_int(arr, indexes, column, res_type):
+    return [TeamSeasonTopResult(res_type, s[COL_TEAM_ID], s[column]) for s in arr[indexes, :]]
+
+
+def _get_top_results_from_fp(arr_fp, arr_int, indexes, column, res_type):
+    return [TeamSeasonTopResult(res_type, arr_int[i, COL_TEAM_ID], arr_fp[i, column]) for i in indexes]
+
+
+def _get_results_for_int_column(arr, column, res_type):
+    res_idx = get_indexes_max_results(arr, column)
+    max_res = _get_top_results_from_int(arr, res_idx, column, res_type)
+    res_idx = get_indexes_min_results(arr, column)
+    min_res = _get_top_results_from_int(arr, res_idx, column, res_type + 'Min')
+    return max_res + min_res
+
+
+def _get_results_for_fp_column(arr_fp, arr_int, column, res_type):
+    res_idx = get_indexes_max_results(arr_fp, column)
+    max_res = _get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)
+    res_idx = get_indexes_min_results(arr_fp, column)
+    min_res = _get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type + 'Min')
+    return max_res + min_res

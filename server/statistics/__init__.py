@@ -1,4 +1,5 @@
 import time
+from collections import namedtuple
 
 import numpy as np
 
@@ -6,6 +7,9 @@ INT_ARRAY_DATA_TYPE = np.int32
 FP_ARRAY_DATA_TYPE = np.float32
 
 THRESHOLD_PERCENTILE = 40
+
+
+SkaterSeasonTopResult = namedtuple('SkaterSeasonTopResult', ['type', 'pid', 'value'])
 
 
 def fraction(a, b):
@@ -59,3 +63,13 @@ def get_rate_and_avg(arr, column, obj_row_idx, desc_order=True):
 
 def date_to_int(date):
     return int(time.mktime(date.timetuple()))
+
+
+def get_indexes_max_results(arr, column):
+    value = np.max(arr[:, column])
+    return np.argwhere(arr[:, column] == value).flatten()
+
+
+def get_indexes_min_results(arr, column):
+    value = np.min(arr[:, column])
+    return np.argwhere(arr[:, column] == value).flatten()

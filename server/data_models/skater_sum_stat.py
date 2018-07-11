@@ -193,3 +193,15 @@ class SkaterSumStat(SumStatsModel):
             self.pp_toi,
             self.sh_toi,
             self.games)
+
+    @classmethod
+    def get_forwards_season_stats(cls, db_conn, season_id, regular):
+        query = ('SELECT s.* FROM skater_sum_stats s JOIN players p on s.player_id = p.id '
+                 'WHERE s.season_id = %s AND s.is_regular = %s AND p.primary_pos != "defenseman"')
+        return cls._get_columns_from_db(db_conn, query, (season_id, regular))
+
+    @classmethod
+    def get_defensemen_season_stats(cls, db_conn, season_id, regular):
+        query = ('SELECT s.* FROM skater_sum_stats s JOIN players p on s.player_id = p.id '
+                 'WHERE s.season_id = %s AND s.is_regular = %s AND p.primary_pos = "defenseman"')
+        return cls._get_columns_from_db(db_conn, query, (season_id, regular))

@@ -205,3 +205,12 @@ class SeasonStat(SumStatsModel):
                  'WHERE s.status = "finished" OR (s.status = "play_off" AND t.is_regular = 1) '
                  'GROUP BY t.season_id, t.is_regular ORDER BY t.season_id')
         return cls._get_columns_from_db(db, query)
+
+    @classmethod
+    def get_season_sum_stats(cls, db, season_id, regular):
+        query = ('SELECT SUM(games) DIV 2, SUM(goals_for)/SUM(games)*2, SUM(shots)/SUM(games)*2, '
+                 'SUM(penalty_minutes)/SUM(games)*2, SUM(blocked)/SUM(games)*2, SUM(hits)/SUM(games)*2, '
+                 'SUM(pp_goals)/SUM(pp_opportunities)*100, SUM(win_regular)/SUM(games)*100, '
+                 'SUM(win_overtime)/SUM(games)*100, SUM(win_shootout)/SUM(games)*100 FROM team_sum_stats '
+                 'WHERE season_id = %s AND is_regular = %s')
+        return cls._get_columns_from_db(db, query, (season_id, regular))
