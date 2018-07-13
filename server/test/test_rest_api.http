@@ -17,6 +17,12 @@ Cache-Control: no-cache
 
 ###
 
+GET http://localhost:5000/api/season/charts/penalties?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
 GET http://localhost:5000/api/stats/skaters?sid=4&stype=reg
 Accept: */*
 Cache-Control: no-cache
@@ -77,6 +83,12 @@ Cache-Control: no-cache
 
 ###
 
+GET http://localhost:5000/api/team/13/charts/penalties?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
 GET http://localhost:5000/api/skater/8478402/stats?sid=4&stype=reg
 Accept: */*
 Cache-Control: no-cache
@@ -102,6 +114,12 @@ Cache-Control: no-cache
 ###
 
 GET http://localhost:5000/api/skater/8474149/charts/points-progress?sid=5&stype=reg
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/api/skater/8474149/charts/penalties?sid=5&stype=reg
 Accept: */*
 Cache-Control: no-cache
 

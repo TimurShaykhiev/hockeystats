@@ -1,10 +1,14 @@
+from marshmallow import fields
+
 from datetime import timedelta
 from abc import ABC, abstractmethod
 
 from app.database import get_db
+from . import ModelSchema, StatValue
 
 CHART_POINTS_PROGRESS_INTERVAL = timedelta(days=5)
-CHART_ELEMENTS_LIMIT = 50
+BAR_CHART_ELEMENTS_LIMIT = 50
+PIE_CHART_ELEMENTS_LIMIT = 15
 
 
 class ChartData(ABC):
@@ -21,3 +25,13 @@ class ChartData(ABC):
     @abstractmethod
     def _prepare_data(self, db):
         pass
+
+
+class NameValueDataSchema(ModelSchema):
+    name = fields.String()
+    value = StatValue()
+
+
+class TypeValueDataSchema(ModelSchema):
+    type = fields.Integer()
+    value = StatValue()

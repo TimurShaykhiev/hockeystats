@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from app.models.team_info import TeamInfo, TeamAllSeasonStatsCollection, TeamPlayersSeasonStatsCollection, TeamCompare
 from app.models.season import Season, TeamSeasonCollection
-from app.models.team_charts import TeamPointsProgressChart
+from app.models.team_charts import TeamPointsProgressChart, TeamPenaltiesChart
 from .response_utils import response, CACHE_TYPE_CURRENT_SEASON_STATS, CACHE_TYPE_OLD_SEASON_STATS, \
     CACHE_TYPE_SEASONS_DATA
 
@@ -45,4 +45,11 @@ def team_compare(team1_id, team2_id):
 def points_progress_chart(team_id):
     season = Season.create()
     return response(TeamPointsProgressChart(team_id, season).get_data(),
+                    CACHE_TYPE_CURRENT_SEASON_STATS if season.current else CACHE_TYPE_OLD_SEASON_STATS)
+
+
+@team_api.route('/<int:team_id>/charts/penalties')
+def penalties_chart(team_id):
+    season = Season.create()
+    return response(TeamPenaltiesChart(team_id, season).get_data(),
                     CACHE_TYPE_CURRENT_SEASON_STATS if season.current else CACHE_TYPE_OLD_SEASON_STATS)
