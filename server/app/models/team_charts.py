@@ -46,5 +46,6 @@ class TeamPenaltiesChart(_TeamChart):
         self.chart_data = []
 
     def _prepare_data(self, db):
-        self.chart_data = Penalty.get_team_penalty_types_percentage(db, self.team_id, self.season.start,
-                                                                    self.season.end, PIE_CHART_ELEMENTS_LIMIT)
+        start, end = self.season.get_dates()
+        self.chart_data = Penalty.get_team_penalty_types_percentage(db, self.team_id, start, end,
+                                                                    PIE_CHART_ELEMENTS_LIMIT)
