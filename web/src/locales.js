@@ -196,7 +196,8 @@ let locales = {
         goalsAgainst: 'Goals Against',
         goalsDiff: 'Goals Difference',
         pointsProgress: 'Points Progress',
-        faceoffWin: 'Faceoff Win Percentage'
+        faceoffWin: 'Faceoff Win Percentage',
+        penaltyDrewBy: 'Penalty Drew By'
       },
       itemSelectorPlaceholder: {
         team: 'Select a team',
@@ -411,7 +412,8 @@ let locales = {
         goalsAgainst: 'Пропущенные шайбы',
         goalsDiff: 'Разница шайб',
         pointsProgress: 'Набор очков',
-        faceoffWin: 'Процент выигранных вбрасываний'
+        faceoffWin: 'Процент выигранных вбрасываний',
+        penaltyDrewBy: 'Заработанные удаления'
       },
       itemSelectorPlaceholder: {
         team: 'Выбери команду',

@@ -87,5 +87,13 @@ export default {
       query: reqParams.getQueryParams()
     };
     return makeRequest(reqData);
+  },
+
+  getSkatersPenaltyDrewBy(reqParams) {
+    let reqData = {
+      path: ['skaters', 'charts', 'penalty-drew-by'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
   }
 };

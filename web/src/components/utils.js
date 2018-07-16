@@ -88,6 +88,11 @@ export default {
     return result;
   },
 
+  nameValueToChartData(nvMap) {
+    // Convert name/value to chart data set.
+    return nvMap.map((el) => ({x: el.name, y: el.value}));
+  },
+
   seasonStatsToChartData(stats, axises, legendKey, fieldMap) {
     // Convert season stats to chart data set.
     let data;

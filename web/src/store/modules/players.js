@@ -38,7 +38,8 @@ const state = {
   goalieStatsLimits: {},
   skatersComparison: {},
   goaliesComparison: {},
-  skaterPointsProgress: {}
+  skaterPointsProgress: {},
+  skatersPenaltyDrewBy: {}
 };
 
 function isCorrectPlayer(playerId, stats) {
@@ -135,6 +136,16 @@ const getters = {
     return (chartName, season, playerId) => {
       let stats = state[chartName];
       if (StoreUtils.isCorrectSeason(season, stats) && stats.pid === playerId) {
+        return stats;
+      }
+      return null;
+    };
+  },
+
+  getPlayersSeasonChartData(state) {
+    return (chartName, season) => {
+      let stats = state[chartName];
+      if (StoreUtils.isCorrectSeason(season, stats)) {
         return stats;
       }
       return null;
@@ -272,6 +283,11 @@ const actions = {
   getSkaterPointsProgress({commit, state}, {playerId, reqParams}) {
     return getPlayerDataByIdAndSeason('getSkaterPointsProgress', 'setSkaterPointsProgress', 'skaterPointsProgress',
       commit, state, playerId, reqParams);
+  },
+
+  getSkatersPenaltyDrewBy({commit, state}, {reqParams}) {
+    return getPlayersDataBySeason('getSkatersPenaltyDrewBy', 'setSkatersPenaltyDrewBy', 'skatersPenaltyDrewBy',
+      commit, state, reqParams);
   }
 };
 
@@ -536,6 +552,16 @@ const mutations = {
       season: season,
       pid: stats.pid,
       data: StoreUtils.prepareLineChartData(stats.data, season.start, stats.interval)
+    };
+  },
+
+  setSkatersPenaltyDrewBy(state, stats) {
+    logger.debug('mutation: setSkatersPenaltyDrewBy');
+    let season = StoreUtils.convertSeason(stats.season);
+    state.skatersPenaltyDrewBy = {
+      timestamp: stats.timestamp,
+      season: season,
+      data: stats.data
     };
   }
 };
