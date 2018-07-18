@@ -89,6 +89,14 @@ export default {
     return makeRequest(reqData);
   },
 
+  getSkaterPenalties(playerId, reqParams) {
+    let reqData = {
+      path: ['skater', playerId, 'charts', 'penalties'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
   getSkatersPenaltyDrewBy(reqParams) {
     let reqData = {
       path: ['skaters', 'charts', 'penalty-drew-by'],

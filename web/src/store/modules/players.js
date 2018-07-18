@@ -39,6 +39,7 @@ const state = {
   skatersComparison: {},
   goaliesComparison: {},
   skaterPointsProgress: {},
+  skaterPenalties: {},
   skatersPenaltyDrewBy: {}
 };
 
@@ -282,6 +283,11 @@ const actions = {
 
   getSkaterPointsProgress({commit, state}, {playerId, reqParams}) {
     return getPlayerDataByIdAndSeason('getSkaterPointsProgress', 'setSkaterPointsProgress', 'skaterPointsProgress',
+      commit, state, playerId, reqParams);
+  },
+
+  getSkaterPenalties({commit, state}, {playerId, reqParams}) {
+    return getPlayerDataByIdAndSeason('getSkaterPenalties', 'setSkaterPenalties', 'skaterPenalties',
       commit, state, playerId, reqParams);
   },
 
@@ -552,6 +558,17 @@ const mutations = {
       season: season,
       pid: stats.pid,
       data: StoreUtils.prepareLineChartData(stats.data, season.start, stats.interval)
+    };
+  },
+
+  setSkaterPenalties(state, stats) {
+    logger.debug('mutation: setSkaterPenalties');
+    let season = StoreUtils.convertSeason(stats.season);
+    state.skaterPenalties = {
+      timestamp: stats.timestamp,
+      season: season,
+      pid: stats.pid,
+      data: stats.data
     };
   },
 

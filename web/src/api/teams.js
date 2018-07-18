@@ -57,6 +57,14 @@ export default {
     return makeRequest(reqData);
   },
 
+  getTeamPenalties(teamId, reqParams) {
+    let reqData = {
+      path: ['team', teamId, 'charts', 'penalties'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
   getTeamsStandings(reqParams) {
     let reqData = {
       path: ['teams', 'standings'],

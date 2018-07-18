@@ -179,5 +179,11 @@ export default {
       return '';
     }
     return short ? team.abbr : team.name;
+  },
+
+  getPenaltiesPieChartData(chartData) {
+    let legend = chartData.map((d) => ({key: d.type, name: i18n.t(`penaltyTypes[${d.type - 1}]`)}));
+    let data = chartData.map((d) => ({key: d.type, name: i18n.t(`penaltyTypes[${d.type - 1}]`), value: d.value}));
+    return {legend: legend, chartData: data};
   }
 };

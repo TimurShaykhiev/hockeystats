@@ -39,7 +39,8 @@ const state = {
   divisions: {},
   teamStatRanges: teamStatRanges,
   teamsComparison: {},
-  teamPointsProgress: {}
+  teamPointsProgress: {},
+  teamPenalties: {}
 };
 
 function isCorrectTeam(teamId, stats) {
@@ -268,6 +269,11 @@ const actions = {
 
   getTeamPointsProgress({commit, state}, {teamId, reqParams}) {
     return getTeamDataByIdAndSeason('getTeamPointsProgress', 'setTeamPointsProgress', 'teamPointsProgress',
+      commit, state, teamId, reqParams);
+  },
+
+  getTeamPenalties({commit, state}, {teamId, reqParams}) {
+    return getTeamDataByIdAndSeason('getTeamPenalties', 'setTeamPenalties', 'teamPenalties',
       commit, state, teamId, reqParams);
   }
 };
@@ -562,6 +568,17 @@ const mutations = {
       season: season,
       tid: stats.tid,
       data: StoreUtils.prepareLineChartData(stats.data, season.start, stats.interval)
+    };
+  },
+
+  setTeamPenalties(state, stats) {
+    logger.debug('mutation: setTeamPenalties');
+    let season = StoreUtils.convertSeason(stats.season);
+    state.teamPenalties = {
+      timestamp: stats.timestamp,
+      season: season,
+      tid: stats.tid,
+      data: stats.data
     };
   }
 };

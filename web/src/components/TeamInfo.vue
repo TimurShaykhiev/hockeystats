@@ -21,6 +21,7 @@
         <stacked-bar-chart v-else-if="chartData.stackedBarChart" v-bind="chartData.chartData"/>
         <radar-chart v-else-if="chartData.radarChart" v-bind="chartData.chartData"/>
         <line-chart v-else-if="chartData.lineChart" v-bind="chartData.chartData"/>
+        <pie-chart v-else-if="chartData.pieChart" v-bind="chartData.chartData"/>
       </tab>
       <tab :name="$t('tabNames.table')">
         <teams-stats-table type="team"/>
@@ -58,6 +59,7 @@ const CHART_LOSSES = 5;
 const CHART_PPP = 6;
 const CHART_PKP = 7;
 const CHART_POINTS_PROGRESS = 8;
+const CHART_PENALTIES = 9;
 // Team player charts
 const CHART_GOALS_ASSISTS = 100;
 const CHART_PLAYER_POINTS = 101;
@@ -115,6 +117,7 @@ export default {
         {name: this.$t('charts.teamSkills'), value: CHART_SKILLS, disabled: false},
         {name: this.$t('charts.homeAway'), value: CHART_HOME_AWAY, disabled: false},
         {name: this.$t('charts.pointsProgress'), value: CHART_POINTS_PROGRESS, disabled: false},
+        {name: this.$t('charts.penalties'), value: CHART_PENALTIES, disabled: false},
         {name: this.$t('teamInfo.chartPickerPlayers'), value: 0, disabled: true},
         {name: this.$t('charts.goalsAssists'), value: CHART_GOALS_ASSISTS, disabled: false},
         {name: this.$t('charts.points'), value: CHART_PLAYER_POINTS, disabled: false},
@@ -376,6 +379,19 @@ export default {
           chartData: {
             yCaption: this.$t('charts.points'),
             dataSet: {names: [chartData.tid], data: [chartData.data]}
+          }
+        };
+      } else if (this.selectedChart === CHART_PENALTIES) {
+        let chartData = this.getChartData('teamPenalties', 'getTeamPenalties');
+        if (chartData === null) {
+          return {};
+        }
+        let data = CompUtils.getPenaltiesPieChartData(chartData.data);
+        return {
+          pieChart: true,
+          chartData: {
+            dataSet: data.chartData,
+            legend: data.legend
           }
         };
       } else if (this.selectedChart < CHART_POINTS) {

@@ -17,6 +17,7 @@
         <stacked-bar-chart v-else-if="chartData.stackedBarChart" v-bind="chartData.chartData"/>
         <radar-chart v-else-if="chartData.radarChart" v-bind="chartData.chartData"/>
         <line-chart v-else-if="chartData.lineChart" v-bind="chartData.chartData"/>
+        <pie-chart v-else-if="chartData.pieChart" v-bind="chartData.chartData"/>
       </tab>
       <tab :name="$t('tabNames.table')">
         <skaters-stats-table type="player"/>
@@ -52,6 +53,7 @@ const CHART_PLUS_MINUS = 7;
 const CHART_POINTS_PER_GAME = 8;
 const CHART_HOME_AWAY = 9;
 const CHART_POINTS_PROGRESS = 10;
+const CHART_PENALTIES = 11;
 
 export default {
   name: 'skater-info',
@@ -97,7 +99,8 @@ export default {
         {name: this.$t('charts.homeAway'), value: CHART_HOME_AWAY},
         {name: this.$t('charts.plusMinus'), value: CHART_PLUS_MINUS},
         {name: this.$t('charts.pointsPerGame'), value: CHART_POINTS_PER_GAME},
-        {name: this.$t('charts.pointsProgress'), value: CHART_POINTS_PROGRESS}
+        {name: this.$t('charts.pointsProgress'), value: CHART_POINTS_PROGRESS},
+        {name: this.$t('charts.penalties'), value: CHART_PENALTIES}
       ]
     };
   },
@@ -364,6 +367,19 @@ export default {
           chartData: {
             yCaption: this.$t('charts.points'),
             dataSet: {names: [chartData.pid], data: [chartData.data]}
+          }
+        };
+      } else if (this.selectedChart === CHART_PENALTIES) {
+        let chartData = this.getChartData('skaterPenalties', 'getSkaterPenalties');
+        if (chartData === null) {
+          return {};
+        }
+        let data = CompUtils.getPenaltiesPieChartData(chartData.data);
+        return {
+          pieChart: true,
+          chartData: {
+            dataSet: data.chartData,
+            legend: data.legend
           }
         };
       } else if (this.selectedChart === CHART_SKILLS || this.selectedChart === CHART_HOME_AWAY) {

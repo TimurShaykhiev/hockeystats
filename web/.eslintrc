@@ -13,7 +13,7 @@
     "quotes": ["warn", "single"],
     "no-unused-vars": ["warn"],
     "semi": ["warn"],
-    "no-invalid-this": ["warn"],
+    "no-invalid-this": ["off"],
     "spaced-comment": ["warn"]
   },
   "extends": ["google"],

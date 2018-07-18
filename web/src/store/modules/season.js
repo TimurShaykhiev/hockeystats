@@ -8,7 +8,8 @@ const settings = new UserSettings();
 const state = {
   currentSeason: {},
   allSeasons: {},
-  selectedSeason: {}
+  selectedSeason: {},
+  seasonPenalties: {}
 };
 
 const getters = {
@@ -18,8 +19,28 @@ const getters = {
       season = settings.selectedSeason;
     }
     return season;
+  },
+
+  getSeasonChartData(state) {
+    return (chartName, season) => {
+      let stats = state[chartName];
+      if (StoreUtils.isCorrectSeason(season, stats)) {
+        return stats;
+      }
+      return null;
+    };
   }
 };
+
+function getDataBySeason(actName, mutName, stateName, commit, state, reqParams) {
+  logger.debug(`action: ${actName}`);
+  if (reqParams.isSeasonEqual(state[stateName].season)) {
+    logger.debug(`action: ${actName} data is in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  let requestPromise = seasonApi[actName](reqParams);
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
+}
 
 const actions = {
   getCurrentSeason({commit, state}) {
@@ -40,6 +61,7 @@ const actions = {
         }
       );
   },
+
   getAllSeasons({commit, state}) {
     logger.debug('action: getAllSeasons');
     if (state.allSeasons.timestamp) {
@@ -57,6 +79,10 @@ const actions = {
           logger.error(`action: getAllSeasons error: ${error.message}`);
         }
       );
+  },
+
+  getSeasonPenalties({commit, state}, {reqParams}) {
+    return getDataBySeason('getSeasonPenalties', 'setSeasonPenalties', 'seasonPenalties', commit, state, reqParams);
   }
 };
 
@@ -65,15 +91,27 @@ const mutations = {
     logger.debug('mutation: setCurrentSeason');
     state.currentSeason = StoreUtils.convertSeason(season);
   },
+
   setAllSeasons(state, seasons) {
     logger.debug('mutation: setAllSeasons');
     state.allSeasons = seasons;
     state.allSeasons.seasons = state.allSeasons.seasons.map((s) => StoreUtils.convertSeason(s));
   },
+
   setSelectedSeason(state, season) {
     logger.debug('mutation: setSelectedSeason');
     state.selectedSeason = season;
     settings.selectedSeason = season;
+  },
+
+  setSeasonPenalties(state, stats) {
+    logger.debug('mutation: setSeasonPenalties');
+    let season = StoreUtils.convertSeason(stats.season);
+    state.seasonPenalties = {
+      timestamp: stats.timestamp,
+      season: season,
+      data: stats.data
+    };
   }
 };
 

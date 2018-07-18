@@ -22,6 +22,7 @@ import BarChart from 'Components/BarChart';
 import StackedBarChart from 'Components/StackedBarChart';
 import RadarChart from 'Components/RadarChart';
 import LineChart from 'Components/LineChart';
+import PieChart from 'Components/PieChart';
 
 // 3rd party CSS modules
 require('../node_modules/normalize.css/normalize.css');
@@ -50,6 +51,7 @@ Vue.component('bar-chart', BarChart);
 Vue.component('stacked-bar-chart', StackedBarChart);
 Vue.component('radar-chart', RadarChart);
 Vue.component('line-chart', LineChart);
+Vue.component('pie-chart', PieChart);
 
 Vue.use(VueYandexMetrika, {
   id: 49021346,
