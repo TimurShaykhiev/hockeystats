@@ -12,6 +12,8 @@ import Compare from 'Components/Compare';
 import TeamsCompare from 'Components/TeamsCompare';
 import SkatersCompare from 'Components/SkatersCompare';
 import GoaliesCompare from 'Components/GoaliesCompare';
+import Ratings from 'Components/Ratings';
+import Seasons from 'Components/Seasons';
 
 Vue.use(VueRouter);
 
@@ -84,6 +86,20 @@ const routes = [{
     component: Compare,
     meta: {
       title: i18n.t('pageTitle.compare')
+    }
+  }, {
+    path: '/seasons',
+    name: 'seasons',
+    component: Seasons,
+    meta: {
+      title: i18n.t('pageTitle.seasons')
+    }
+  }, {
+    path: '/ratings',
+    name: 'ratings',
+    component: Ratings,
+    meta: {
+      title: i18n.t('pageTitle.ratings')
     }
   }, {
     path: '/',

@@ -198,6 +198,9 @@ function getTeamDataById(actName, mutName, stateName, commit, state, teamId) {
 const actions = {
   getAllTeams({commit, state}, {reqParams}) {
     logger.debug('action: getAllTeams');
+    // Always request all teams for regular season to avoid additional requests. Play-off team list is a subset
+    // of regular one.
+    reqParams.setRegular(true);
     if (reqParams.isSeasonEqual(state.allTeams.season)) {
       logger.debug('action: getAllTeams data is in storage');
       return Promise.resolve(state.allTeams);

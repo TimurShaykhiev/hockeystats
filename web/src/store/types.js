@@ -21,6 +21,9 @@ export class SeasonRequestParams {
     }
     return this.seasonId === season.seasonId && this.seasonType === season.seasonType;
   }
+  setRegular(regular) {
+    this.seasonType = regular ? 'reg' : 'po';
+  }
 }
 
 export class LocaleRequestParams {

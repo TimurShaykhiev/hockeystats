@@ -210,7 +210,9 @@ let locales = {
         teams: 'Teams',
         skaters: 'Skaters',
         goalies: 'Goaltenders',
-        compare: 'Compare'
+        compare: 'Compare',
+        seasons: 'Seasons',
+        ratings: 'Ratings'
       },
       pageTitle: {
         teamInfo: 'Team statistics',
@@ -219,6 +221,8 @@ let locales = {
         teams: 'Teams statistics',
         skaters: 'Skaters statistics',
         goalies: 'Goaltenders statistics',
+        seasons: 'Seasons statistics',
+        ratings: 'Ratings',
         compare: 'Compare',
         teamsCompare: 'Compare teams',
         skatersCompare: 'Compare skaters',
@@ -504,7 +508,9 @@ let locales = {
         teams: 'Команды',
         skaters: 'Игроки',
         goalies: 'Вратари',
-        compare: 'Сравнить'
+        compare: 'Сравнить',
+        seasons: 'Сезоны',
+        ratings: 'Рейтинги'
       },
       pageTitle: {
         teamInfo: 'Статистика команды',
@@ -513,6 +519,8 @@ let locales = {
         teams: 'Статистика команд',
         skaters: 'Статистика игроков',
         goalies: 'Статистика вратарей',
+        seasons: 'Статистика сезонов',
+        ratings: 'Рейтинги',
         compare: 'Сравнение',
         teamsCompare: 'Сравнение команд',
         skatersCompare: 'Сравнение игроков',

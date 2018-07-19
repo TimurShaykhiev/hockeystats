@@ -27,6 +27,12 @@
         <router-link tag="li" :to="{name: 'goalies'}" class="header__goalies-link">
           <a>{{$t("navBar.goalies")}}</a>
         </router-link>
+        <router-link tag="li" :to="{name: 'seasons'}" class="header__seasons-link">
+          <a>{{$t("navBar.seasons")}}</a>
+        </router-link>
+        <router-link tag="li" :to="{name: 'ratings'}" class="header__ratings-link">
+          <a>{{$t("navBar.ratings")}}</a>
+        </router-link>
         <router-link tag="li" :to="{name: 'compare'}" class="header__compare-link">
           <a>{{$t("navBar.compare")}}</a>
         </router-link>
@@ -114,14 +120,14 @@ export default {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      width: 80%;
+      width: 90%;
       li {
         display: inline;
         text-align: center;
         a {
           box-sizing: border-box;
           display: inline-block;
-          width: 19%;
+          width: 12%;
           color: @header-text-color;
           text-align: center;
           padding: .5rem;
@@ -129,23 +135,31 @@ export default {
         }
       }
       .header__home-link:hover ~ hr {
-        margin-left: 5%;
+        margin-left: 2%;
         visibility: visible;
       }
       .header__teams-link:hover ~ hr {
-        margin-left: 24%;
+        margin-left: 14%;
         visibility: visible;
       }
       .header__skaters-link:hover ~ hr {
-        margin-left: 44%;
+        margin-left: 26%;
         visibility: visible;
       }
       .header__goalies-link:hover ~ hr {
-        margin-left: 63%;
+        margin-left: 38%;
+        visibility: visible;
+      }
+      .header__seasons-link:hover ~ hr {
+        margin-left: 52%;
+        visibility: visible;
+      }
+      .header__ratings-link:hover ~ hr {
+        margin-left: 64%;
         visibility: visible;
       }
       .header__compare-link:hover ~ hr {
-        margin-left: 83%;
+        margin-left: 76%;
         visibility: visible;
       }
       hr {
