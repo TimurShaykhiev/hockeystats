@@ -200,12 +200,13 @@ const actions = {
     logger.debug('action: getAllTeams');
     // Always request all teams for regular season to avoid additional requests. Play-off team list is a subset
     // of regular one.
-    reqParams.setRegular(true);
-    if (reqParams.isSeasonEqual(state.allTeams.season)) {
+    let newReqParams = reqParams.clone();
+    newReqParams.setRegular(true);
+    if (newReqParams.isSeasonEqual(state.allTeams.season)) {
       logger.debug('action: getAllTeams data is in storage');
       return Promise.resolve(state.allTeams);
     }
-    return teamsApi.getAllTeams(reqParams)
+    return teamsApi.getAllTeams(newReqParams)
       .then(
         (result) => {
           logger.debug('action: getAllTeams result received');

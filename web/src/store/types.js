@@ -6,6 +6,9 @@ export class SeasonRequestParams {
     // English locale is default, it can be omitted in request.
     this.locale = store.state.userLocale !== 'en' ? store.state.userLocale : null;
   }
+  clone() {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
   getQueryParams() {
     return [
       {name: 'sid', value: this.seasonId, required: true},
