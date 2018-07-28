@@ -43,24 +43,17 @@ class SeasonStatsCollection:
         return schema.dumps(self)
 
 
-class _SeasonSkatersTopResultSchema(ModelSchema):
+class _SeasonTopResultSchema(ModelSchema):
     type = fields.String()
-    pid = fields.Integer()
     value = StatValue()
-
-
-class _SeasonTeamsTopResultSchema(ModelSchema):
-    type = fields.String()
-    tid = fields.Integer()
-    value = StatValue()
+    ids = fields.List(fields.Integer())
 
 
 class _SeasonInfoSchema(ModelSchema):
     season = fields.Nested(SeasonSchema)
     stats = fields.List(StatValue())
     players = fields.Nested(PlayerSchema, many=True)
-    tops = fields.Nested(_SeasonSkatersTopResultSchema, many=True)
-    teamTops = fields.Nested(_SeasonTeamsTopResultSchema, many=True, attribute='team_tops')
+    tops = fields.Nested(_SeasonTopResultSchema, many=True)
 
 
 class SeasonInfo:
@@ -72,7 +65,6 @@ class SeasonInfo:
         self.stats = []
         self.players = []
         self.tops = []
-        self.team_tops = []
 
     def get_data(self):
         db = get_db()
@@ -89,18 +81,19 @@ class SeasonInfo:
         goalie_stats = GoalieSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
         self.tops.extend(get_goalies_season_top_results(goalie_stats))
 
-        team_stats = TeamSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
-        self.team_tops = get_teams_season_top_results(team_stats)
-
         pl_ids = set()
         for res in self.tops:
-            pl_ids.add(res.pid)
+            for pid in res.ids:
+                pl_ids.add(pid)
         pl_ids = list(pl_ids)
         pl_list = PlayerDm.get_players(db, pl_ids, self.season.id, self.season.current, False, locale)
         pl_dict = dict((p.id, p) for p in pl_list)
         for p in pl_ids:
             pl = Player.create(p, season=self.season, players=pl_dict)
             self.players.append(pl)
+
+        team_stats = TeamSumStat.get_stat_tuples(db, self.season.id, self.season.regular)
+        self.tops.extend(get_teams_season_top_results(team_stats))
 
         schema = _SeasonInfoSchema()
         return schema.dumps(self)

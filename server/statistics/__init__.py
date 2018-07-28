@@ -9,7 +9,7 @@ FP_ARRAY_DATA_TYPE = np.float32
 THRESHOLD_PERCENTILE = 40
 
 
-SkaterSeasonTopResult = namedtuple('SkaterSeasonTopResult', ['type', 'pid', 'value'])
+SeasonTopResult = namedtuple('SeasonTopResult', ['type', 'value', 'ids'])
 
 
 def fraction(a, b):

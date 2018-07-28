@@ -3,7 +3,7 @@ from collections import namedtuple
 import numpy as np
 
 from .skater_stats import get_skater_home_away_stats
-from . import FP_ARRAY_DATA_TYPE, SkaterSeasonTopResult, fraction, percentage, stats_to_array, find_index, find_rate,\
+from . import FP_ARRAY_DATA_TYPE, SeasonTopResult, fraction, percentage, stats_to_array, find_index, find_rate,\
     get_indexes_max_results, get_indexes_min_results
 
 '''
@@ -137,10 +137,12 @@ def get_skaters_season_top_results(fwd_stats, def_stats):
         _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_TAKEAWAYS_PER_GAME,
                                        _get_res_types('taPerGame')) +\
         _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_GIVEAWAYS_PER_GAME,
-                                       _get_res_types('gaPerGame'))
+                                       _get_res_types('gaPerGame')) +\
+        _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, COL_SHOOTING_PERCENTAGE,
+                                       _get_res_types('shootingPrc'))
 
     res_idx = get_indexes_max_results(fwd_arr_fp, COL_FACE_OFF_WIN_PERCENTAGE)
-    res = _get_top_results_from_fp(fwd_arr_fp, fwd_arr_int, res_idx, COL_FACE_OFF_WIN_PERCENTAGE, 'fow')
+    res = [_get_top_results_from_fp(fwd_arr_fp, fwd_arr_int, res_idx, COL_FACE_OFF_WIN_PERCENTAGE, 'fow')]
     result.extend(res)
 
     return result
@@ -269,31 +271,29 @@ def _get_res_types(res_type):
 
 
 def _get_top_results_from_int(arr, indexes, column, res_type):
-    return [SkaterSeasonTopResult(res_type, s[COL_PLAYER_ID], s[column]) for s in arr[indexes, :]]
+    value = arr[indexes[0], column]
+    return SeasonTopResult(res_type, value, [s[COL_PLAYER_ID] for s in arr[indexes, :]])
 
 
 def _get_top_results_from_fp(arr_fp, arr_int, indexes, column, res_type):
-    return [SkaterSeasonTopResult(res_type, arr_int[i, COL_PLAYER_ID], arr_fp[i, column]) for i in indexes]
+    value = arr_fp[indexes[0], column]
+    return SeasonTopResult(res_type, value, [arr_int[i, COL_PLAYER_ID] for i in indexes])
 
 
 def _get_total_max_results(fwd_results, def_results, res_type):
-    if fwd_results[0].value > def_results[0].value:
-        total_max = fwd_results
-    elif fwd_results[0].value < def_results[0].value:
-        total_max = def_results
-    else:
-        total_max = fwd_results + def_results
-    return [SkaterSeasonTopResult(res_type, res.pid, res.value) for res in total_max]
+    if fwd_results.value > def_results.value:
+        return SeasonTopResult(res_type, fwd_results.value, fwd_results.ids)
+    elif fwd_results.value < def_results.value:
+        return SeasonTopResult(res_type, def_results.value, def_results.ids)
+    return SeasonTopResult(res_type, fwd_results.value, fwd_results.ids + def_results.ids)
 
 
 def _get_total_min_results(fwd_results, def_results, res_type):
-    if fwd_results[0].value < def_results[0].value:
-        total_min = fwd_results
-    elif fwd_results[0].value > def_results[0].value:
-        total_min = def_results
-    else:
-        total_min = fwd_results + def_results
-    return [SkaterSeasonTopResult(res_type, res.pid, res.value) for res in total_min]
+    if fwd_results.value < def_results.value:
+        return SeasonTopResult(res_type, fwd_results.value, fwd_results.ids)
+    elif fwd_results.value > def_results.value:
+        return SeasonTopResult(res_type, def_results.value, def_results.ids)
+    return SeasonTopResult(res_type, fwd_results.value, fwd_results.ids + def_results.ids)
 
 
 def _get_max_results_for_int_column(fwd_arr, def_arr, column, res_types):
@@ -301,7 +301,7 @@ def _get_max_results_for_int_column(fwd_arr, def_arr, column, res_types):
     fwd_results = _get_top_results_from_int(fwd_arr, fwd_results_idx, column, res_types.fwd)
     def_results_idx = get_indexes_max_results(def_arr, column)
     def_results = _get_top_results_from_int(def_arr, def_results_idx, column, res_types.df)
-    return fwd_results + def_results + _get_total_max_results(fwd_results, def_results, res_types.total)
+    return [fwd_results, def_results, _get_total_max_results(fwd_results, def_results, res_types.total)]
 
 
 def _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, column, res_types):
@@ -309,7 +309,7 @@ def _get_max_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_
     fwd_results = _get_top_results_from_fp(fwd_arr_fp, fwd_arr_int, fwd_results_idx, column, res_types.fwd)
     def_results_idx = get_indexes_max_results(def_arr_fp, column)
     def_results = _get_top_results_from_fp(def_arr_fp, def_arr_int, def_results_idx, column, res_types.df)
-    return fwd_results + def_results + _get_total_max_results(fwd_results, def_results, res_types.total)
+    return [fwd_results, def_results, _get_total_max_results(fwd_results, def_results, res_types.total)]
 
 
 def _get_min_results_for_int_column(fwd_arr, def_arr, column, res_types):
@@ -317,4 +317,12 @@ def _get_min_results_for_int_column(fwd_arr, def_arr, column, res_types):
     fwd_results = _get_top_results_from_int(fwd_arr, fwd_results_idx, column, res_types.fwd)
     def_results_idx = get_indexes_min_results(def_arr, column)
     def_results = _get_top_results_from_int(def_arr, def_results_idx, column, res_types.df)
-    return fwd_results + def_results + _get_total_min_results(fwd_results, def_results, res_types.total)
+    return [fwd_results, def_results, _get_total_min_results(fwd_results, def_results, res_types.total)]
+
+
+def _get_min_results_for_fp_column(fwd_arr_fp, def_arr_fp, fwd_arr_int, def_arr_int, column, res_types):
+    fwd_results_idx = get_indexes_min_results(fwd_arr_fp, column)
+    fwd_results = _get_top_results_from_fp(fwd_arr_fp, fwd_arr_int, fwd_results_idx, column, res_types.fwd)
+    def_results_idx = get_indexes_min_results(def_arr_fp, column)
+    def_results = _get_top_results_from_fp(def_arr_fp, def_arr_int, def_results_idx, column, res_types.df)
+    return [fwd_results, def_results, _get_total_min_results(fwd_results, def_results, res_types.total)]

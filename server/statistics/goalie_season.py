@@ -1,7 +1,7 @@
 import numpy as np
 
 from .goalie_stats import get_goalie_home_away_stats
-from . import FP_ARRAY_DATA_TYPE, SkaterSeasonTopResult, fraction, percentage, stats_to_array, find_index, find_rate,\
+from . import FP_ARRAY_DATA_TYPE, SeasonTopResult, fraction, percentage, stats_to_array, find_index, find_rate,\
     find_rate2, get_indexes_max_results, get_indexes_min_results
 
 '''
@@ -95,8 +95,8 @@ def get_goalies_season_top_results(g_stats):
         _get_max_results_for_int_column(arr_int, COL_WINS, 'glWins') +\
         _get_max_results_for_int_column(arr_int, COL_SHUTOUT, 'glShutouts') +\
         _get_max_results_for_int_column(arr_int, COL_TOI, 'glToi') +\
-        _get_min_results_for_fp_column(arr_fp, arr_int_filtered, COL_GOALS_AGAINST_AVERAGE, 'gaa') +\
-        _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_GOALS_AGAINST_AVERAGE, 'gaaMin') +\
+        _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_GOALS_AGAINST_AVERAGE, 'gaa') +\
+        _get_min_results_for_fp_column(arr_fp, arr_int_filtered, COL_GOALS_AGAINST_AVERAGE, 'gaaMin') +\
         _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_SAVE_PERCENTAGE, 'sp') +\
         _get_min_results_for_fp_column(arr_fp, arr_int_filtered, COL_SAVE_PERCENTAGE, 'spMin') +\
         _get_max_results_for_fp_column(arr_fp, arr_int_filtered, COL_WIN_PERCENTAGE, 'winPrc') +\
@@ -151,23 +151,25 @@ def _goals_against_average(arr):
 
 
 def _get_top_results_from_int(arr, indexes, column, res_type):
-    return [SkaterSeasonTopResult(res_type, s[COL_PLAYER_ID], s[column]) for s in arr[indexes, :]]
+    value = arr[indexes[0], column]
+    return SeasonTopResult(res_type, value, [s[COL_PLAYER_ID] for s in arr[indexes, :]])
 
 
 def _get_top_results_from_fp(arr_fp, arr_int, indexes, column, res_type):
-    return [SkaterSeasonTopResult(res_type, arr_int[i, COL_PLAYER_ID], arr_fp[i, column]) for i in indexes]
+    value = arr_fp[indexes[0], column]
+    return SeasonTopResult(res_type, value, [arr_int[i, COL_PLAYER_ID] for i in indexes])
 
 
 def _get_max_results_for_int_column(arr, column, res_type):
     res_idx = get_indexes_max_results(arr, column)
-    return _get_top_results_from_int(arr, res_idx, column, res_type)
+    return [_get_top_results_from_int(arr, res_idx, column, res_type)]
 
 
 def _get_max_results_for_fp_column(arr_fp, arr_int, column, res_type):
     res_idx = get_indexes_max_results(arr_fp, column)
-    return _get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)
+    return [_get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)]
 
 
 def _get_min_results_for_fp_column(arr_fp, arr_int, column, res_type):
     res_idx = get_indexes_min_results(arr_fp, column)
-    return _get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)
+    return [_get_top_results_from_fp(arr_fp, arr_int, res_idx, column, res_type)]

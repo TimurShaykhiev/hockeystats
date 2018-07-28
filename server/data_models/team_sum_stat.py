@@ -199,8 +199,8 @@ class SeasonStat(SumStatsModel):
         query = ('SELECT t.season_id, t.is_regular, SUM(t.games) DIV 2, SUM(t.goals_for)/SUM(t.games)*2, '
                  'SUM(t.shots)/SUM(t.games)*2, SUM(t.penalty_minutes)/SUM(t.games)*2, SUM(t.blocked)/SUM(t.games)*2, '
                  'SUM(t.hits)/SUM(t.games)*2, SUM(t.pp_goals)/SUM(t.pp_opportunities)*100, '
-                 'SUM(t.win_regular)/SUM(t.games)*100, SUM(t.win_overtime)/SUM(t.games)*100, '
-                 'SUM(t.win_shootout)/SUM(t.games)*100 FROM team_sum_stats t '
+                 'SUM(t.win_regular)/SUM(t.games)*200, SUM(t.win_overtime)/SUM(t.games)*200, '
+                 'SUM(t.win_shootout)/SUM(t.games)*200 FROM team_sum_stats t '
                  'JOIN seasons s ON t.season_id = s.id '
                  'WHERE s.status = "finished" OR (s.status = "play_off" AND t.is_regular = 1) '
                  'GROUP BY t.season_id, t.is_regular ORDER BY t.season_id')
@@ -210,7 +210,7 @@ class SeasonStat(SumStatsModel):
     def get_season_sum_stats(cls, db, season_id, regular):
         query = ('SELECT SUM(games) DIV 2, SUM(goals_for)/SUM(games)*2, SUM(shots)/SUM(games)*2, '
                  'SUM(penalty_minutes)/SUM(games)*2, SUM(blocked)/SUM(games)*2, SUM(hits)/SUM(games)*2, '
-                 'SUM(pp_goals)/SUM(pp_opportunities)*100, SUM(win_regular)/SUM(games)*100, '
-                 'SUM(win_overtime)/SUM(games)*100, SUM(win_shootout)/SUM(games)*100 FROM team_sum_stats '
+                 'SUM(pp_goals)/SUM(pp_opportunities)*100, SUM(win_regular)/SUM(games)*200, '
+                 'SUM(win_overtime)/SUM(games)*200, SUM(win_shootout)/SUM(games)*200 FROM team_sum_stats '
                  'WHERE season_id = %s AND is_regular = %s')
         return cls._get_columns_from_db(db, query, (season_id, regular))
