@@ -13,6 +13,7 @@ const TYPE_ALL = 'all';
 const TYPE_TEAM = 'team';
 const TYPE_SKATER = 'skater';
 const TYPE_GOALIE = 'goalie';
+const TYPE_ALL_FINISHED = 'all-finished';
 
 export default {
   name: 'season-picker',
@@ -38,7 +39,7 @@ export default {
     };
   },
   created() {
-    if (this.type === TYPE_ALL) {
+    if (this.type === TYPE_ALL || this.type === TYPE_ALL_FINISHED) {
       this.$store.dispatch('getAllSeasons').then((result) => {
         this.setSelectedSeason(result.seasons);
       });
@@ -64,6 +65,9 @@ export default {
       }
       let result = [];
       for (let el of seasons) {
+        if (!this.isSeasonValid(el)) {
+          continue;
+        }
         let name;
         let id;
         if (el.regular) {
@@ -80,7 +84,7 @@ export default {
   },
   methods: {
     getSeasons() {
-      if (this.type === TYPE_ALL) {
+      if (this.type === TYPE_ALL || this.type === TYPE_ALL_FINISHED) {
         return this.$store.state.season.allSeasons.seasons;
       } else if (this.type === TYPE_TEAM) {
         return this.$store.state.teams.teamSeasons.seasons;
@@ -90,27 +94,43 @@ export default {
         return this.$store.state.players.goalieSeasons.seasons;
       }
     },
+
     findSelectedSeason() {
       let seasons = this.getSeasons();
       let id = Math.abs(this.selectedSeason);
       let regular = this.selectedSeason > 0;
       return seasons.find((s) => s.id === id && s.regular === regular);
     },
+
     seasonChanged() {
       this.$store.commit('setSelectedSeason', this.findSelectedSeason());
     },
+
     setSelectedSeason(seasons) {
       let selectedSeason = this.$store.state.season.selectedSeason;
       if (selectedSeason.id !== undefined &&
-          seasons.find((el) => el.id === selectedSeason.id) !== undefined) {
+          seasons.find((el) => {
+            return el.id === selectedSeason.id && el.regular === selectedSeason.regular && this.isSeasonValid(el);
+          }) !== undefined) {
         // Set selected season from storage
         this.selectedSeason = selectedSeason.regular ? selectedSeason.id : -selectedSeason.id;
       } else {
         // Not in storage yet or seasons list does not contain selected season.
         // Set first season in list as selected.
-        this.selectedSeason = seasons[0].regular ? seasons[0].id : -seasons[0].id;
+        for (let s of seasons) {
+          if (this.isSeasonValid(s)) {
+            this.selectedSeason = s.regular ? s.id : -s.id;
+            break;
+          }
+        }
         this.seasonChanged();
       }
+    },
+
+    isSeasonValid(season) {
+      let now = Date.now();
+      return !(this.type === TYPE_ALL_FINISHED &&
+        (season.regular && now < season.poStart || !season.regular && now < season.end));
     }
   }
 };

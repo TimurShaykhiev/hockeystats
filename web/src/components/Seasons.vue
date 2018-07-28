@@ -5,7 +5,7 @@
       <checkbox-switch v-model="showAllSeasons" textClasses="seasons__all-seasons-checkbox-text">
         {{$t('allSeasonsCheckbox')}}
       </checkbox-switch>
-      <season-picker type="all"/>
+      <season-picker type="all-finished"/>
     </div>
     <div v-if="showAllSeasons">
       <seasons-stats-table type="regular" class="seasons__season-table"/>
