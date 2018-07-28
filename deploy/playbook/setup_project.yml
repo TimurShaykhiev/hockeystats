@@ -4,7 +4,6 @@
   become_user: "{{ project_user }}"
 
   vars:
-    db_backup_path: "/home/{{ project_user }}/db_backup"
     db_backup_file: hockeystats_db.sql.gz # if compressed, use gzip format
 
   tasks:

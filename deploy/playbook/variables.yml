@@ -2,6 +2,7 @@
 src_path: "/home/{{ project_user }}/sources"
 server_src_path: "/home/{{ project_user }}/sources/server"
 config_path: "/home/{{ project_user }}/config"
+db_backup_path: "/home/{{ project_user }}/db_backup"
 
 gunicorn_runtime_dir: "hockstats_gunicorn"
 gunicorn_config: "/home/{{ project_user }}/gunicorn_config.py"
