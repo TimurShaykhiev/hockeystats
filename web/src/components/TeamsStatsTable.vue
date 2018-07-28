@@ -323,7 +323,7 @@ export default {
   }
   .team-stats-table__cell {
     a {
-      color: black;
+      color: @main-text-color;
       text-decoration: none;
     }
   }

@@ -222,7 +222,7 @@ export default {
     width: 90%;
     padding-left: .5rem;
     a {
-      color: black;
+      color: @main-text-color;
       text-decoration: none;
     }
   }

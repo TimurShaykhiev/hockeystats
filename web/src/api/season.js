@@ -9,6 +9,18 @@ export default {
     return makeRequest({path: ['season', 'all']});
   },
 
+  getSeasonStats() {
+    return makeRequest({path: ['stats', 'seasons']});
+  },
+
+  getSeasonInfo(reqParams) {
+    let reqData = {
+      path: ['season', 'stats'],
+      query: reqParams.getQueryParams()
+    };
+    return makeRequest(reqData);
+  },
+
   getSeasonPenalties(reqParams) {
     let reqData = {
       path: ['season', 'charts', 'penalties'],

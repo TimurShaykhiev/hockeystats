@@ -70,8 +70,6 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
-  @good-stat-color: #008000;
-  @bad-stat-color: #8B0000;
   @bar-width: 2.5rem;
 
   .team-main-stat {

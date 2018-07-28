@@ -265,7 +265,7 @@ export default {
         text-align: left;
         padding-left: .7rem;
         a {
-          color: black;
+          color: @main-text-color;
           text-decoration: none;
         }
       }

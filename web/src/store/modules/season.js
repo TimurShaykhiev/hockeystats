@@ -8,6 +8,8 @@ const settings = new UserSettings();
 const state = {
   currentSeason: {},
   allSeasons: {},
+  seasonStats: {},
+  seasonInfo: {},
   selectedSeason: {},
   seasonPenalties: {}
 };
@@ -19,6 +21,15 @@ const getters = {
       season = settings.selectedSeason;
     }
     return season;
+  },
+
+  getSeasonInfo(state) {
+    return (season) => {
+      if (StoreUtils.isCorrectSeason(season, state.seasonInfo)) {
+        return state.seasonInfo;
+      }
+      return null;
+    };
   },
 
   getSeasonChartData(state) {
@@ -42,49 +53,52 @@ function getDataBySeason(actName, mutName, stateName, commit, state, reqParams) 
   return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
 }
 
+function getDataForAllSeasons(actName, mutName, stateName, commit, state) {
+  logger.debug(`action: ${actName}`);
+  if (state[stateName].timestamp) {
+    logger.debug(`action: ${actName} data is in storage`);
+    return Promise.resolve(state[stateName]);
+  }
+  let requestPromise = seasonApi[actName]();
+  return StoreUtils.processRequest(actName, mutName, stateName, commit, state, requestPromise);
+}
+
 const actions = {
   getCurrentSeason({commit, state}) {
-    logger.debug('action: getCurrentSeason');
-    if (state.currentSeason.timestamp) {
-      logger.debug('action: getCurrentSeason current season is in storage');
-      return Promise.resolve(state.currentSeason);
-    }
-    return seasonApi.getCurrentSeason()
-      .then(
-        (result) => {
-          logger.debug('action: getCurrentSeason result received');
-          StoreUtils.commitNew(commit, 'setCurrentSeason', state.currentSeason, result);
-          return state.currentSeason;
-        },
-        (error) => {
-          logger.error(`action: getCurrentSeason error: ${error.message}`);
-        }
-      );
+    return getDataForAllSeasons('getCurrentSeason', 'setCurrentSeason', 'currentSeason', commit, state);
   },
 
   getAllSeasons({commit, state}) {
-    logger.debug('action: getAllSeasons');
-    if (state.allSeasons.timestamp) {
-      logger.debug('action: getAllSeasons seasons are in storage');
-      return Promise.resolve(state.allSeasons);
-    }
-    return seasonApi.getAllSeasons()
-      .then(
-        (result) => {
-          logger.debug('action: getAllSeasons result received');
-          StoreUtils.commitNew(commit, 'setAllSeasons', state.allSeasons, result);
-          return state.allSeasons;
-        },
-        (error) => {
-          logger.error(`action: getAllSeasons error: ${error.message}`);
-        }
-      );
+    return getDataForAllSeasons('getAllSeasons', 'setAllSeasons', 'allSeasons', commit, state);
+  },
+
+  getSeasonStats({commit, state}) {
+    return getDataForAllSeasons('getSeasonStats', 'setSeasonStats', 'seasonStats', commit, state);
+  },
+
+  getSeasonInfo({commit, state}, {reqParams}) {
+    return getDataBySeason('getSeasonInfo', 'setSeasonInfo', 'seasonInfo', commit, state, reqParams);
   },
 
   getSeasonPenalties({commit, state}, {reqParams}) {
     return getDataBySeason('getSeasonPenalties', 'setSeasonPenalties', 'seasonPenalties', commit, state, reqParams);
   }
 };
+
+function seasonStatsToObject(stats) {
+  return {
+    games: stats[0],
+    goalsPerGame: stats[1],
+    shotsPerGame: stats[2],
+    pimPerGame: stats[3],
+    blocksPerGame: stats[4],
+    hitsPerGame: stats[5],
+    ppPercentage: stats[6],
+    regularWinPercentage: stats[7],
+    overtimeWinPercentage: stats[8],
+    shootoutWinPercentage: stats[9]
+  };
+}
 
 const mutations = {
   setCurrentSeason(state, season) {
@@ -96,6 +110,38 @@ const mutations = {
     logger.debug('mutation: setAllSeasons');
     state.allSeasons = seasons;
     state.allSeasons.seasons = state.allSeasons.seasons.map((s) => StoreUtils.convertSeason(s));
+  },
+
+  setSeasonStats(state, stats) {
+    logger.debug('mutation: setSeasonStats');
+
+    let processSeasonStats = (stats) => ({
+      season: StoreUtils.convertSeason(stats.season),
+      stats: seasonStatsToObject(stats.stats)
+    });
+
+    state.seasonStats = {
+      regular: stats.regular.map((s) => processSeasonStats(s)),
+      playoff: stats.po.map((s) => processSeasonStats(s))
+    };
+  },
+
+  setSeasonInfo(state, stats) {
+    logger.debug('mutation: setSeasonInfo');
+    let info = {
+      timestamp: stats.timestamp,
+      season: StoreUtils.convertSeason(stats.season),
+      stats: seasonStatsToObject(stats.stats),
+      players: {},
+      tops: {}
+    };
+    for (let p of stats.players) {
+      info.players[p.id] = p;
+    }
+    for (let t of stats.tops) {
+      info.tops[t.type] = {value: t.value, ids: t.ids};
+    }
+    state.seasonInfo = info;
   },
 
   setSelectedSeason(state, season) {

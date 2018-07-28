@@ -205,7 +205,7 @@ export default {
       text-overflow: ellipsis;
       a {
         display: block;
-        color: black;
+        color: @main-text-color;
         text-decoration: none;
       }
       .preview-table__team-name {
