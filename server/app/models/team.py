@@ -46,7 +46,7 @@ class Team:
         db = get_db()
         team_dm = TeamDm.from_db(db, self.id)
         if team_dm is None:
-            current_app.logger.error('Team id %s not found.', self.id)
+            current_app.logger.info('Team id %s not found.', self.id)
             raise ApiError(404, 'TEAM_NOT_FOUND')
 
         locale = get_locale()

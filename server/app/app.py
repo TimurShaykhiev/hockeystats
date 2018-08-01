@@ -35,9 +35,11 @@ def _configure_logging(app):
     rfh.setFormatter(formatter)
     app.logger.addHandler(rfh)
 
-    email_handler = create_smtp_handler(app.config, 'WebApp:Error')
-    email_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(email_handler)
+    if not app.config['DEBUG']:
+        email_handler = create_smtp_handler(app.config, 'WebApp:Error')
+        email_handler.setLevel(logging.ERROR)
+        email_handler.setFormatter(formatter)
+        app.logger.addHandler(email_handler)
 
     @app.before_request
     def log_request():

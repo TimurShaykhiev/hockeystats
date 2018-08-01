@@ -7,6 +7,7 @@ DB_PASSWORD = 'hockstats'
 # Logger settings
 LOG_DIR = '/home/timur/hockeystats/log/'
 HOCKEY_STATS_LOG_LEVEL = 'DEBUG'
+FILTER_THROTTLING_INTERVAL = 60
 
 # Email settings
 EMAIL_TO_ADDR = 't.shaykhiev@yandex.ru'

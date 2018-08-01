@@ -59,7 +59,7 @@ class _SeasonInfoSchema(ModelSchema):
 class SeasonInfo:
     def __init__(self, season):
         if not season.is_finished():
-            current_app.logger.error('Season (id: %s, regular: %s) not finished.', season.id, season.regular)
+            current_app.logger.info('Season (id: %s, regular: %s) not finished.', season.id, season.regular)
             raise ApiError(422, 'SEASON_NOT_FINISHED')
         self.season = season
         self.stats = []

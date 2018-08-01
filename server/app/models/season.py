@@ -37,7 +37,7 @@ class Season:
 
         dm = SeasonDm.from_db(db, sid)
         if dm is None:
-            current_app.logger.error('Season id %s not found.', sid)
+            current_app.logger.info('Season id %s not found.', sid)
             raise ApiError(404, 'SEASON_NOT_FOUND')
 
         season = cls()
@@ -50,7 +50,7 @@ class Season:
         db = get_db()
         dm = SeasonDm.get_current(db)
         if dm is None:
-            current_app.logger.error('Current season not found.')
+            current_app.logger.info('Current season not found.')
             raise ApiError(404, 'SEASON_NOT_FOUND')
 
         season = cls()
@@ -166,6 +166,6 @@ class _FilteredSeasonCollectionSchema(ModelSchema):
 def get_all_seasons(db):
     all_seasons = SeasonDm.get_all(db, order_by=['-start'])
     if len(all_seasons) == 0:
-        current_app.logger.error('Seasons are not found.')
+        current_app.logger.info('Seasons are not found.')
         raise ApiError(404, 'SEASON_NOT_FOUND')
     return all_seasons

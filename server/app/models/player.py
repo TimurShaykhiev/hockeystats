@@ -43,7 +43,7 @@ class Player:
         else:
             pl_dm = PlayerDm.get_player_for_season(db, self.id, self._season.id, self._season.current, locale)
         if pl_dm is None:
-            current_app.logger.error('Player id %s not found.', self.id)
+            current_app.logger.info('Player id %s not found.', self.id)
             raise ApiError(404, 'PLAYER_NOT_FOUND')
         self._set_from_data_model(pl_dm)
 
