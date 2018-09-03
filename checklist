@@ -2,5 +2,8 @@
 Manual actions between seasons
 =======================================
 1. Add new season to 'seasons' table.
+INSERT INTO seasons (start, po_start, end, status, current) VALUES ('2018-10-03', '2019-04-07', '2019-06-30', 'not_started', 0);
+
 2. Check for new teams, changes in conferences and divisions.
+
 3. Start 'server/db_utility_scripts/update_player_team_season.py' to add new records to 'player_team_season'.

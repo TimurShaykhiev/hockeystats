@@ -2,12 +2,13 @@ from collections import namedtuple
 
 import MySQLdb as Db
 
+from config.config import get_custom_config
 from data_models.season import Season
 from data_models.player import Player
 from data_models.player_trade import PlayerTrade
 from db_utils.add_player_team_season import add_player_team_season
 
-SEASON_ID = 4
+SEASON_ID = 5
 
 PlayerInfo = namedtuple('PlayerInfo', ['tid', 'trades'])
 
@@ -49,7 +50,9 @@ def main(db):
 
 
 if __name__ == '__main__':
-    db_conn = Db.connect(host='localhost', user='hockstats', password='hockstats', database='NHL_STATS', charset='utf8')
+    config = get_custom_config()
+    db_conn = Db.connect(host=config.DB_URL, user=config.DB_USER, password=config.DB_PASSWORD, database=config.DB_NAME,
+                         charset='utf8')
     try:
         main(db_conn)
     finally:
