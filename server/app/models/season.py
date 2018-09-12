@@ -164,7 +164,7 @@ class _FilteredSeasonCollectionSchema(ModelSchema):
 
 
 def get_all_seasons(db):
-    all_seasons = SeasonDm.get_all(db, order_by=['-start'])
+    all_seasons = SeasonDm.get_all_seasons(db)
     if len(all_seasons) == 0:
         current_app.logger.info('Seasons are not found.')
         raise ApiError(404, 'SEASON_NOT_FOUND')

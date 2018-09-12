@@ -36,6 +36,11 @@ class Season(EntityModel):
     def get_current(cls, db_conn):
         return cls._get_one_from_db(db_conn, 'SELECT * FROM seasons WHERE current = 1')
 
+    @classmethod
+    def get_all_seasons(cls, db_conn):
+        query = 'SELECT * FROM seasons WHERE status != \'not_started\' ORDER BY start DESC'
+        return cls._get_all_from_db(db_conn, query)
+
     def __str__(self):
         return '{}\t{}\t{}\t{}\t{}\t{}\n'.format(
             self.id,
