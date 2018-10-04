@@ -176,6 +176,10 @@ class Game(Model):
         scores = cls._get_columns_from_db(db_conn, query, (from_date, to_date))
         return dict(((t1, t2), {t1: w1, t2: w2}) for t1, t2, w1, w2 in scores)
 
+    @classmethod
+    def get_all_sorted(cls, db_conn):
+        return cls._get_columns_from_db(db_conn, 'SELECT * FROM games ORDER BY date')
+
     def to_tuple(self):
         return (self.id, self.date, self.is_regular, self.win_type, self.home.team.id, self.away.team.id,
                 self.home.goals, self.home.goals_period1, self.home.goals_period2, self.home.goals_period3,

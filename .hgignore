@@ -12,3 +12,4 @@ venv
 vaultpass
 *.retry
 db_backup
+dataset
