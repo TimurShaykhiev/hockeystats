@@ -24,9 +24,9 @@
         <pie-chart v-else-if="chartData.pieChart" v-bind="chartData.chartData"/>
       </tab>
       <tab :name="$t('tabNames.table')">
-        <teams-stats-table type="team"/>
-        <skaters-stats-table type="team"/>
-        <goalies-stats-table type="team"/>
+        <teams-stats-table class="team-info__stats-table" type="team"/>
+        <skaters-stats-table class="team-info__stats-table" type="team"/>
+        <goalies-stats-table class="team-info__stats-table" type="team"/>
       </tab>
     </tabs>
     <stats-block :caption="$t('teamInfo.goalStatistics')" :items="goalStats"/>
@@ -722,5 +722,8 @@ export default {
     width: 95%;
     margin: 1rem 2.5%;
     border: none;
+  }
+  .team-info__stats-table {
+    margin-bottom: 1rem;
   }
 </style>

@@ -8,7 +8,8 @@
 <script>
 import ChartLegend from 'Components/ChartLegend';
 import {select} from 'd3-selection';
-import {scaleOrdinal, schemeCategory20} from 'd3-scale';
+import {scaleOrdinal} from 'd3-scale';
+import {schemePaired, schemeSet3} from 'd3-scale-chromatic';
 import {pie, arc} from 'd3-shape';
 import {format} from 'd3-format';
 import d3Tip from 'ThirdParty/d3tip';
@@ -37,7 +38,7 @@ export default {
   },
   computed: {
     legendColors() {
-      return scaleOrdinal(schemeCategory20).domain(this.dataSet.map((d) => d.key));
+      return scaleOrdinal(schemePaired.concat(schemeSet3)).domain(this.dataSet.map((d) => d.key));
     }
   },
   methods: {

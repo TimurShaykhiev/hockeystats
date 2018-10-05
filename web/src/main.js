@@ -6,6 +6,7 @@ import router from 'Root/router';
 import store from 'Store/store';
 import {logger, DEBUG} from 'Root/logger';
 import VueGoodTable from 'vue-good-table';
+import 'vue-good-table/dist/vue-good-table.css';
 import vSelect from 'vue-select';
 import Tab from 'Components/Tab';
 import Tabs from 'Components/Tabs';

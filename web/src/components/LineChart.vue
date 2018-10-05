@@ -7,7 +7,8 @@
 
 <script>
 import {select} from 'd3-selection';
-import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import {scaleLinear, scaleOrdinal} from 'd3-scale';
+import {schemeCategory10} from 'd3-scale-chromatic';
 import {extent, merge} from 'd3-array';
 import {line, curveBasis} from 'd3-shape';
 import {timeFormat} from 'd3-time-format';

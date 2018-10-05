@@ -3,14 +3,15 @@
 const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const Extract = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const {VueLoaderPlugin} = require('vue-loader');
 
-const devBuild = process.env.NODE_ENV === 'development';
-const deployBuild = process.env.NODE_ENV === 'deploy';
+const devBuild = process.env.TARGET === 'dev';
+const deployBuild = process.env.TARGET === 'deploy';
 
-const extractLess = new ExtractTextPlugin({
+const extractCss = new Extract({
   filename: devBuild ? 'all.css' : '[hash].css'
 });
 
@@ -70,15 +71,11 @@ const config = {
   module: {
     rules: [{
         test: /\.css$/,
-        use: extractLess.extract({
-          use: ['css-loader']
-        }),
+        use: [Extract.loader, 'css-loader'],
         include: path.resolve(__dirname, 'node_modules')
       }, {
         test: /\.less$/,
-        use: extractLess.extract({
-          use: ['css-loader', 'postcss-loader', 'less-loader']
-        })
+        use: [Extract.loader, 'css-loader', 'postcss-loader', 'less-loader']
       }, {
         test: /\.vue$/,
         loader: 'vue-loader'
@@ -125,17 +122,15 @@ const config = {
     }
   },
   plugins: [
-    extractLess,
+    extractCss,
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: 'index.template'
     }),
     new CopyWebpackPlugin([{from: ASSETS_DIR + '/images/team*.svg', to: 'images', flatten: true}]),
     new CopyWebpackPlugin([{from: ASSETS_DIR + '/favicons/*', to: '', flatten: true}]),
     new webpack.DefinePlugin({
-      '__APP_CONFIG__': JSON.stringify(devBuild ? appConfigDev : appConfigProduction),
-      'process.env': {
-        NODE_ENV: devBuild ? '"development"' : '"production"'
-      }
+      '__APP_CONFIG__': JSON.stringify(devBuild ? appConfigDev : appConfigProduction)
     })
   ],
   devServer: {
@@ -147,9 +142,19 @@ const config = {
         target: 'http://localhost:5000',
         secure: false
       }
+    },
+    stats: {
+      children: false,
+      performance: false
     }
   },
-  devtool: getDevTool()
+
+  devtool: getDevTool(),
+
+  stats: {
+    children: false,
+    performance: false
+  }
 };
 
 module.exports = config;

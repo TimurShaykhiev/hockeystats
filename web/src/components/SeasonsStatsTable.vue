@@ -1,19 +1,18 @@
 <template>
   <div class="season-stats-table">
     <vue-good-table
-      title=""
       :columns="columns"
       :rows="rows"
-      :paginate="false"
+      :pagination-options="{enabled: false}"
       :lineNumbers="false"
-      styleClass="table condensed table-bordered table-striped season-stats-table__table">
+      styleClass="vgt-table condensed bordered striped stats-table__table">
       <template slot="table-column" slot-scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
       <template slot="table-row" slot-scope="props">
-        <td v-for="el in columns" class="season-stats-table__cell" v-if="!el.hidden && el.field">
-          <span>{{props.row[el.field]}}</span>
-        </td>
+        <div class="season-stats-table__cell">
+          <span>{{props.row[props.column.field]}}</span>
+        </div>
       </template>
     </vue-good-table>
   </div>
@@ -139,15 +138,7 @@ export default {
 <style lang="less">
   @import '../../styles/vars.less';
 
-  .season-stats-table__table {
-    .desktop({
-      font-size: @table-font-size-desktop;
-    });
-    .small-desktop({
-      font-size: @table-font-size-sm-desktop;
-    });
-  }
-  .season-stats-table__cell {
+  .stats-table__cell {
     text-align: center;
   }
 </style>

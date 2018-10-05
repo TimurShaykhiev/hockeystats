@@ -8,7 +8,8 @@
 <script>
 import ChartLegend from 'Components/ChartLegend';
 import {select} from 'd3-selection';
-import {scaleBand, scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import {scaleBand, scaleLinear, scaleOrdinal} from 'd3-scale';
+import {schemeCategory10} from 'd3-scale-chromatic';
 import {max} from 'd3-array';
 import d3Tip from 'ThirdParty/d3tip';
 import ChartUtils from 'Components/chartUtils';

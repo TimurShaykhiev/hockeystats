@@ -1,32 +1,24 @@
 <template>
   <div class="skaters-stats-table">
+    <h2 class="skaters-stats-table__caption">{{tableCaption}}</h2>
     <div v-if="showFilter" class="skaters-stats-table__filter-container container-row">
       <table-filter :columns="columns" v-on:apply-table-filter="applyFilter" v-on:reset-table-filter="resetFilter"/>
     </div>
     <vue-good-table
-      :title="tableCaption"
       :columns="columns"
       :rows="rows"
-      :paginate="showPagination"
-      :perPage="30"
-      :nextText="paginationText.next"
-      :prevText="paginationText.prev"
-      :rowsPerPageText="paginationText.rowsPerPage"
-      :ofText="paginationText.ofText"
-      :allText="paginationText.allText"
+      :pagination-options="paginationOptions"
       :lineNumbers="showLineNumbers"
-      :defaultSortBy="defaultSortColumn"
-      styleClass="table condensed table-bordered table-striped skaters-stats-table__table">
+      :sort-options="{enabled: true, initialSortBy: defaultSortColumn}"
+      styleClass="vgt-table condensed bordered striped stats-table__table">
       <template slot="table-column" slot-scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
       <template slot="table-row" slot-scope="props">
-        <td v-for="el in columns" class="skater-stats-table__cell" v-if="!el.hidden && el.field">
-          <router-link v-if="el.field === 'name'" :to="{name: 'skater', params: {id: props.row.playerId}}">
-            {{props.row[el.field]}}
-          </router-link>
-          <span v-else>{{props.row[el.field]}}</span>
-        </td>
+        <router-link v-if="props.column.field === 'name'" :to="{name: 'skater', params: {id: props.row.playerId}}" class="stats-table__cell">
+          {{props.row[props.column.field]}}
+        </router-link>
+        <span v-else>{{props.row[props.column.field]}}</span>
       </template>
     </vue-good-table>
   </div>
@@ -67,7 +59,6 @@ export default {
   data() {
     return {
       showLineNumbers: this.type !== TYPE_PLAYER,
-      showPagination: this.type === TYPE_ALL,
       showFilter: this.type === TYPE_ALL,
       filterData: null
     };
@@ -227,8 +218,8 @@ export default {
       }];
     },
 
-    paginationText() {
-      return CompUtils.getPaginationText();
+    paginationOptions() {
+      return CompUtils.getPaginationOptions(this.type === TYPE_ALL);
     },
 
     rows() {
@@ -348,18 +339,7 @@ export default {
   .skaters-stats-table__filter-container {
     justify-content: flex-end;
   }
-  .skaters-stats-table__table {
-    .desktop({
-      font-size: @table-font-size-desktop;
-    });
-    .small-desktop({
-      font-size: @table-font-size-sm-desktop;
-    });
-  }
-  .skater-stats-table__cell {
-    a {
-      color: @main-text-color;
-      text-decoration: none;
-    }
+  .skaters-stats-table__caption {
+    margin-bottom: .5rem;
   }
 </style>

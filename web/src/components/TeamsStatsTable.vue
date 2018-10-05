@@ -1,26 +1,24 @@
 <template>
   <div class="team-stats-table">
+    <h2 class="team-stats-table__caption">{{tableCaption}}</h2>
     <div v-if="showFilter" class="team-stats-table__filter-container container-row">
       <table-filter :columns="columns" v-on:apply-table-filter="applyFilter" v-on:reset-table-filter="resetFilter"/>
     </div>
     <vue-good-table
-      :title="tableCaption"
       :columns="columns"
       :rows="rows"
-      :paginate="false"
+      :paginationOptions="{enabled: false}"
       :lineNumbers="showLineNumbers"
-      :defaultSortBy="defaultSortColumn"
-      styleClass="table condensed table-bordered table-striped team-stats-table__table">
+      :sort-options="{enabled: true, initialSortBy: defaultSortColumn}"
+      styleClass="vgt-table condensed bordered striped stats-table__table">
       <template slot="table-column" slot-scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
       <template slot="table-row" slot-scope="props">
-        <td v-for="el in columns" class="team-stats-table__cell" v-if="!el.hidden && el.field">
-          <router-link v-if="el.field === 'teamName'" :to="{name: 'team', params: {id: props.row.teamId}}">
-            {{props.row[el.field]}}
-          </router-link>
-          <span v-else>{{props.row[el.field]}}</span>
-        </td>
+        <router-link v-if="props.column.field === 'teamName'" :to="{name: 'team', params: {id: props.row.teamId}}" class="stats-table__cell">
+          {{props.row[props.column.field]}}
+        </router-link>
+        <span v-else>{{props.row[props.column.field]}}</span>
       </template>
     </vue-good-table>
   </div>
@@ -313,18 +311,7 @@ export default {
   .team-stats-table__filter-container {
     justify-content: flex-end;
   }
-  .team-stats-table__table {
-    .desktop({
-      font-size: @table-font-size-desktop;
-    });
-    .small-desktop({
-      font-size: @table-font-size-sm-desktop;
-    });
-  }
-  .team-stats-table__cell {
-    a {
-      color: @main-text-color;
-      text-decoration: none;
-    }
+  .team-stats-table__caption {
+    margin-bottom: .5rem;
   }
 </style>

@@ -176,6 +176,7 @@ let locales = {
         next: 'Next',
         prev: 'Prev',
         rowsPerPage: 'Rows Per Page',
+        pageText: 'Page',
         ofText: 'of',
         allText: 'All'
       },
@@ -488,7 +489,8 @@ let locales = {
       pagination: {
         next: 'След',
         prev: 'Пред',
-        rowsPerPage: 'Строк на стр.',
+        rowsPerPage: 'Строк на странице',
+        pageText: 'Страница',
         ofText: 'из',
         allText: 'Все'
       },

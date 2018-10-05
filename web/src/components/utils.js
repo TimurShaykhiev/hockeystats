@@ -30,13 +30,19 @@ export default {
     return `${i18n.t(str)} ${years}`;
   },
 
-  getPaginationText() {
+  getPaginationOptions(showPagination) {
     return {
-      next: i18n.t('pagination.next'),
-      prev: i18n.t('pagination.prev'),
-      rowsPerPage: i18n.t('pagination.rowsPerPage'),
-      ofText: i18n.t('pagination.ofText'),
-      allText: i18n.t('pagination.allText')
+      enabled: showPagination,
+      mode: 'pages',
+      perPage: 30,
+      position: 'bottom',
+      perPageDropdown: [30, 50, 100],
+      nextLabel: i18n.t('pagination.next'),
+      prevLabel: i18n.t('pagination.prev'),
+      rowsPerPageLabel: i18n.t('pagination.rowsPerPage'),
+      pageLabel: i18n.t('pagination.pageText'),
+      ofLabel: i18n.t('pagination.ofText'),
+      allLabel: i18n.t('pagination.allText')
     };
   },
 

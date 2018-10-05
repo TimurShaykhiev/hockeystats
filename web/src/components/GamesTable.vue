@@ -1,12 +1,12 @@
 <template>
   <div class="games-table">
+    <h2 class="games-table__caption">{{$t('gamesTable.caption')}}</h2>
     <vue-good-table
-      :title="$t('gamesTable.caption')"
       :columns="columns"
       :rows="rows"
-      :paginate="false"
+      :paginationOptions="{enabled: false}"
       :lineNumbers="false"
-      styleClass="table condensed table-bordered table-striped games-table__table">
+      styleClass="vgt-table condensed bordered striped stats-table__table">
       <template slot="table-column" slot-scope="props">
         <span :title="props.column.hint">{{props.column.label}}</span>
       </template>
@@ -180,14 +180,7 @@ export default {
 </script>
 
 <style lang="less">
-  @import '../../styles/vars.less';
-
-  .games-table__table {
-    .desktop({
-      font-size: @table-font-size-desktop;
-    });
-    .small-desktop({
-      font-size: @table-font-size-sm-desktop;
-    });
+  .games-table__caption {
+    margin-bottom: 1rem;
   }
 </style>

@@ -143,10 +143,38 @@ ul {
 
 .compare-block--left {
   color: #fff;
-  background-color: @compare-left-color!important;
+  background-color: @compare-left-color;
 }
 
 .compare-block--right {
   color: #fff;
-  background-color: @compare-right-color!important;
+  background-color: @compare-right-color;
+}
+
+table.vgt-table.stats-table__table {
+  .desktop({
+    font-size: @table-font-size-desktop;
+  });
+  .small-desktop({
+    font-size: @table-font-size-sm-desktop;
+  });
+  td {
+    color: @main-text-color;
+  }
+  thead th {
+    &.compare-block--left {
+      color: #fff;
+      background: @compare-left-color;
+    }
+    &.compare-block--right {
+      color: #fff;
+      background: @compare-right-color;
+    }
+  }
+}
+.stats-table__cell {
+  a {
+    color: @main-text-color;
+    text-decoration: none;
+  }
 }

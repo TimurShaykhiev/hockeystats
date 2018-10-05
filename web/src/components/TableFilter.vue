@@ -105,6 +105,7 @@ export default {
 <style lang="less">
   .table-filter {
     font-size: .9rem;
+    margin-bottom: 1rem;
   }
   .table-filter__label {
     padding-top: .2rem;
