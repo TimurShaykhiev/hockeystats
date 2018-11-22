@@ -136,18 +136,20 @@ class Standings:
         res = b.wins - a.wins
         if res != 0:
             return res
-        # 3. To check this condition we need games info
-        if self._tie_breaking_info is not None:
-            res = self._tie_breaking_info[b.tid] - self._tie_breaking_info[a.tid]
-            if res != 0:
-                return res
-        elif a.games > 20:
-            # it makes no sense to do these check when too few games are played
-            key = (a.points, a.games, a.wins)
-            if key not in self._ties:
-                self._ties[key] = set()
-            self._ties[key].add(a.tid)
-            self._ties[key].add(b.tid)
+        # 3
+        # It makes no sense to do this check when too few games are played
+        if a.games > 20:
+            # To check this condition we need games info
+            if self._tie_breaking_info is not None:
+                res = self._tie_breaking_info[b.tid] - self._tie_breaking_info[a.tid]
+                if res != 0:
+                    return res
+            else:
+                key = (a.points, a.games, a.wins)
+                if key not in self._ties:
+                    self._ties[key] = set()
+                self._ties[key].add(a.tid)
+                self._ties[key].add(b.tid)
         # 4
         return b.diff - a.diff
 
